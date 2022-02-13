@@ -15,4 +15,6 @@ I want to use this as an opportunity to:
 
 ### Drawing the '@' symbol and moving it around
 
+http://rogueliketutorials.com/tutorials/tcod/v2/part-1/
+
 It has been a long time since I did anything significant with python or tcod, so this should be a lot of fun.
