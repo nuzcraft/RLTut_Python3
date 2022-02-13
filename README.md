@@ -10,6 +10,7 @@ I want to use this as an opportunity to:
 2. relearn some tcod
 3. implement unit tests
 4. make a roguelike
+5. practice with git
 
 ## Part 1 Dev Notes
 
