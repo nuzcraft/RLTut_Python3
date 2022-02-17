@@ -23,6 +23,8 @@ class Test_Input_Handlers(unittest.TestCase):
             scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
         self.assertIsInstance(action, MovementAction)
+        self.assertEqual(action.dx, 0)
+        self.assertEqual(action.dy, -1)
 
     def test_ev_keydown_down(self):
         event_handler = input_handlers.EventHandler()
@@ -30,6 +32,8 @@ class Test_Input_Handlers(unittest.TestCase):
             scancode=tcod.event.Scancode.DOWN, sym=tcod.event.K_DOWN, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
         self.assertIsInstance(action, MovementAction)
+        self.assertEqual(action.dx, 0)
+        self.assertEqual(action.dy, 1)
 
     def test_ev_keydown_left(self):
         event_handler = input_handlers.EventHandler()
@@ -37,6 +41,8 @@ class Test_Input_Handlers(unittest.TestCase):
             scancode=tcod.event.Scancode.LEFT, sym=tcod.event.K_LEFT, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
         self.assertIsInstance(action, MovementAction)
+        self.assertEqual(action.dx, -1)
+        self.assertEqual(action.dy, 0)
 
     def test_ev_keydown_right(self):
         event_handler = input_handlers.EventHandler()
@@ -44,6 +50,8 @@ class Test_Input_Handlers(unittest.TestCase):
             scancode=tcod.event.Scancode.RIGHT, sym=tcod.event.K_RIGHT, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
         self.assertIsInstance(action, MovementAction)
+        self.assertEqual(action.dx, 1)
+        self.assertEqual(action.dy, 0)
 
     def test_ev_keydown_escape(self):
         event_handler = input_handlers.EventHandler()
