@@ -14,7 +14,7 @@ class Test_Input_Handlers(unittest.TestCase):
         event = tcod.event.Quit()
         with self.assertRaises(SystemExit) as action:
             event_handler.dispatch(event)
-        self.assertEquals(action.exception.code, None)
+        self.assertEqual(action.exception.code, None)
 
     # tcod.event.KeyDown() events will trigger ev_keydown
     def test_ev_keydown_up(self):
