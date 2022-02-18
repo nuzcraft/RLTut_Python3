@@ -2,7 +2,7 @@ import input_handlers
 import unittest
 import tcod.event
 
-from actions import Action, EscapeAction, MovementAction
+from actions import EscapeAction, MovementAction
 
 
 class Test_Input_Handlers(unittest.TestCase):
