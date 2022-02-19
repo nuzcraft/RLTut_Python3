@@ -1,6 +1,9 @@
+from unittest.mock import Mock
 from engine import Engine
 import unittest
 import tcod.event
+
+import tcod
 
 from entity import Entity
 from input_handlers import EventHandler
@@ -68,3 +71,22 @@ class Test_Engine(unittest.TestCase):
         eng.handle_events({event1})
         self.assertEqual(eng.player.x, x_val)
         self.assertEqual(eng.player.y, y_val)
+
+    def test_render(self):
+        '''
+        lets try to test that the render function works by mocking the console functions?
+        mock a few of the functions and make sure they are called
+        '''
+        ent1 = Entity(1, 1, "@", (0, 0, 0))
+        event_handler = EventHandler()
+        eng = Engine({ent1}, event_handler, ent1)
+
+        with tcod.context.new_terminal(10, 10) as context:
+            console = tcod.Console(10, 10)
+            console.print = Mock()
+            context.present = Mock()
+            console.clear = Mock()
+            eng.render(console, context)
+            console.print.assert_called_once()
+            context.present.assert_called_once_with(console)
+            console.clear.assert_called_once()
