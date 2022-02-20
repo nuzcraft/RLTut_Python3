@@ -23,3 +23,11 @@ It has been a long time since I did anything significant with python or tcod, so
 Welp, after finishing part one, there is a lot of syntax in here that I'm not very familiar with. I think I understand the gist of what's happening, but it will take some work before I'm fully comfortable with it. Regardless, I'm really enjoying how this is going!
 
 I got movin' and groovin' on unit testing and after some finagling I got a suite of unit tests running on the overwritten ev_quit and ev_keydown functions. I found this to be an educational experience, and look forward to setting up more unit tests as the codebase grows.
+
+## Part 2 Dev Notes
+
+### The generic Entity, the render functions, and the map
+
+http://rogueliketutorials.com/tutorials/tcod/v2/part-2/
+
+I had a good time setting up unit tests and such in part one, and I think part 2 is going to be a challenge. At this exact time, I'm looking at setting up unit tests for the engine scripts, am seeing functions that will be difficult to test, and am looking forward to the puzzle solving.
