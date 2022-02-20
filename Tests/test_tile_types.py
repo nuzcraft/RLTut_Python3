@@ -4,6 +4,9 @@ import tile_types
 
 class Test_Tile_Types(unittest.TestCase):
     def test_new_tile(self):
+        '''
+        test initializing a new tile
+        '''
         tile = tile_types.new_tile(
             walkable=True, transparent=True, dark=(ord(" "), (255, 255, 255), (50, 50, 150)),
         )

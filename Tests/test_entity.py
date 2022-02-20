@@ -4,6 +4,9 @@ import unittest
 
 class Test_Entity(unittest.TestCase):
     def test_init(self):
+        '''
+        tests initializing a new entity assigns values correctly
+        '''
         x_val = 1
         y_val = 2
         char = '@'
@@ -15,6 +18,9 @@ class Test_Entity(unittest.TestCase):
         self.assertEqual(ent.color, color)
 
     def test_move(self):
+        '''
+        tests moving an entity
+        '''
         x_val = 1
         y_val = 2
         char = '@'
