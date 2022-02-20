@@ -33,3 +33,11 @@ http://rogueliketutorials.com/tutorials/tcod/v2/part-2/
 I had a good time setting up unit tests and such in part one, and I think part 2 is going to be a challenge. At this exact time, I'm looking at setting up unit tests for the engine scripts, am seeing functions that will be difficult to test, and am looking forward to the puzzle solving.
 
 After quite a bit of futzing, I'm feeling really good about the development process here. Create script, write tests, implement code, see results. I think it will be really interesting to update/fix unit tests as the codebase changes. Part 2 is complete! Looking forward to part 3!
+
+## Part 3 Dev Notes
+
+### Generating a Dungeon
+
+http://rogueliketutorials.com/tutorials/tcod/v2/part-3/
+
+I'm really looking forward to dungeon generation. The procedural nature is probably my favorite part of roguelike development/working through these tutorials.
