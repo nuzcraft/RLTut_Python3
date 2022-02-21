@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 from engine import Engine
 from game_map import GameMap
+import tile_types
 import unittest
 import tcod.event
 
@@ -40,6 +41,9 @@ class Test_Engine(unittest.TestCase):
         event2 = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.LEFT, sym=tcod.event.K_LEFT, mod=tcod.event.Modifier.NONE)
         gm = GameMap(50, 50)
+        # make sure, regardless of generation, we have a clear path to move up and left
+        gm.tiles[x_val-1, y_val] = tile_types.floor
+        gm.tiles[x_val-1, y_val-1] = tile_types.floor
         eng = Engine({}, event_handler, gm, ent1)
         eng.handle_events({event1, event2})
         self.assertNotEqual(eng.player.x, x_val)
