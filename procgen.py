@@ -1,4 +1,8 @@
-from typing import Tuple
+from tkinter import Y
+from typing import Tuple, Iterator
+import random
+
+import tcod
 
 from game_map import GameMap
 import tile_types
@@ -22,6 +26,26 @@ class RectangularRoom:
     def inner(self) -> Tuple[slice, slice]:
         """Return the inner area of the room as a 2D array index"""
         return slice(self.x1 + 1, self.x2), slice(self.y1 + 1, self.y2)
+
+
+def tunnel_between(
+    start: Tuple[int, int], end: Tuple[int, int]
+) -> Iterator[Tuple[int, int]]:
+    """Return an L-shaped tunnel between these two points"""
+    x1, y1 = start
+    x2, y2 = end
+    if random.random() < 0.5:  # 50% chance
+        # move horizontally, then vertically
+        corner_x, corner_y = x2, y1
+    else:
+        # move vertically, then horizontally
+        corner_x, corner_y = x1, y2
+
+    # gnerate the coordinaes for this tunnel
+    for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
+        yield x, Y
+    for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
+        yield x, y
 
 
 def generate_dungeon(map_width, map_height) -> GameMap:

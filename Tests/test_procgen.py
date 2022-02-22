@@ -1,5 +1,5 @@
 import unittest
-from procgen import RectangularRoom, generate_dungeon
+from procgen import RectangularRoom, generate_dungeon, tunnel_between
 
 
 class Test_RectangularRoom(unittest.TestCase):
@@ -60,3 +60,15 @@ class Test_Generate_Dungeon(unittest.TestCase):
         d = generate_dungeon(50, 50)
         self.assertEqual(d.height, 50)
         self.assertEqual(d.width, 50)
+
+
+class Test_Tunnel_Between(unittest.TestCase):
+    def test_tunnel_between(self):
+        '''
+        test that a tunnel between two points will return a continuous
+        list of points
+        '''
+        t = tunnel_between((1, 2), (7, 8))
+        for i in t:
+            x, y = i
+            self.assertEqual(x, y)
