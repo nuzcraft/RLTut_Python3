@@ -41,3 +41,5 @@ After quite a bit of futzing, I'm feeling really good about the development proc
 http://rogueliketutorials.com/tutorials/tcod/v2/part-3/
 
 I'm really looking forward to dungeon generation. The procedural nature is probably my favorite part of roguelike development/working through these tutorials.
+
+This turned out to be quite a lot of fun. I liked breaking down the procgen into smaller pieces, rectangles and such. Unit testing is also going well? I'm not sure if I'm testing functions well, but it seems like some testing is better than none.
