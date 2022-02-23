@@ -57,4 +57,7 @@ def generate_dungeon(map_width, map_height) -> GameMap:
     dungeon.tiles[room_1.inner] = tile_types.floor
     dungeon.tiles[room_2.inner] = tile_types.floor
 
+    for x, y in tunnel_between(room_2.center, room_1.center):
+        dungeon.tiles[x, y] = tile_types.floor
+
     return dungeon
