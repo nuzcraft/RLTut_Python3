@@ -1,9 +1,9 @@
 from unittest.mock import Mock
 from engine import Engine
 from game_map import GameMap
-import tile_types
 import unittest
 import tcod.event
+from actions import MovementAction
 
 import tcod
 
@@ -30,7 +30,7 @@ class Test_Engine(unittest.TestCase):
 
     def test_handle_events_MovementAction(self):
         '''
-        tests that 2 basic movement actions will move the player object in the engine
+        tests that 2 basic movement events will call perform on the resulting action
         '''
         x_val = 10
         y_val = 10
@@ -41,13 +41,11 @@ class Test_Engine(unittest.TestCase):
         event2 = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.LEFT, sym=tcod.event.K_LEFT, mod=tcod.event.Modifier.NONE)
         gm = GameMap(50, 50)
-        # make sure, regardless of generation, we have a clear path to move up and left
-        gm.tiles[x_val-1, y_val] = tile_types.floor
-        gm.tiles[x_val-1, y_val-1] = tile_types.floor
         eng = Engine({}, event_handler, gm, ent1)
+        # mock the perform function from the MovementAction
+        MovementAction.perform = Mock()
         eng.handle_events({event1, event2})
-        self.assertNotEqual(eng.player.x, x_val)
-        self.assertNotEqual(eng.player.y, y_val)
+        MovementAction.perform.assert_called()
 
     def test_handle_events_EscapeAction(self):
         '''
