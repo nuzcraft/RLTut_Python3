@@ -49,6 +49,26 @@ class Test_RectangularRoom(unittest.TestCase):
         self.assertEqual(rm.inner[0], slice(1, 6))
         self.assertEqual(rm.inner[1], slice(1, 6))
 
+    def test_intersect_true(self):
+        '''
+        test that two intersecting rooms return true 
+        '''
+        x, y, w, h = 0, 0, 6, 6
+        x2, y2, w2, h2 = 1, 1, 7, 7
+        rm = RectangularRoom(x, y, w, h)
+        rm2 = RectangularRoom(x2, y2, w2, h2)
+        self.assertTrue(rm.intersects(rm2))
+
+    def test_intersect_false(self):
+        '''
+        test that two non-intersecting rooms return false
+        '''
+        x, y, w, h = 0, 0, 3, 3
+        x2, y2, w2, h2 = 4, 4, 7, 7
+        rm = RectangularRoom(x, y, w, h)
+        rm2 = RectangularRoom(x2, y2, w2, h2)
+        self.assertFalse(rm.intersects(rm2))
+
 
 class Test_Generate_Dungeon(unittest.TestCase):
     def test_generate_dungeon(self):
