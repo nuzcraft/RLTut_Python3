@@ -43,7 +43,7 @@ def tunnel_between(
 
     # gnerate the coordinaes for this tunnel
     for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
-        yield x, Y
+        yield x, y
     for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
         yield x, y
 

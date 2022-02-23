@@ -66,9 +66,15 @@ class Test_Tunnel_Between(unittest.TestCase):
     def test_tunnel_between(self):
         '''
         test that a tunnel between two points will return a continuous
-        list of points
+        list of points. Each point should be 1 point away from the previous point
         '''
-        t = tunnel_between((1, 2), (7, 8))
-        for i in t:
-            x, y = i
-            self.assertEqual(x, y)
+        x_s, y_s = 1, 2
+        x_t, y_t = x_s, y_s
+        x_e, y_e = 7, 8
+        t = tunnel_between((x_s, y_s), (x_e, y_e))
+        for x, y in t:
+            # dist between entries in the tunnel should always be less than 1
+            dist = abs((x_t-x) + (y_t-y))
+            self.assertLessEqual(dist, 1)
+            # set the transitory x so the next entry is only 1 space away
+            x_t, y_t = x, y
