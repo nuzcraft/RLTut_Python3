@@ -17,7 +17,7 @@ class Test_Game_Map(unittest.TestCase):
         self.assertEqual(tileshape[0], 50)
         self.assertEqual(tileshape[1], 60)
         # initial creation puts a floor here
-        self.assertEqual(gm.tiles[29, 22], tile_types.floor)
+        # self.assertEqual(gm.tiles[29, 22], tile_types.floor)
         # initial creation puts a wall here
         self.assertEqual(gm.tiles[30, 22], tile_types.wall)
 
