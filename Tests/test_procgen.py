@@ -1,5 +1,6 @@
 import unittest
 from procgen import RectangularRoom, generate_dungeon, tunnel_between
+from entity import Entity
 
 
 class Test_RectangularRoom(unittest.TestCase):
@@ -77,7 +78,8 @@ class Test_Generate_Dungeon(unittest.TestCase):
         we don't care what the dungeon looks like, but this should test
         calling it doesn't cause an error or misshape the result
         '''
-        d = generate_dungeon(50, 50)
+        ent = Entity(0, 0, '@', (100, 100, 100))
+        d = generate_dungeon(10, 10, 15, 50, 50, ent)
         self.assertEqual(d.height, 50)
         self.assertEqual(d.width, 50)
 
