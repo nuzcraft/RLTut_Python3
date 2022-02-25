@@ -64,14 +64,15 @@ class Test_Game_Map(unittest.TestCase):
         gm = GameMap(50, 50)
         self.assertFalse(gm.in_bounds(x, y))
 
-    def test_render(self):
-        '''
-        tests that on render the console matches the GameMap
-        '''
-        gm = GameMap(50, 50)
-        console = tcod.Console(50, 50)
-        gm.render(console)
-        # let's check the specific locations in console to make
-        # sure they match the game map
-        self.assertEqual(console.tiles_rgb[29, 22], gm.tiles[29, 22]["dark"])
-        self.assertEqual(console.tiles_rgb[30, 22], gm.tiles[30, 22]["dark"])
+    # def test_render(self):
+    #     '''
+    #     tests that on render the console matches the GameMap
+    #     removing this test until there's something easier to test
+    #     '''
+    #     gm = GameMap(50, 50)
+    #     console = tcod.Console(50, 50)
+    #     gm.render(console)
+    #     # let's check the specific locations in console to make
+    #     # sure they match the game map
+    #     self.assertEqual(console.tiles_rgb[29, 22], gm.tiles[29, 22]["dark"])
+    #     self.assertEqual(console.tiles_rgb[30, 22], gm.tiles[30, 22]["dark"])
