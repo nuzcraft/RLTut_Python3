@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from engine import Engine
 from game_map import GameMap
 import unittest
@@ -15,18 +15,21 @@ class Test_Engine(unittest.TestCase):
     def test_init(self):
         '''
         tests that instantiating the engine will set values correctly
+        also assert that update_fov is called when the engine is initialized
         '''
         ent1 = Entity(0, 0, "@", (0, 0, 0))
         ent2 = Entity(10, 10, "k", (255, 255, 255))
         ents = {ent1, ent2}
         event_handler = EventHandler()
         gm = GameMap(50, 50)
+        Engine.update_fov = Mock()
         eng = Engine(ents, event_handler, gm, ent1)
         self.assertIn(ent1, eng.entities)
         self.assertIn(ent2, eng.entities)
         self.assertEqual(eng.event_handler, event_handler)
         self.assertEqual(eng.game_map, gm)
         self.assertEqual(eng.player, ent1)
+        Engine.update_fov.assert_called_once()
 
     def test_handle_events_MovementAction(self):
         '''
@@ -79,6 +82,25 @@ class Test_Engine(unittest.TestCase):
         eng.handle_events({event1})
         self.assertEqual(eng.player.x, x_val)
         self.assertEqual(eng.player.y, y_val)
+
+    # @patch.object(tcod.map, 'compute_fov')
+    # def test_update_fov(self, mock_compute_fov):
+    #     '''
+    #     test the fov is computed based on player's position
+    #     check that tcod.map.compute_fov is called using specific parameters
+    #     UPDATE: not sure what's happening here, I can't get the test to recognize
+    #     that compute_fov is getting called. Canning this test for now.
+    #     '''
+    #     ent1 = Entity(1, 1, "@", (0, 0, 0))
+    #     event_handler = EventHandler()
+    #     gm = GameMap(50, 50)
+    #     gm.tiles[:] = tile_types.floor
+    #     eng = Engine(
+    #         entities={}, event_handler=event_handler, game_map=gm, player=ent1)
+    #     eng.update_fov()
+    #     # tcod.map.compute_fov.assert_called_once_with(
+    #     #     eng.game_map.tiles["transparent"], (eng.player.x, eng.player.y), radius)
+    #     mock_compute_fov.assert_called()
 
     def test_render(self):
         '''
