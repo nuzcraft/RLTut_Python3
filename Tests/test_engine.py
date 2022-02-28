@@ -9,6 +9,8 @@ import tcod
 
 from entity import Entity
 from input_handlers import EventHandler
+import tile_types
+import numpy
 
 
 class Test_Engine(unittest.TestCase):
@@ -83,24 +85,27 @@ class Test_Engine(unittest.TestCase):
         self.assertEqual(eng.player.x, x_val)
         self.assertEqual(eng.player.y, y_val)
 
-    # @patch.object(tcod.map, 'compute_fov')
-    # def test_update_fov(self, mock_compute_fov):
+    # # @patch.object(tcod.map, 'compute_fov')
+    # def test_update_fov(self):
     #     '''
-    #     test the fov is computed based on player's position
-    #     check that tcod.map.compute_fov is called using specific parameters
-    #     UPDATE: not sure what's happening here, I can't get the test to recognize
-    #     that compute_fov is getting called. Canning this test for now.
+    #     test that the fov is computed
+    #     I couldn't figure out how to mock the right function, so well
+    #     make sure the 'visible' array is different from when the GameMap
+    #     is created
+    #     UPDATE: this didn't work, may have to workshop this test later
+    #     the final assertIsNone should fail if the arrays are not the same
+    #     (and they shouldn't be if the fov is updated after the tile types switch)
     #     '''
     #     ent1 = Entity(1, 1, "@", (0, 0, 0))
     #     event_handler = EventHandler()
     #     gm = GameMap(50, 50)
-    #     gm.tiles[:] = tile_types.floor
     #     eng = Engine(
     #         entities={}, event_handler=event_handler, game_map=gm, player=ent1)
+    #     init_visible = eng.game_map.visible
+    #     eng.game_map.tiles[:] = tile_types.floor
     #     eng.update_fov()
-    #     # tcod.map.compute_fov.assert_called_once_with(
-    #     #     eng.game_map.tiles["transparent"], (eng.player.x, eng.player.y), radius)
-    #     mock_compute_fov.assert_called()
+    #     self.assertIsNone(numpy.testing.assert_array_equal(
+    #         eng.game_map.visible, init_visible))
 
     def test_render(self):
         '''
