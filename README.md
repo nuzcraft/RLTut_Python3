@@ -43,3 +43,15 @@ http://rogueliketutorials.com/tutorials/tcod/v2/part-3/
 I'm really looking forward to dungeon generation. The procedural nature is probably my favorite part of roguelike development/working through these tutorials.
 
 This turned out to be quite a lot of fun. I liked breaking down the procgen into smaller pieces, rectangles and such. Unit testing is also going well? I'm not sure if I'm testing functions well, but it seems like some testing is better than none.
+
+### Part 4 Dev Notes
+
+### Field of View
+
+http://rogueliketutorials.com/tutorials/tcod/v2/part-4/
+
+Field of view is a really cool...and really annoying part of roguelike development. I think I'm going to make sure I have an easy way to turn on and off FOV since it is way easier to debug issues with FOV off.
+
+OOF, development is starting off rough. At some point in part 3 I removed pyvenv.cfg from the repo (since it directly relates to the local development environment) and it got deleted when I pulled again 😑 I'm not sure how to remove files from a repo without deleting them. It seems like .gitignore should apply to pulls as well, don't pull adds/deletes/changes to files in the .gitignore. Regardless, I think I got it back up and running.
+
+Complete! I got most of the tests up and running well too! Except for engine.compute_fov - for some reason, I couldn't get it set up to assert the tcod.map.compute_fov was called or that the engine.game_map.visible array changed after calling it. Which is weird, because in gameplay it's working just fine. I will likely need to revisit if I find a bug in the code :)
