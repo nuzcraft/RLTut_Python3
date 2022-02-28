@@ -1,12 +1,20 @@
+from __future__ import annotations
+
+from typing import Iterable, TYPE_CHECKING
+
 import numpy as np  # type: ignore
 from tcod.console import Console
 
 import tile_types
 
+if TYPE_CHECKING:
+    from entity import Entity
+
 
 class GameMap:
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, entities: Iterable[Entity] = ()):
         self.width, self.height = width, height
+        self.entities = set(entities)
         self.tiles = np.full(
             (width, height), fill_value=tile_types.wall, order="F")
 

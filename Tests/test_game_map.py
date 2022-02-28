@@ -1,7 +1,6 @@
 import unittest
 from game_map import GameMap
-import tcod
-import tile_types
+from entity import Entity
 
 
 class Test_Game_Map(unittest.TestCase):
@@ -9,7 +8,9 @@ class Test_Game_Map(unittest.TestCase):
         '''
         tests instantiating a new GameMap
         '''
-        gm = GameMap(50, 60)
+        ent1 = Entity(x=10, y=10, char="@", color=(100, 100, 100))
+        ent2 = Entity(x=20, y=20, char="k", color=(200, 200, 200))
+        gm = GameMap(width=50, height=60, entities={ent1, ent2})
         self.assertEqual(gm.width, 50)
         self.assertEqual(gm.height, 60)
         # check that tiles were generated okay
@@ -23,6 +24,9 @@ class Test_Game_Map(unittest.TestCase):
         explored_shape = gm.explored.shape
         self.assertEqual(explored_shape[0], 50)
         self.assertEqual(explored_shape[1], 60)
+        # check that the entities set was created
+        self.assertIn(ent1, gm.entities)
+        self.assertIn(ent2, gm.entities)
 
     def test_in_bounds_both_in(self):
         '''
