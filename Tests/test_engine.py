@@ -20,14 +20,10 @@ class Test_Engine(unittest.TestCase):
         also assert that update_fov is called when the engine is initialized
         '''
         ent1 = Entity(0, 0, "@", (0, 0, 0))
-        ent2 = Entity(10, 10, "k", (255, 255, 255))
-        ents = {ent1, ent2}
         event_handler = EventHandler()
         gm = GameMap(50, 50)
         Engine.update_fov = Mock()
-        eng = Engine(ents, event_handler, gm, ent1)
-        self.assertIn(ent1, eng.entities)
-        self.assertIn(ent2, eng.entities)
+        eng = Engine(event_handler, gm, ent1)
         self.assertEqual(eng.event_handler, event_handler)
         self.assertEqual(eng.game_map, gm)
         self.assertEqual(eng.player, ent1)
@@ -46,7 +42,7 @@ class Test_Engine(unittest.TestCase):
         event2 = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.LEFT, sym=tcod.event.K_LEFT, mod=tcod.event.Modifier.NONE)
         gm = GameMap(50, 50)
-        eng = Engine({}, event_handler, gm, ent1)
+        eng = Engine(event_handler, gm, ent1)
         # mock the perform function from the MovementAction
         MovementAction.perform = Mock()
         eng.handle_events({event1, event2})
@@ -62,7 +58,7 @@ class Test_Engine(unittest.TestCase):
         event1 = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.ESCAPE, sym=tcod.event.K_ESCAPE, mod=tcod.event.Modifier.NONE)
         gm = GameMap(50, 50)
-        eng = Engine({}, event_handler, gm, ent1)
+        eng = Engine(event_handler, gm, ent1)
         with self.assertRaises(SystemExit) as c:
             eng.handle_events({event1})
         self.assertEqual(c.exception.code, None)
@@ -78,7 +74,7 @@ class Test_Engine(unittest.TestCase):
         event1 = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.HOME, sym=tcod.event.K_HOME, mod=tcod.event.Modifier.NONE)
         gm = GameMap(50, 50)
-        eng = Engine({}, event_handler, gm, ent1)
+        eng = Engine(event_handler, gm, ent1)
         # the below function will fail if an escape action is passed
         # the assertEquals will fail if a movement action is passed in
         eng.handle_events({event1})
@@ -117,7 +113,7 @@ class Test_Engine(unittest.TestCase):
         event_handler = EventHandler()
         gm = GameMap(50, 50)
         eng = Engine(
-            entities={ent1}, event_handler=event_handler, game_map=gm, player=ent1)
+            event_handler=event_handler, game_map=gm, player=ent1)
 
         with tcod.context.new_terminal(50, 50) as context:
             console = tcod.Console(50, 50)

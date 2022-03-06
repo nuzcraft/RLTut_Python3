@@ -62,7 +62,7 @@ def tunnel_between(
 
 def generate_dungeon(max_rooms: int, room_min_size: int, room_max_size: int, map_width: int, map_height: int, player: Entity,) -> GameMap:
     """Generate a new dungeon map"""
-    dungeon = GameMap(map_width, map_height)
+    dungeon = GameMap(map_width, map_height, entities=[player])
 
     rooms: List[RectangularRoom] = []
 
