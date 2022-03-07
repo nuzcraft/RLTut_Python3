@@ -16,7 +16,7 @@ class Test_Actions_Action(unittest.TestCase):
         ent1 = Entity(0, 0, "@", (0, 0, 0))
         event_handler = EventHandler()
         gm = GameMap(50, 50)
-        eng = Engine(entities={}, event_handler=event_handler,
+        eng = Engine(event_handler=event_handler,
                      game_map=gm, player=ent1)
         action = Action()
         with self.assertRaises(NotImplementedError):
@@ -43,7 +43,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         player = Entity(player_x, player_y, "@", (0, 0, 0))
         event_handler = EventHandler()
         gm = GameMap(50, 50)
-        eng = Engine(entities={}, event_handler=event_handler,
+        eng = Engine(event_handler=event_handler,
                      game_map=gm, player=player)
         # the below will always move the player out of bounds
         action = MovementAction((player_x + 1) * -1, (player_y + 1) * -1)
@@ -65,7 +65,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         gm = GameMap(50, 50)
         # set the tile we'll try to move to as a wall
         gm.tiles[goal_x, goal_y] = tile_types.wall
-        eng = Engine(entities={}, event_handler=event_handler,
+        eng = Engine(event_handler=event_handler,
                      game_map=gm, player=player)
         # the below will always move the player out of bounds
         action = MovementAction(goal_x - player_x, goal_y - player_y)
@@ -87,7 +87,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         gm = GameMap(50, 50)
         # set the tile we'll try to move to as a floor
         gm.tiles[goal_x, goal_y] = tile_types.floor
-        eng = Engine(entities={}, event_handler=event_handler,
+        eng = Engine(event_handler=event_handler,
                      game_map=gm, player=player)
         # the below will always move the player out of bounds
         action = MovementAction(goal_x - player_x, goal_y - player_y)
@@ -105,7 +105,7 @@ class Test_Actions_EscapeAction(unittest.TestCase):
         ent1 = Entity(0, 0, "@", (0, 0, 0))
         event_handler = EventHandler()
         gm = GameMap(50, 50)
-        eng = Engine(entities={}, event_handler=event_handler,
+        eng = Engine(event_handler=event_handler,
                      game_map=gm, player=ent1)
         action = EscapeAction()
         with self.assertRaises(SystemExit):

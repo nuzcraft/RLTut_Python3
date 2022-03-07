@@ -28,6 +28,24 @@ class Test_Game_Map(unittest.TestCase):
         self.assertIn(ent1, gm.entities)
         self.assertIn(ent2, gm.entities)
 
+    def test_get_blocking_entity_at_location_true(self):
+        '''
+        tests whether a blocking entity returns when checking
+        '''
+        ent = Entity(x=5, y=5, blocks_movement=True)
+        gm = GameMap(width=10, height=10, entities={ent})
+        ent2 = gm.get_blocking_entity_at_location(5, 5)
+        self.assertEqual(ent, ent2)
+
+    def test_get_blocking_entity_at_location_false(self):
+        '''
+        tests whether a blocking entity returns when checking
+        '''
+        ent = Entity(x=5, y=5, blocks_movement=False)
+        gm = GameMap(width=10, height=10, entities={ent})
+        ent2 = gm.get_blocking_entity_at_location(5, 5)
+        self.assertIsNone(ent2)
+
     def test_in_bounds_both_in(self):
         '''
         tests whether x and y in bounds of map returns true

@@ -80,7 +80,7 @@ class Test_Generate_Dungeon(unittest.TestCase):
         calling it doesn't cause an error or misshape the result
         '''
         ent = Entity(0, 0, '@', (100, 100, 100))
-        d = generate_dungeon(10, 10, 15, 50, 50, ent)
+        d = generate_dungeon(10, 10, 15, 50, 50, 2, ent)
         self.assertEqual(d.height, 50)
         self.assertEqual(d.width, 50)
 
