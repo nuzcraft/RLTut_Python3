@@ -63,3 +63,5 @@ Complete! I got most of the tests up and running well too! Except for engine.com
 http://rogueliketutorials.com/tutorials/tcod/v2/part-5/
 
 Oh snap! Now that we have a dungeon, we're ready to start filling it with stuff! Let's get some monsters going!
+
+This was a very fun chapter! We touched a lot of different functions, and I can see the pieces of things coming together really well. I liked the use of the BumpAction and I think it presented an interesting challenge for unit testing. As it stands, I'm starting to get confident in my ability to build and run the program and have it work as expected so long as my unit tests have passed! I think there's still plenty of room for improvement in them, but as it is, I'm happy with what I've learned.
