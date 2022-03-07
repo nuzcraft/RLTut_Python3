@@ -59,7 +59,7 @@ class Test_Actions_MeleeAction(unittest.TestCase):
     @patch('builtins.print')
     def test_perform_with_target(self, mock_print):
         '''
-        test that a Melee Actino with a target will do something
+        test that a Melee Action with a target will do something
         '''
         player_x, player_y = 1, 1
         ent_x, ent_y = 2, 2
