@@ -1,6 +1,7 @@
 import unittest
-from procgen import RectangularRoom, generate_dungeon, tunnel_between
+from procgen import RectangularRoom, generate_dungeon, tunnel_between, place_entities
 from entity import Entity
+from game_map import GameMap
 
 
 class Test_RectangularRoom(unittest.TestCase):
@@ -79,7 +80,7 @@ class Test_Generate_Dungeon(unittest.TestCase):
         calling it doesn't cause an error or misshape the result
         '''
         ent = Entity(0, 0, '@', (100, 100, 100))
-        d = generate_dungeon(10, 10, 15, 50, 50, ent)
+        d = generate_dungeon(10, 10, 15, 50, 50, 2, ent)
         self.assertEqual(d.height, 50)
         self.assertEqual(d.width, 50)
 
@@ -100,3 +101,13 @@ class Test_Tunnel_Between(unittest.TestCase):
             self.assertLessEqual(dist, 1)
             # set the transitory x so the next entry is only 1 space away
             x_t, y_t = x, y
+
+
+# class Test_Place_Entities(unittest.TestCase):
+#     def test_place_entities(self):
+#         '''
+#         test that placing entities call the code that places entities
+#         '''
+#         x, y, w, h = 0, 0, 10, 10
+#         rm = RectangularRoom(x, y, w, h)
+#         d = GameMap(10, 10, {})

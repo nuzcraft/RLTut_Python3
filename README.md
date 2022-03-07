@@ -55,3 +55,13 @@ Field of view is a really cool...and really annoying part of roguelike developme
 OOF, development is starting off rough. At some point in part 3 I removed pyvenv.cfg from the repo (since it directly relates to the local development environment) and it got deleted when I pulled again 😑 I'm not sure how to remove files from a repo without deleting them. It seems like .gitignore should apply to pulls as well, don't pull adds/deletes/changes to files in the .gitignore. Regardless, I think I got it back up and running.
 
 Complete! I got most of the tests up and running well too! Except for engine.compute_fov - for some reason, I couldn't get it set up to assert the tcod.map.compute_fov was called or that the engine.game_map.visible array changed after calling it. Which is weird, because in gameplay it's working just fine. I will likely need to revisit if I find a bug in the code :)
+
+### Part 5 Dev Notes
+
+### Placing Enemies and kicking them (harmlessly)
+
+http://rogueliketutorials.com/tutorials/tcod/v2/part-5/
+
+Oh snap! Now that we have a dungeon, we're ready to start filling it with stuff! Let's get some monsters going!
+
+This was a very fun chapter! We touched a lot of different functions, and I can see the pieces of things coming together really well. I liked the use of the BumpAction and I think it presented an interesting challenge for unit testing. As it stands, I'm starting to get confident in my ability to build and run the program and have it work as expected so long as my unit tests have passed! I think there's still plenty of room for improvement in them, but as it is, I'm happy with what I've learned.
