@@ -1,6 +1,8 @@
 from html import entities
 import unittest
-from actions import Action, EscapeAction, MovementAction
+
+from numpy import block
+from actions import Action, ActionWithDirection, MovementAction, EscapeAction
 from entity import Entity
 from input_handlers import EventHandler
 from game_map import GameMap
@@ -23,17 +25,19 @@ class Test_Actions_Action(unittest.TestCase):
             action.perform(eng, ent1)
 
 
-class Test_Actions_MovementAction(unittest.TestCase):
+class Test_Actions_ActionWithDirection(unittest.TestCase):
     def test_init(self):
         '''
-        test that a MovementAction assigns values
+        test that an ActionWithDirection assigns values
         '''
         x_val = 1
         y_val = -2
-        action = MovementAction(x_val, y_val)
+        action = ActionWithDirection(x_val, y_val)
         self.assertEqual(action.dx, x_val)
         self.assertEqual(action.dy, y_val)
 
+
+class Test_Actions_MovementAction(unittest.TestCase):
     def test_perform_out_of_bounds(self):
         '''
         test that moving a player out of bounds does nothing
@@ -67,8 +71,23 @@ class Test_Actions_MovementAction(unittest.TestCase):
         gm.tiles[goal_x, goal_y] = tile_types.wall
         eng = Engine(event_handler=event_handler,
                      game_map=gm, player=player)
-        # the below will always move the player out of bounds
+        # the below will move the player towards the goal
         action = MovementAction(goal_x - player_x, goal_y - player_y)
+        action.perform(engine=eng, entity=player)
+        # since the action returns, we expect the player to have not moved
+        self.assertEqual(player.x, player_x)
+        self.assertEqual(player.y, player_y)
+
+    def test_perform_blocked_by_entity(self):
+        player_x, player_y = 1, 1
+        ent_x, ent_y = 2, 2
+        player = Entity(x=player_x, y=player_y)
+        ent = Entity(x=ent_x, y=ent_y, blocks_movement=True)
+        event_handler = EventHandler()
+        gm = GameMap(10, 10, {ent})
+        eng = Engine(event_handler=event_handler, game_map=gm, player=player)
+        # move the player into the entity space
+        action = MovementAction(ent_x-player_x, ent_y-player_y)
         action.perform(engine=eng, entity=player)
         # since the action returns, we expect the player to have not moved
         self.assertEqual(player.x, player_x)
