@@ -29,6 +29,21 @@ class Test_Engine(unittest.TestCase):
         self.assertEqual(eng.player, ent1)
         Engine.update_fov.assert_called_once()
 
+    @patch('builtins.print')
+    def test_handle_enemy_turns(self, mock_print):
+        '''
+        tests that an enemy taking its turn will print
+        '''
+        ent1 = Entity()
+        ent2 = Entity()
+        event_handler = EventHandler()
+        gm = GameMap(10, 10, {ent2})
+        eng = Engine(event_handler=event_handler, game_map=gm, player=ent1)
+        # this function will currently call the print if there are entities
+        # with turns to take
+        eng.handle_enemy_turns()
+        mock_print.assert_called()
+
     def test_handle_events_MovementAction(self):
         '''
         tests that 2 basic movement events will call perform on the resulting action
