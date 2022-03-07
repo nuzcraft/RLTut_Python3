@@ -2,7 +2,7 @@ import input_handlers
 import unittest
 import tcod.event
 
-from actions import EscapeAction, MovementAction
+from actions import EscapeAction, BumpAction
 
 
 class Test_Input_Handlers(unittest.TestCase):
@@ -28,7 +28,7 @@ class Test_Input_Handlers(unittest.TestCase):
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
-        self.assertIsInstance(action, MovementAction)
+        self.assertIsInstance(action, BumpAction)
         self.assertEqual(action.dx, 0)
         self.assertEqual(action.dy, -1)
 
@@ -40,7 +40,7 @@ class Test_Input_Handlers(unittest.TestCase):
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.DOWN, sym=tcod.event.K_DOWN, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
-        self.assertIsInstance(action, MovementAction)
+        self.assertIsInstance(action, BumpAction)
         self.assertEqual(action.dx, 0)
         self.assertEqual(action.dy, 1)
 
@@ -52,7 +52,7 @@ class Test_Input_Handlers(unittest.TestCase):
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.LEFT, sym=tcod.event.K_LEFT, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
-        self.assertIsInstance(action, MovementAction)
+        self.assertIsInstance(action, BumpAction)
         self.assertEqual(action.dx, -1)
         self.assertEqual(action.dy, 0)
 
@@ -64,7 +64,7 @@ class Test_Input_Handlers(unittest.TestCase):
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.RIGHT, sym=tcod.event.K_RIGHT, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
-        self.assertIsInstance(action, MovementAction)
+        self.assertIsInstance(action, BumpAction)
         self.assertEqual(action.dx, 1)
         self.assertEqual(action.dy, 0)
 
