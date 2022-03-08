@@ -3,6 +3,9 @@ import unittest
 import tcod.event
 
 from actions import EscapeAction, BumpAction
+from engine import Engine
+
+# TODO: rewrite all of these once new engine code is in place
 
 
 class Test_Input_Handlers(unittest.TestCase):
