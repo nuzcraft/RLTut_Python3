@@ -37,7 +37,6 @@ def main() -> None:
         map_height=map_height,
         max_monsters_per_room=max_monsters_per_room,
         engine=engine,
-        player=player,
     )
     engine.update_fov()
 
