@@ -70,6 +70,8 @@ This was a very fun chapter! We touched a lot of different functions, and I can 
 
 ### Doing (and taking) some damage
 
+http://rogueliketutorials.com/tutorials/tcod/v2/part-6/
+
 Heyo, it looks like this part is going to start with a bit of a code refactor! This means we'll be making lots of changes to our existing codebase + lots of changes to our existing unit tests. This part might be a bit of a pain...but we'll come through!
 
 TODO:
