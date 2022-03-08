@@ -82,3 +82,5 @@ TODO:
 4. rewrite entity unit tests once the engine refactor is complete
 5. rewrite procgen unit tests once the engine refactor is complete
 6. rewrite engine unit tests not that the engine refactor is complete
+
+😆 with this refactor, only 8 of my 44 unit tests are passing 😎 there's a lot of testing work to be done before we work on part 6 proper.
