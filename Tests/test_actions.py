@@ -10,19 +10,44 @@ import tile_types
 
 
 class Test_Actions_Action(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that an action can be initialized
+        '''
+        ent = Entity()
+        action = Action(entity=ent)
+        self.assertEqual(action.entity, ent)
+
+    def test_get_engine(self):
+        '''
+        test that getting the action engine will match the 
+        engine of the game_map of the entity
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        ent.gamemap = gm
+        action = Action(ent)
+        self.assertEqual(eng, action.engine)
+
     def test_perform(self):
         '''
         make sure a basic action will return a NotImplementedError
         '''
-        ent1 = Entity(0, 0, "@", (0, 0, 0))
-        event_handler = EventHandler()
-        gm = GameMap(50, 50)
-        eng = Engine(event_handler=event_handler,
-                     game_map=gm, player=ent1)
-        action = Action()
+        ent = Entity()
+        action = Action(entity=ent)
         with self.assertRaises(NotImplementedError):
-            action.perform(eng, ent1)
+            action.perform()
 
+class Test_Actions_EscapeAction(unittest.TestCase):
+    def test_perform(self):
+        '''
+        make sure an EscapeAction will return a SystemExit
+        '''
+        ent1 = Entity()
+        action = EscapeAction(ent1)
+        with self.assertRaises(SystemExit):
+            action.perform()
 
 class Test_Actions_ActionWithDirection(unittest.TestCase):
     def test_init(self):
@@ -158,22 +183,6 @@ class Test_Actions_MovementAction(unittest.TestCase):
         # we expect the player to have moved to the new location
         self.assertEqual(player.x, goal_x)
         self.assertEqual(player.y, goal_y)
-
-
-class Test_Actions_EscapeAction(unittest.TestCase):
-    def test_perform(self):
-        '''
-        make sure an EscapeAction will return a SystemExit
-        '''
-        ent1 = Entity(0, 0, "@", (0, 0, 0))
-        event_handler = EventHandler()
-        gm = GameMap(50, 50)
-        eng = Engine(event_handler=event_handler,
-                     game_map=gm, player=ent1)
-        action = EscapeAction()
-        with self.assertRaises(SystemExit):
-            action.perform(eng, ent1)
-
 
 class Test_Actions_BumpAction(unittest.TestCase):
     @patch('builtins.print')
