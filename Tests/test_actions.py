@@ -61,6 +61,50 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         self.assertEqual(action.dx, x_val)
         self.assertEqual(action.dy, y_val)
 
+    def test_get_dest_xy(self):
+        '''
+        test that dest_xy returns a correct tuple
+        '''
+        ent = Entity(x=1, y=-2)
+        dx, dy = 1, -2
+        # dest = ent.x+dx, ent.y+dy
+        dest = 2, -4
+        action = ActionWithDirection(entity=ent, dx=dx, dy=dy)
+        self.assertEqual(dest, action.dest_xy)
+
+    def test_get_blocking_entity_exists(self):
+        '''
+        test that blocking_entity will return an entity if its blocking
+        the destination location
+        '''
+        pl = Entity() # player at 0,0
+        ent = Entity(x=1, y=1, blocks_movement=True) # blocking entity at 1,1
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # add blocking entity to the game map, add game map to engine and player
+        gm.entities = {ent}
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = ActionWithDirection(entity=pl, dx=dx, dy=dy)
+        self.assertEqual(ent, action.blocking_entity)
+
+    def test_get_blocking_entity_not_exists(self):
+        '''
+        test that blocking_entity will return None if no blocking entity
+        the destination location
+        '''
+        pl = Entity() # player at 0,0
+        ent = Entity(x=1, y=1, blocks_movement=False) # non-blocking entity at 1,1
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # add non-blocking entity to the game map, add game map to engine and player
+        gm.entities = {ent}
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = ActionWithDirection(entity=pl, dx=dx, dy=dy)
+        self.assertIsNone(action.blocking_entity)
 
 class Test_Actions_MeleeAction(unittest.TestCase):
     def test_perform_no_target(self):
