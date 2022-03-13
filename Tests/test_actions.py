@@ -111,39 +111,38 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         '''
         test that a MeleeAction with no target returns with no change
         '''
-        player_x, player_y = 1, 1
-        ent_x, ent_y = 2, 2
-        player = Entity(x=player_x, y=player_y)
-        # note blocks_movement is false
-        ent = Entity(x=ent_x, y=ent_y, blocks_movement=False)
-        event_handler = EventHandler()
-        gm = GameMap(10, 10, {ent})
-        eng = Engine(event_handler=event_handler, game_map=gm, player=player)
-        # move the player into the entity space
-        action = MeleeAction(ent_x-player_x, ent_y-player_y)
-        action.perform(engine=eng, entity=player)
-        # since the action returns, we expect the player to have not moved
-        self.assertEqual(player.x, player_x)
-        self.assertEqual(player.y, player_y)
+        pl = Entity() # player at 0,0
+        ent = Entity(x=1, y=1, blocks_movement=False) # nonblocking entity at 1,1
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # add blocking entity to the game map, add game map to engine and player
+        gm.entities = {ent}
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = MeleeAction(entity=pl, dx=dx, dy=dy)
+        action.perform()
+        self.assertEqual(pl.x, 0)
+        self.assertEqual(pl.y, 0)
 
     @patch('builtins.print')
     def test_perform_with_target(self, mock_print):
         '''
         test that a Melee Action with a target will do something
         '''
-        player_x, player_y = 1, 1
-        ent_x, ent_y = 2, 2
-        player = Entity(x=player_x, y=player_y)
-        # note blocks_movement is false
-        ent = Entity(x=ent_x, y=ent_y, blocks_movement=True)
-        event_handler = EventHandler()
-        gm = GameMap(10, 10, {ent})
-        eng = Engine(event_handler=event_handler, game_map=gm, player=player)
-        # move the player into the entity space
-        action = MeleeAction(ent_x-player_x, ent_y-player_y)
-        action.perform(engine=eng, entity=player)
-        # since the action will call the print function, assert that
-        # it was, we don't care about the contents of the output
+        pl = Entity() # player at 0,0
+        ent = Entity(x=1, y=1, blocks_movement=True) # blocking entity at 1,1
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # add blocking entity to the game map, add game map to engine and player
+        gm.entities = {ent}
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = MeleeAction(entity=pl, dx=dx, dy=dy)
+        action.perform()
+        # verify that print was called as it will only be called if there
+        # is a blocking entity
         mock_print.assert_called_once()
 
 
