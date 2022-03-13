@@ -56,7 +56,8 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         '''
         x_val = 1
         y_val = -2
-        action = ActionWithDirection(x_val, y_val)
+        ent = Entity()
+        action = ActionWithDirection(entity=ent, dx=x_val, dy=y_val)
         self.assertEqual(action.dx, x_val)
         self.assertEqual(action.dy, y_val)
 
