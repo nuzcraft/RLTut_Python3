@@ -151,82 +151,73 @@ class Test_Actions_MovementAction(unittest.TestCase):
         '''
         test that moving a player out of bounds does nothing
         '''
-        player_x = 1
-        player_y = 1
-        player = Entity(player_x, player_y, "@", (0, 0, 0))
-        event_handler = EventHandler()
-        gm = GameMap(50, 50)
-        eng = Engine(event_handler=event_handler,
-                     game_map=gm, player=player)
-        # the below will always move the player out of bounds
-        action = MovementAction((player_x + 1) * -1, (player_y + 1) * -1)
-        action.perform(engine=eng, entity=player)
-        # since the action returns, we expect the player to have not moved
-        self.assertEqual(player.x, player_x)
-        self.assertEqual(player.y, player_y)
+        pl = Entity() # player at 0,0
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = -1, -1
+        action = MovementAction(entity=pl, dx=dx, dy=dy)
+        action.perform()
+        # moving out of bounds will do nothing, so x, y should still be 0, 0
+        self.assertEqual(pl.x, 0)
+        self.assertEqual(pl.y, 0)
 
     def test_perform_not_walkable(self):
         '''
         test that moving a player into a wall does nothing
         '''
-        player_x = 1
-        player_y = 1
-        goal_x = 2
-        goal_y = 2
-        player = Entity(player_x, player_y, "@", (0, 0, 0))
-        event_handler = EventHandler()
-        gm = GameMap(50, 50)
-        # set the tile we'll try to move to as a wall
+        pl = Entity() # player at 0,0
+        goal_x, goal_y = 1, 1
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # set the goal to a wall
         gm.tiles[goal_x, goal_y] = tile_types.wall
-        eng = Engine(event_handler=event_handler,
-                     game_map=gm, player=player)
-        # the below will move the player towards the goal
-        action = MovementAction(goal_x - player_x, goal_y - player_y)
-        action.perform(engine=eng, entity=player)
-        # since the action returns, we expect the player to have not moved
-        self.assertEqual(player.x, player_x)
-        self.assertEqual(player.y, player_y)
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = MovementAction(entity=pl, dx=dx, dy=dy)
+        action.perform()
+        # nothing changes because the goal is a wall
+        self.assertEqual(pl.x, 0)
+        self.assertEqual(pl.y, 0)
 
     def test_perform_blocked_by_entity(self):
         '''
         tests that moving an entity into a blocking entity will not
         actually move the entity
         '''
-        player_x, player_y = 1, 1
-        ent_x, ent_y = 2, 2
-        player = Entity(x=player_x, y=player_y)
-        ent = Entity(x=ent_x, y=ent_y, blocks_movement=True)
-        event_handler = EventHandler()
-        gm = GameMap(10, 10, {ent})
-        eng = Engine(event_handler=event_handler, game_map=gm, player=player)
-        # move the player into the entity space
-        action = MovementAction(ent_x-player_x, ent_y-player_y)
-        action.perform(engine=eng, entity=player)
-        # since the action returns, we expect the player to have not moved
-        self.assertEqual(player.x, player_x)
-        self.assertEqual(player.y, player_y)
+        pl = Entity() # player at 0,0
+        ent = Entity(x=1, y=1, blocks_movement=True) # nonblocking entity at 1,1
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # add blocking entity to the game map, add game map to engine and player
+        gm.entities = {ent}
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = MovementAction(entity=pl, dx=dx, dy=dy)
+        action.perform()
+        # nothing happens because the goal location is blocked by an entity
+        self.assertEqual(pl.x, 0)
+        self.assertEqual(pl.y, 0)
 
     def test_perform_walkable(self):
         '''
         test that moving a player to a floor tile moves the player
         '''
-        player_x = 1
-        player_y = 1
-        goal_x = 2
-        goal_y = 2
-        player = Entity(player_x, player_y, "@", (0, 0, 0))
-        event_handler = EventHandler()
-        gm = GameMap(50, 50)
-        # set the tile we'll try to move to as a floor
-        gm.tiles[goal_x, goal_y] = tile_types.floor
-        eng = Engine(event_handler=event_handler,
-                     game_map=gm, player=player)
-        # the below will always move the player out of bounds
-        action = MovementAction(goal_x - player_x, goal_y - player_y)
-        action.perform(engine=eng, entity=player)
-        # we expect the player to have moved to the new location
-        self.assertEqual(player.x, goal_x)
-        self.assertEqual(player.y, goal_y)
+        pl = Entity() # player at 0,0
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.tiles[1, 1] = tile_types.floor
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = MovementAction(entity=pl, dx=dx, dy=dy)
+        action.perform()
+        # since the goal x, y is walkable, make sure the entity moved there
+        self.assertEqual(pl.x, 1)
+        self.assertEqual(pl.y, 1)
 
 class Test_Actions_BumpAction(unittest.TestCase):
     @patch('builtins.print')
