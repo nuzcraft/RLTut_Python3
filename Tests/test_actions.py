@@ -226,19 +226,19 @@ class Test_Actions_BumpAction(unittest.TestCase):
         verify that a BumpAction performs the same as a MeleeAction
         basically a copy of Test_Actions_MeleeAction.test_perform_with_target
         '''
-        player_x, player_y = 1, 1
-        ent_x, ent_y = 2, 2
-        player = Entity(x=player_x, y=player_y)
-        # note blocks_movement is false
-        ent = Entity(x=ent_x, y=ent_y, blocks_movement=True)
-        event_handler = EventHandler()
-        gm = GameMap(10, 10, {ent})
-        eng = Engine(event_handler=event_handler, game_map=gm, player=player)
-        # move the player into the entity space
-        action = BumpAction(ent_x-player_x, ent_y-player_y)
-        action.perform(engine=eng, entity=player)
-        # since the action will call the print function, assert that
-        # it was, we don't care about the contents of the output
+        pl = Entity() # player at 0,0
+        ent = Entity(x=1, y=1, blocks_movement=True) # blocking entity at 1,1
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # add blocking entity to the game map, add game map to engine and player
+        gm.entities = {ent}
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = MeleeAction(entity=pl, dx=dx, dy=dy)
+        action.perform()
+        # verify that print was called as it will only be called if there
+        # is a blocking entity
         mock_print.assert_called_once()
 
     def test_perform_movement(self):
@@ -246,20 +246,15 @@ class Test_Actions_BumpAction(unittest.TestCase):
         verify that a BumpAction performs the same as a MovementAction
         basically a copy of Test_Actions_MovementAction.test_perform_walkable
         '''
-        player_x = 1
-        player_y = 1
-        goal_x = 2
-        goal_y = 2
-        player = Entity(player_x, player_y, "@", (0, 0, 0))
-        event_handler = EventHandler()
-        gm = GameMap(50, 50)
-        # set the tile we'll try to move to as a floor
-        gm.tiles[goal_x, goal_y] = tile_types.floor
-        eng = Engine(event_handler=event_handler,
-                     game_map=gm, player=player)
-        # the below will always move the player out of bounds
-        action = BumpAction(goal_x - player_x, goal_y - player_y)
-        action.perform(engine=eng, entity=player)
-        # we expect the player to have moved to the new location
-        self.assertEqual(player.x, goal_x)
-        self.assertEqual(player.y, goal_y)
+        pl = Entity() # player at 0,0
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.tiles[1, 1] = tile_types.floor
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = MovementAction(entity=pl, dx=dx, dy=dy)
+        action.perform()
+        # since the goal x, y is walkable, make sure the entity moved there
+        self.assertEqual(pl.x, 1)
+        self.assertEqual(pl.y, 1)
