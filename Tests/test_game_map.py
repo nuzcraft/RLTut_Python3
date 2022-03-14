@@ -1,16 +1,19 @@
 import unittest
 from game_map import GameMap
 from entity import Entity
-
+from engine import Engine
 
 class Test_Game_Map(unittest.TestCase):
     def test_init(self):
         '''
         tests instantiating a new GameMap
         '''
+        player = Entity()
+        eng = Engine(player=player)
         ent1 = Entity(x=10, y=10, char="@", color=(100, 100, 100))
         ent2 = Entity(x=20, y=20, char="k", color=(200, 200, 200))
-        gm = GameMap(width=50, height=60, entities={ent1, ent2})
+        gm = GameMap(engine=eng, width=50, height=60, entities={ent1, ent2})
+        self.assertEqual(gm.engine, eng)
         self.assertEqual(gm.width, 50)
         self.assertEqual(gm.height, 60)
         # check that tiles were generated okay
@@ -33,7 +36,8 @@ class Test_Game_Map(unittest.TestCase):
         tests whether a blocking entity returns when checking
         '''
         ent = Entity(x=5, y=5, blocks_movement=True)
-        gm = GameMap(width=10, height=10, entities={ent})
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng,width=10, height=10, entities={ent})
         ent2 = gm.get_blocking_entity_at_location(5, 5)
         self.assertEqual(ent, ent2)
 
@@ -42,7 +46,8 @@ class Test_Game_Map(unittest.TestCase):
         tests whether a blocking entity returns when checking
         '''
         ent = Entity(x=5, y=5, blocks_movement=False)
-        gm = GameMap(width=10, height=10, entities={ent})
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10, entities={ent})
         ent2 = gm.get_blocking_entity_at_location(5, 5)
         self.assertIsNone(ent2)
 
@@ -50,40 +55,50 @@ class Test_Game_Map(unittest.TestCase):
         '''
         tests whether x and y in bounds of map returns true
         '''
+        ent = Entity()
+        eng = Engine(player=ent)
         x, y = 25, 25
-        gm = GameMap(50, 50)
+        gm = GameMap(engine=eng, width=50, height=50)
         self.assertTrue(gm.in_bounds(x, y))
 
     def test_in_bounds_both_out_low(self):
         '''
         tests whether x and y both out of bounds with low values returns false
         '''
+        ent = Entity()
+        eng = Engine(player=ent)
         x, y = -1, -1
-        gm = GameMap(50, 50)
+        gm = GameMap(engine=eng, width=50, height=50)
         self.assertFalse(gm.in_bounds(x, y))
 
     def test_in_bounds_both_out_high(self):
         '''
         tests whether x and y both out of bounds high values returns false
         '''
+        ent = Entity()
+        eng = Engine(player=ent)
         x, y = 100, 100
-        gm = GameMap(50, 50)
+        gm = GameMap(engine=eng, width=50, height=50)
         self.assertFalse(gm.in_bounds(x, y))
 
     def test_in_bounds_x_in_y_out(self):
         '''
         tests x in bounds, y out of bounds returns false
         '''
+        ent = Entity()
+        eng = Engine(player=ent)
         x, y = 25, 100
-        gm = GameMap(50, 50)
+        gm = GameMap(engine=eng, width=50, height=50)
         self.assertFalse(gm.in_bounds(x, y))
 
     def test_in_bounds_x_out_y_in(self):
         '''
         tests x out of bounds, y in bounds returns false
         '''
+        ent = Entity()
+        eng = Engine(player=ent)
         x, y = -25, 25
-        gm = GameMap(50, 50)
+        gm = GameMap(engine=eng, width=50, height=50)
         self.assertFalse(gm.in_bounds(x, y))
 
     # def test_render(self):
