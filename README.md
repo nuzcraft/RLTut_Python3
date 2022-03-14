@@ -74,7 +74,7 @@ http://rogueliketutorials.com/tutorials/tcod/v2/part-6/
 
 Heyo, it looks like this part is going to start with a bit of a code refactor! This means we'll be making lots of changes to our existing codebase + lots of changes to our existing unit tests. This part might be a bit of a pain...but we'll come through!
 
-TODO:
+DONE:
 
 1. rewrite input_handler unit tests once the Engine refactor is complete
 2. rewrite our action unit tests once the engine refactor is complete
@@ -84,3 +84,5 @@ TODO:
 6. rewrite engine unit tests not that the engine refactor is complete
 
 😆 with this refactor, only 8 of my 44 unit tests are passing 😎 there's a lot of testing work to be done before we work on part 6 proper.
+
+Alright! All done with the unit test refactor! I was right, there was a lot of work to do! When we change how objects are initialized, it causes problems all over the place.
