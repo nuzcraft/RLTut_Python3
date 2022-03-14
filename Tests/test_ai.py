@@ -14,3 +14,8 @@ class Test_BaseAI(unittest.TestCase):
         ai = BaseAI(entity=ent)
         with self.assertRaises(NotImplementedError):
             ai.perform()
+
+    def test_get_path_to(self):
+        '''
+        how should we test this function?
+        '''
