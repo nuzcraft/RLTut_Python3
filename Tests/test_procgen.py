@@ -1,7 +1,7 @@
 import unittest
 from procgen import RectangularRoom, generate_dungeon, tunnel_between, place_entities
 from entity import Entity
-from game_map import GameMap
+from engine import Engine
 
 
 class Test_RectangularRoom(unittest.TestCase):
@@ -79,8 +79,17 @@ class Test_Generate_Dungeon(unittest.TestCase):
         we don't care what the dungeon looks like, but this should test
         calling it doesn't cause an error or misshape the result
         '''
-        ent = Entity(0, 0, '@', (100, 100, 100))
-        d = generate_dungeon(10, 10, 15, 50, 50, 2, ent)
+        ent = Entity()
+        eng = Engine(player=ent)
+        d = generate_dungeon(
+            max_rooms=10,
+            room_min_size=3,
+            room_max_size=5,
+            map_width=50,
+            map_height=50,
+            max_monsters_per_room=3,
+            engine=eng
+        )
         self.assertEqual(d.height, 50)
         self.assertEqual(d.width, 50)
 
