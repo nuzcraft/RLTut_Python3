@@ -16,13 +16,13 @@ class Test_Entity(unittest.TestCase):
         name = 'nuzcraft'
         blocks_movement = True
         ent = Entity(
-            x=x_val, 
-            y=y_val, 
-            char=char, 
-            color=color, 
-            name=name, 
+            x=x_val,
+            y=y_val,
+            char=char,
+            color=color,
+            name=name,
             blocks_movement=blocks_movement,
-            )
+        )
         self.assertEqual(ent.x, x_val)
         self.assertEqual(ent.y, y_val)
         self.assertEqual(ent.char, char)
@@ -38,11 +38,11 @@ class Test_Entity(unittest.TestCase):
         player = Entity()
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
-        ent = Entity(gamemap = gm)
+        ent = Entity(gamemap=gm)
         self.assertEqual(ent.gamemap, gm)
         # make sure the entity gets added to the gamemap
         self.assertIn(ent, ent.gamemap.entities)
-        
+
     def test_spawn(self):
         '''
         tests that spawn will copy the entity
@@ -103,3 +103,10 @@ class Test_Entity(unittest.TestCase):
         ent.move(dx, dy)
         self.assertEqual(ent.x, x_val + dx)
         self.assertEqual(ent.y, y_val + dy)
+
+
+class TestActor(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that initializing an
+        '''
