@@ -18,4 +18,10 @@ class Test_BaseAI(unittest.TestCase):
     def test_get_path_to(self):
         '''
         how should we test this function?
+        let's do 3 tests
+        1. test that it returns a short path in a straight line
+        2. test that it avoids walls
+        3. test that it avoids blocking entities
+        we don't really want to test the pathfinder, just that it works
+        with our walkable array + avoiding entities that block movement
         '''
