@@ -86,3 +86,5 @@ DONE:
 😆 with this refactor, only 8 of my 44 unit tests are passing 😎 there's a lot of testing work to be done before we work on part 6 proper.
 
 Alright! All done with the unit test refactor! I was right, there was a lot of work to do! When we change how objects are initialized, it causes problems all over the place.
+
+I've started adding a few of the components (so far, BaseComponent, Fighter, and BaseAI) but I haven't implemented any of them yet. Writing unit tests for them has been helpful, I'm relatively confident their implementation will work without too many headaches, provided I use them as intended.
