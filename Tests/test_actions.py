@@ -1,11 +1,13 @@
+from turtle import width
 import unittest
 from unittest.mock import patch
 
 from actions import Action, ActionWithDirection, MovementAction, EscapeAction, MeleeAction, BumpAction
-from entity import Entity
-from input_handlers import EventHandler
+from entity import Entity, Actor
 from game_map import GameMap
 from engine import Engine
+from components.ai import BaseAI
+from components.fighter import Fighter
 import tile_types
 
 
@@ -116,6 +118,40 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         dx, dy = 1, 1
         action = ActionWithDirection(entity=pl, dx=dx, dy=dy)
         self.assertIsNone(action.blocking_entity)
+
+    def test_target_actor_with_actor(self):
+        '''
+        test that target_actor returns and actor if one exists at the location 
+        of the action
+        '''
+        pl = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10))  # player at 0, 0
+        ent = Actor(x=1, y=1, ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10))  # entity at 1, 1
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.entities = {pl, ent}
+        eng.game_map = gm
+        pl.gamemap = gm
+        action = ActionWithDirection(entity=pl, dx=1, dy=1)
+        returned_actor = action.target_actor
+        self.assertEqual(returned_actor, ent)
+
+    def test_target_actor_noner(self):
+        '''
+        test that target_actor returns nothing when none exists at the location 
+        of the action
+        '''
+        pl = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10))  # player at 0, 0
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.entities = {pl, }
+        eng.game_map = gm
+        pl.gamemap = gm
+        action = ActionWithDirection(entity=pl, dx=1, dy=1)
+        returned_actor = action.target_actor
+        self.assertIsNone(returned_actor)
 
 
 class Test_Actions_MeleeAction(unittest.TestCase):
