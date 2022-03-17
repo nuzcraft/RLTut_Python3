@@ -1,7 +1,9 @@
 import unittest
 from typing import List, Tuple
 
-from components.ai import BaseAI
+from numpy import power
+
+from components.ai import BaseAI, HostileEnemy
 from components.fighter import Fighter
 from entity import Entity, Actor
 from game_map import GameMap
@@ -102,3 +104,15 @@ class Test_BaseAI(unittest.TestCase):
         path_should_be: List[Tuple[int, int]] = [
             (0, 1), (0, 2), (0, 3), (1, 4), (2, 5), (1, 6), (0, 7), (0, 8), (0, 9)]
         self.assertEqual(path, path_should_be)
+
+
+class TestHostileEnemy(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that the hostile enemy class can be initialized without issues
+        '''
+        # instantiating an actor will automatically instantiate the ai class under actor.ai
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10))
+        self.assertEqual(actor, actor.ai.entity)
+        self.assertEqual([], actor.ai.path)

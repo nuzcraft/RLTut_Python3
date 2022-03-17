@@ -48,3 +48,9 @@ class BaseAI(Action, BaseComponent):
 
         # convert from list[list[int]] to List[Tuple[int, int]]
         return [(index[0], index[1]) for index in path]
+
+
+class HostileEnemy(BaseAI):
+    def __init__(self, entity: Actor):
+        super().__init__(entity)
+        self.path: List[Tuple[int, int]] = []
