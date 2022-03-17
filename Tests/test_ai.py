@@ -2,13 +2,26 @@ import unittest
 from typing import List, Tuple
 
 from components.ai import BaseAI
-from entity import Entity
+from components.fighter import Fighter
+from entity import Entity, Actor
 from game_map import GameMap
 from engine import Engine
 import tile_types
 
 
 class Test_BaseAI(unittest.TestCase):
+    def test_entity_set(self):
+        '''
+        tests that the entity can be set correctly
+        '''
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10))
+        self.assertEqual(actor, actor.ai.entity)
+
+        ai = BaseAI(actor)
+        ai.entity = actor
+        self.assertEqual(actor, ai.entity)
+
     def test_perform(self):
         '''
         all perform of this AI will be handled
