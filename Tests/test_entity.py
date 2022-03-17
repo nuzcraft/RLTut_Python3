@@ -122,6 +122,7 @@ class TestActor(unittest.TestCase):
         self.assertEqual(actor.char, "?")
         self.assertEqual(actor.color, (255, 255, 255))
         self.assertEqual(actor.name, "<Unnamed>")
+        self.assertEqual(actor.blocks_movement, True)
         # ai and fighter components reference the entity, need an extra check
         self.assertIsInstance(actor.ai, BaseAI)
         self.assertEqual(actor, actor.ai.entity)
