@@ -130,13 +130,17 @@ class TestHostileEnemy(unittest.TestCase):
         gm.tiles[:, :] = tile_types.floor
         gm.entities.add(player)
 
-        hostile_ent = Actor(x=0, y=1, ai_cls=HostileEnemy, fighter=Fighter(
+        hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
             hp=10, defense=10, power=10))
         gm.entities.add(hostile_ent)
 
         player.gamemap = gm
         hostile_ent.gamemap = gm
         eng.game_map = gm
+
+        # since update_fov has not been run, there is no 'visible' tiles
+        # for the player to see the hostile entity
+        # eng.update_fov()
 
         # patch the class we want to test for then run the code
         with patch('actions.WaitAction.perform') as mock_WaitAction_perform:
@@ -145,9 +149,9 @@ class TestHostileEnemy(unittest.TestCase):
         # verify the WaitAction.perform was called
         mock_WaitAction_perform.assert_called()
 
-    def test_perform_wait(self):
+    def test_perform_movement(self):
         '''
-        test that perform() with no path will call WaitAction.perform
+        test that perform() with a path will call MovementAction.perform
         '''
         # run the setup code
         player = Entity(x=0, y=0)
@@ -156,6 +160,38 @@ class TestHostileEnemy(unittest.TestCase):
         gm.tiles[:, :] = tile_types.floor
         gm.entities.add(player)
 
+        # hostile entity is 2 spaces away
+        hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10))
+        gm.entities.add(hostile_ent)
+
+        player.gamemap = gm
+        hostile_ent.gamemap = gm
+        eng.game_map = gm
+
+        # run update_fov to update the visible tiles
+        eng.update_fov()
+
+        # patch the class we want to test for then run the code
+        with patch('actions.MovementAction.perform') as mock_MovementAction_perform:
+            hostile_ent.ai.perform()
+
+        # verify the WaitAction.perform was called
+        mock_MovementAction_perform.assert_called()
+
+    def test_perform_melee(self):
+        '''
+        test that perform() while next to the player object will 
+        peform a melee action
+        '''
+        # run the setup code
+        player = Entity(x=0, y=0)
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.tiles[:, :] = tile_types.floor
+        gm.entities.add(player)
+
+        # hostile entity is 1 spaces away
         hostile_ent = Actor(x=0, y=1, ai_cls=HostileEnemy, fighter=Fighter(
             hp=10, defense=10, power=10))
         gm.entities.add(hostile_ent)
@@ -164,9 +200,12 @@ class TestHostileEnemy(unittest.TestCase):
         hostile_ent.gamemap = gm
         eng.game_map = gm
 
+        # run update_fov to update the visible tiles
+        eng.update_fov()
+
         # patch the class we want to test for then run the code
-        with patch('actions.WaitAction.perform') as mock_WaitAction_perform:
+        with patch('actions.MeleeAction.perform') as mock_MeleeAction_perform:
             hostile_ent.ai.perform()
 
         # verify the WaitAction.perform was called
-        mock_WaitAction_perform.assert_called()
+        mock_MeleeAction_perform.assert_called()
