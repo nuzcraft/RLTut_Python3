@@ -4,7 +4,7 @@ from typing import Optional, TYPE_CHECKING
 
 import tcod.event
 
-from actions import Action, EscapeAction, BumpAction
+from actions import Action, EscapeAction, BumpAction, WaitAction
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -39,6 +39,13 @@ MOVE_KEYS = {
     tcod.event.K_n: (1, 1),
 }
 
+WAIT_KEYS = {
+    tcod.event.K_PERIOD,
+    tcod.event.K_KP_5,
+    tcod.event.K_CLEAR
+}
+
+
 class EventHandler(tcod.event.EventDispatch[Action]):
     def __init__(self, engine: Engine):
         self.engine = engine
@@ -65,14 +72,11 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
         player = self.engine.player
 
-        if key == tcod.event.K_UP:
-            action = BumpAction(player, dx=0, dy=-1)
-        elif key == tcod.event.K_DOWN:
-            action = BumpAction(player, dx=0, dy=1)
-        elif key == tcod.event.K_LEFT:
-            action = BumpAction(player, dx=-1, dy=0)
-        elif key == tcod.event.K_RIGHT:
-            action = BumpAction(player, dx=1, dy=0)
+        if key in MOVE_KEYS:
+            dx, dy = MOVE_KEYS[key]
+            action = BumpAction(player, dx, dy)
+        elif key in WAIT_KEYS:
+            action = WaitAction(player)
 
         elif key == tcod.event.K_ESCAPE:
             action = EscapeAction(player)
