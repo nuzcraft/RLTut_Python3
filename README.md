@@ -88,3 +88,5 @@ DONE:
 Alright! All done with the unit test refactor! I was right, there was a lot of work to do! When we change how objects are initialized, it causes problems all over the place.
 
 I've started adding a few of the components (so far, BaseComponent, Fighter, and BaseAI) but I haven't implemented any of them yet. Writing unit tests for them has been helpful, I'm relatively confident their implementation will work without too many headaches, provided I use them as intended.
+
+We're making progress. There have been a couple things I've had issues adding unit tests for - mostly in HostileEnemy.perform - we have a component that will call the perform function on a different class, which has proven difficult to mock. Otherwise, things are going smoothly.
