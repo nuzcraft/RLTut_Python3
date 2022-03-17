@@ -39,6 +39,7 @@ class Test_Actions_Action(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             action.perform()
 
+
 class Test_Actions_EscapeAction(unittest.TestCase):
     def test_perform(self):
         '''
@@ -48,6 +49,15 @@ class Test_Actions_EscapeAction(unittest.TestCase):
         action = EscapeAction(ent1)
         with self.assertRaises(SystemExit):
             action.perform()
+
+
+class Test_Actions_WaitAction(unittest.TestCase):
+    def test_perform(self):
+        '''
+        nothing to test here since the wait action just 
+        passes for now
+        '''
+
 
 class Test_Actions_ActionWithDirection(unittest.TestCase):
     def test_init(self):
@@ -77,8 +87,8 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         test that blocking_entity will return an entity if its blocking
         the destination location
         '''
-        pl = Entity() # player at 0,0
-        ent = Entity(x=1, y=1, blocks_movement=True) # blocking entity at 1,1
+        pl = Entity()  # player at 0,0
+        ent = Entity(x=1, y=1, blocks_movement=True)  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -94,8 +104,9 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         test that blocking_entity will return None if no blocking entity
         the destination location
         '''
-        pl = Entity() # player at 0,0
-        ent = Entity(x=1, y=1, blocks_movement=False) # non-blocking entity at 1,1
+        pl = Entity()  # player at 0,0
+        # non-blocking entity at 1,1
+        ent = Entity(x=1, y=1, blocks_movement=False)
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add non-blocking entity to the game map, add game map to engine and player
@@ -106,13 +117,15 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         action = ActionWithDirection(entity=pl, dx=dx, dy=dy)
         self.assertIsNone(action.blocking_entity)
 
+
 class Test_Actions_MeleeAction(unittest.TestCase):
     def test_perform_no_target(self):
         '''
         test that a MeleeAction with no target returns with no change
         '''
-        pl = Entity() # player at 0,0
-        ent = Entity(x=1, y=1, blocks_movement=False) # nonblocking entity at 1,1
+        pl = Entity()  # player at 0,0
+        # nonblocking entity at 1,1
+        ent = Entity(x=1, y=1, blocks_movement=False)
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -130,8 +143,8 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         '''
         test that a Melee Action with a target will do something
         '''
-        pl = Entity() # player at 0,0
-        ent = Entity(x=1, y=1, blocks_movement=True) # blocking entity at 1,1
+        pl = Entity()  # player at 0,0
+        ent = Entity(x=1, y=1, blocks_movement=True)  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -151,7 +164,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         '''
         test that moving a player out of bounds does nothing
         '''
-        pl = Entity() # player at 0,0
+        pl = Entity()  # player at 0,0
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         eng.game_map = gm
@@ -167,7 +180,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         '''
         test that moving a player into a wall does nothing
         '''
-        pl = Entity() # player at 0,0
+        pl = Entity()  # player at 0,0
         goal_x, goal_y = 1, 1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -187,8 +200,9 @@ class Test_Actions_MovementAction(unittest.TestCase):
         tests that moving an entity into a blocking entity will not
         actually move the entity
         '''
-        pl = Entity() # player at 0,0
-        ent = Entity(x=1, y=1, blocks_movement=True) # nonblocking entity at 1,1
+        pl = Entity()  # player at 0,0
+        # nonblocking entity at 1,1
+        ent = Entity(x=1, y=1, blocks_movement=True)
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -206,7 +220,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         '''
         test that moving a player to a floor tile moves the player
         '''
-        pl = Entity() # player at 0,0
+        pl = Entity()  # player at 0,0
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         gm.tiles[1, 1] = tile_types.floor
@@ -219,6 +233,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         self.assertEqual(pl.x, 1)
         self.assertEqual(pl.y, 1)
 
+
 class Test_Actions_BumpAction(unittest.TestCase):
     @patch('builtins.print')
     def test_perform_melee(self, mock_print):
@@ -226,8 +241,8 @@ class Test_Actions_BumpAction(unittest.TestCase):
         verify that a BumpAction performs the same as a MeleeAction
         basically a copy of Test_Actions_MeleeAction.test_perform_with_target
         '''
-        pl = Entity() # player at 0,0
-        ent = Entity(x=1, y=1, blocks_movement=True) # blocking entity at 1,1
+        pl = Entity()  # player at 0,0
+        ent = Entity(x=1, y=1, blocks_movement=True)  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -246,7 +261,7 @@ class Test_Actions_BumpAction(unittest.TestCase):
         verify that a BumpAction performs the same as a MovementAction
         basically a copy of Test_Actions_MovementAction.test_perform_walkable
         '''
-        pl = Entity() # player at 0,0
+        pl = Entity()  # player at 0,0
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         gm.tiles[1, 1] = tile_types.floor

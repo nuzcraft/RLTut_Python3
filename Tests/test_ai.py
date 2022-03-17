@@ -1,5 +1,7 @@
 import unittest
 from typing import List, Tuple
+from unittest import mock
+from unittest.mock import patch
 
 from numpy import power
 
@@ -8,6 +10,7 @@ from components.fighter import Fighter
 from entity import Entity, Actor
 from game_map import GameMap
 from engine import Engine
+from actions import MeleeAction, MovementAction, WaitAction
 import tile_types
 
 
@@ -116,3 +119,30 @@ class TestHostileEnemy(unittest.TestCase):
             hp=10, defense=10, power=10))
         self.assertEqual(actor, actor.ai.entity)
         self.assertEqual([], actor.ai.path)
+
+    # @patch.object(WaitAction, 'perform')
+    # def test_perform_wait(self, mock_WaitAction_perform):
+    #     '''
+    #     test that perform() with no path will return a WaitAction
+    #     NOTE: this is not implemented, I'm having trouble patching things
+    #     down so that I can tell if the WaitAction.perform method was called
+    #     Ideally, we'd have at least 3 test cases to tell if WaitAction,
+    #     MovementAction, or MeleeAction was called
+    #     '''
+    #     player = Entity(x=0, y=0)
+    #     eng = Engine(player=player)
+    #     gm = GameMap(engine=eng, width=10, height=10)
+    #     gm.tiles[:, :] = tile_types.floor
+    #     gm.entities.add(player)
+
+    #     hostile_ent = Actor(x=0, y=1, ai_cls=HostileEnemy, fighter=Fighter(
+    #         hp=10, defense=10, power=10))
+    #     gm.entities.add(hostile_ent)
+
+    #     player.gamemap = gm
+    #     hostile_ent.gamemap = gm
+    #     eng.game_map = gm
+
+    #     hostile_ent.ai.perform()
+
+    #     mock_WaitAction_perform.assertIsCalled()
