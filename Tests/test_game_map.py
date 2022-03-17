@@ -133,3 +133,31 @@ class Test_Game_Map(unittest.TestCase):
     #     # sure they match the game map
     #     self.assertEqual(console.tiles_rgb[29, 22], gm.tiles[29, 22]["dark"])
     #     self.assertEqual(console.tiles_rgb[30, 22], gm.tiles[30, 22]["dark"])
+
+    def test_get_actor_at_location_with_actor(self):
+        '''
+        tests that checking a location with an actor
+        will return that actor
+        '''
+        act = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        eng = Engine(player=act)
+        gm = GameMap(engine=eng, width=10, height=10, entities={act})
+        act.gamemap = gm
+        eng.game_map = gm
+
+        returned_act = gm.get_actor_at_location(x=5, y=6)
+        self.assertEqual(act, returned_act)
+
+    def test_get_actor_at_location_empty(self):
+        '''
+        tests that checking a location with an actor
+        will return that actor
+        '''
+        act = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        eng = Engine(player=act)
+        gm = GameMap(engine=eng, width=10, height=10, entities={act})
+        act.gamemap = gm
+        eng.game_map = gm
+        # check an empty location
+        returned_act = gm.get_actor_at_location(x=6, y=7)
+        self.assertIsNone(returned_act)

@@ -78,3 +78,9 @@ class GameMap:
             if self.visible[entity.x, entity.y]:
                 console.print(x=entity.x, y=entity.y,
                               string=entity.char, fg=entity.color)
+
+    def get_actor_at_location(self, x: int, y: int) -> Optional[Actor]:
+        for actor in self.actors:
+            if actor.x == x and actor.y == y:
+                return actor
+        return None
