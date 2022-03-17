@@ -1,6 +1,11 @@
-from entity import Entity
+from lib2to3.pytree import Base
+from entity import Entity, Actor
 from game_map import GameMap
 from engine import Engine
+
+from components.ai import BaseAI
+from components.fighter import Fighter
+
 import unittest
 
 
@@ -108,5 +113,32 @@ class Test_Entity(unittest.TestCase):
 class TestActor(unittest.TestCase):
     def test_init(self):
         '''
-        test that initializing an
+        test that initializing an actor sets the values as expected
         '''
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10))
+        # some of these are defaults
+        self.assertEqual(actor.x, 0)
+        self.assertEqual(actor.y, 0)
+        self.assertEqual(actor.char, "?")
+        self.assertEqual(actor.color, (255, 255, 255))
+        self.assertEqual(actor.name, "<Unnamed>")
+        # ai and fighter components reference the entity, need an extra check
+        self.assertIsInstance(actor.ai, BaseAI)
+        self.assertEqual(actor, actor.ai.entity)
+        self.assertIsInstance(actor.fighter, Fighter)
+        self.assertEqual(actor, actor.fighter.entity)
+
+    def test_property_is_alive_true(self):
+        '''
+        test the is_alive property returns true if there is an ai component
+        '''
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10))
+        self.assertTrue(actor.is_alive)
+
+    def test_property_is_alive_false(self):
+        '''
+        test the is_alive property returns false if there is no
+        '''
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10))
+        actor.ai = None  # remove the ai component
+        self.assertFalse(actor.is_alive)
