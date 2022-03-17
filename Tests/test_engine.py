@@ -1,16 +1,15 @@
 from unittest.mock import Mock, patch
+from components.ai import HostileEnemy
 from engine import Engine
 from game_map import GameMap
 import unittest
 import tcod.event
-from actions import MovementAction
 
 import tcod
 
 from entity import Entity, Actor
-from input_handlers import EventHandler
-import tile_types
-import numpy
+from components.ai import HostileEnemy
+from components.fighter import Fighter
 
 
 class Test_Engine(unittest.TestCase):
@@ -32,20 +31,25 @@ class Test_Engine(unittest.TestCase):
         eng.game_map = gm
         self.assertEqual(eng.game_map, gm)
 
-    @patch('builtins.print')
-    def test_handle_enemy_turns(self, mock_print):
+    def test_handle_enemy_turns(self):
         '''
         tests that an enemy taking its turn will print
         '''
         ent1 = Entity()
-        ent2 = Actor()
+        ent2 = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
         eng = Engine(player=ent1)
-        eng.game_map = GameMap(engine=eng, width=10,
+        gm = GameMap(engine=eng, width=10,
                                height=10, entities={ent2})
-        # this function will currently call the print if there are entities
-        # with turns to take
-        eng.handle_enemy_turns()
-        mock_print.assert_called()
+        eng.game_map = gm
+        ent1.gamemap = gm
+        ent2.gamemap = gm
+
+        with patch('components.ai.HostileEnemy.perform') as mock_ai_perform:
+            eng.handle_enemy_turns()
+
+        # verify the WaitAction.perform was called
+        mock_ai_perform.assert_called_once()
+        
 
     # def test_handle_events_MovementAction(self):
     #     '''
