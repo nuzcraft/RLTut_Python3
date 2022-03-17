@@ -1,7 +1,10 @@
 import unittest
 from game_map import GameMap
-from entity import Entity
+from entity import Entity, Actor
 from engine import Engine
+from components.ai import HostileEnemy
+from components.fighter import Fighter
+
 
 class Test_Game_Map(unittest.TestCase):
     def test_init(self):
@@ -31,13 +34,30 @@ class Test_Game_Map(unittest.TestCase):
         self.assertIn(ent1, gm.entities)
         self.assertIn(ent2, gm.entities)
 
+    def test_property_actors(self):
+        '''
+        test that the actors property will return the correct entities
+        '''
+        player = Entity()
+        eng = Engine(player=player)
+        ent1 = Entity()
+        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter)
+        act3 = Actor(ai_cls=HostileEnemy, fighter=Fighter)
+        act3.ai = None
+        gm = GameMap(engine=eng, width=50, height=60)
+        gm.entities = {ent1, act2, act3}
+        actors = gm.actors
+        # verify that only one of the entities made it into the actors list
+        # act2 is the only 'actor' tha has an ai component
+        self.assertEqual(len(list(actors)), 1)
+
     def test_get_blocking_entity_at_location_true(self):
         '''
         tests whether a blocking entity returns when checking
         '''
         ent = Entity(x=5, y=5, blocks_movement=True)
         eng = Engine(player=ent)
-        gm = GameMap(engine=eng,width=10, height=10, entities={ent})
+        gm = GameMap(engine=eng, width=10, height=10, entities={ent})
         ent2 = gm.get_blocking_entity_at_location(5, 5)
         self.assertEqual(ent, ent2)
 

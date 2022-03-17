@@ -7,7 +7,7 @@ from actions import MovementAction
 
 import tcod
 
-from entity import Entity
+from entity import Entity, Actor
 from input_handlers import EventHandler
 import tile_types
 import numpy
@@ -38,9 +38,10 @@ class Test_Engine(unittest.TestCase):
         tests that an enemy taking its turn will print
         '''
         ent1 = Entity()
-        ent2 = Entity()
+        ent2 = Actor()
         eng = Engine(player=ent1)
-        eng.game_map = GameMap(engine=eng, width=10, height=10, entities={ent2})
+        eng.game_map = GameMap(engine=eng, width=10,
+                               height=10, entities={ent2})
         # this function will currently call the print if there are entities
         # with turns to take
         eng.handle_enemy_turns()
@@ -82,7 +83,7 @@ class Test_Engine(unittest.TestCase):
 
     # def test_handle_events_NoAction(self):
     #     '''
-    #     tests that an unused event does not trigger any change in the engine 
+    #     tests that an unused event does not trigger any change in the engine
     #     '''
     #     x_val = 0
     #     y_val = 0
