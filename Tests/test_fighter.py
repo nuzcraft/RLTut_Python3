@@ -7,6 +7,7 @@ from entity import Actor
 from engine import Engine
 from game_map import GameMap
 from render_order import RenderOrder
+from input_handlers import GameOverEventHandler
 
 
 class Test_Fighter(unittest.TestCase):
@@ -113,6 +114,7 @@ class Test_Fighter(unittest.TestCase):
         self.assertIsNone(ft.entity.ai)
         self.assertEqual(ft.entity.name, "remains of player")
         self.assertEqual(ft.entity.render_order, RenderOrder.CORPSE)
+        self.assertIsInstance(ft.engine.event_handler, GameOverEventHandler)
         mock_print.assert_called_with("You died!")
 
     @patch('builtins.print')
