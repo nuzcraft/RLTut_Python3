@@ -44,7 +44,7 @@ I'm really looking forward to dungeon generation. The procedural nature is proba
 
 This turned out to be quite a lot of fun. I liked breaking down the procgen into smaller pieces, rectangles and such. Unit testing is also going well? I'm not sure if I'm testing functions well, but it seems like some testing is better than none.
 
-### Part 4 Dev Notes
+## Part 4 Dev Notes
 
 ### Field of View
 
@@ -56,7 +56,7 @@ OOF, development is starting off rough. At some point in part 3 I removed pyvenv
 
 Complete! I got most of the tests up and running well too! Except for engine.compute_fov - for some reason, I couldn't get it set up to assert the tcod.map.compute_fov was called or that the engine.game_map.visible array changed after calling it. Which is weird, because in gameplay it's working just fine. I will likely need to revisit if I find a bug in the code :)
 
-### Part 5 Dev Notes
+## Part 5 Dev Notes
 
 ### Placing Enemies and kicking them (harmlessly)
 
@@ -65,3 +65,32 @@ http://rogueliketutorials.com/tutorials/tcod/v2/part-5/
 Oh snap! Now that we have a dungeon, we're ready to start filling it with stuff! Let's get some monsters going!
 
 This was a very fun chapter! We touched a lot of different functions, and I can see the pieces of things coming together really well. I liked the use of the BumpAction and I think it presented an interesting challenge for unit testing. As it stands, I'm starting to get confident in my ability to build and run the program and have it work as expected so long as my unit tests have passed! I think there's still plenty of room for improvement in them, but as it is, I'm happy with what I've learned.
+
+## Part 6 Dev Notes
+
+### Doing (and taking) some damage
+
+http://rogueliketutorials.com/tutorials/tcod/v2/part-6/
+
+Heyo, it looks like this part is going to start with a bit of a code refactor! This means we'll be making lots of changes to our existing codebase + lots of changes to our existing unit tests. This part might be a bit of a pain...but we'll come through!
+
+DONE:
+
+1. rewrite input_handler unit tests once the Engine refactor is complete
+2. rewrite our action unit tests once the engine refactor is complete
+3. rewrite game_map unit tests once the engine refactor is complete
+4. rewrite entity unit tests once the engine refactor is complete
+5. rewrite procgen unit tests once the engine refactor is complete
+6. rewrite engine unit tests not that the engine refactor is complete
+
+😆 with this refactor, only 8 of my 44 unit tests are passing 😎 there's a lot of testing work to be done before we work on part 6 proper.
+
+Alright! All done with the unit test refactor! I was right, there was a lot of work to do! When we change how objects are initialized, it causes problems all over the place.
+
+I've started adding a few of the components (so far, BaseComponent, Fighter, and BaseAI) but I haven't implemented any of them yet. Writing unit tests for them has been helpful, I'm relatively confident their implementation will work without too many headaches, provided I use them as intended.
+
+We're making progress. There have been a couple things I've had issues adding unit tests for - mostly in HostileEnemy.perform - we have a component that will call the perform function on a different class, which has proven difficult to mock. Otherwise, things are going smoothly.
+
+And we're done!! I don't remember exactly how much time I spent on this part, I would hazard a week or so? The initial refactor and fixing of unit tests was pretty intense, then the subsequent code changes were pretty intense to! I've very happy with the results, and am reasonably confident in my learning progress so far. One thing I've got on my brain... this tutorial code IS NOT written to be robust, it's written to accept expected inputs and use them. As such, there is probably a lot of coding and testing that could be done to ensure that functions are only used as intended... that is extra work I'm not intending to do. I will implement positive and negative tests where applicable, but will likely not alter existing code to handle extra weird inputs at this time (nor look to test for them).
+
+At the moment, I think the project is in a good spot where I can look to build up a deployment pipeline of some sort. I've never created releases for a python project, so this should be interesting.
