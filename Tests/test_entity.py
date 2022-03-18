@@ -2,6 +2,7 @@ from lib2to3.pytree import Base
 from entity import Entity, Actor
 from game_map import GameMap
 from engine import Engine
+from render_order import RenderOrder
 
 from components.ai import BaseAI
 from components.fighter import Fighter
@@ -34,6 +35,7 @@ class Test_Entity(unittest.TestCase):
         self.assertEqual(ent.color, color)
         self.assertEqual(ent.name, name)
         self.assertEqual(ent.blocks_movement, blocks_movement)
+        self.assertEqual(ent.render_order, RenderOrder.CORPSE)
 
     def test_init_with_gamemap(self):
         '''
@@ -123,6 +125,7 @@ class TestActor(unittest.TestCase):
         self.assertEqual(actor.color, (255, 255, 255))
         self.assertEqual(actor.name, "<Unnamed>")
         self.assertEqual(actor.blocks_movement, True)
+        self.assertEqual(actor.render_order, RenderOrder.ACTOR)
         # ai and fighter components reference the entity, need an extra check
         self.assertIsInstance(actor.ai, BaseAI)
         self.assertEqual(actor, actor.ai.entity)
