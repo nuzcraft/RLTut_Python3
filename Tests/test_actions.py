@@ -6,7 +6,7 @@ from actions import Action, ActionWithDirection, MovementAction, EscapeAction, M
 from entity import Entity, Actor
 from game_map import GameMap
 from engine import Engine
-from components.ai import BaseAI
+from components.ai import BaseAI, HostileEnemy
 from components.fighter import Fighter
 import tile_types
 
@@ -175,12 +175,12 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         self.assertEqual(pl.y, 0)
 
     @patch('builtins.print')
-    def test_perform_with_target(self, mock_print):
+    def test_perform_with_target_and_damage(self, mock_print):
         '''
-        test that a Melee Action with a target will do something
+        test that a Melee Action with a target will do damage and print
         '''
-        pl = Entity()  # player at 0,0
-        ent = Entity(x=1, y=1, blocks_movement=True)  # blocking entity at 1,1
+        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # player at 0,0
+        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -193,6 +193,30 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         # verify that print was called as it will only be called if there
         # is a blocking entity
         mock_print.assert_called_once()
+        # make sure the target's hp is decreased from 10 to 5
+        self.assertEqual(ent.fighter.hp, 5)
+
+    @patch('builtins.print')
+    def test_perform_with_target_and_no_damage(self, mock_print):
+        '''
+        test that a Melee Action with a target will print when no damage is done
+        '''
+        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # player at 0,0
+        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=5, power=5))  # blocking entity at 1,1
+        eng = Engine(player=pl)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # add blocking entity to the game map, add game map to engine and player
+        gm.entities = {ent}
+        eng.game_map = gm
+        pl.gamemap = gm
+        dx, dy = 1, 1
+        action = MeleeAction(entity=pl, dx=dx, dy=dy)
+        action.perform()
+        # verify that print was called as it will only be called if there
+        # is a blocking entity
+        mock_print.assert_called_once()
+        # make sure the target's hp is not decreased from 10
+        self.assertEqual(ent.fighter.hp, 10)
 
 
 class Test_Actions_MovementAction(unittest.TestCase):
@@ -277,8 +301,8 @@ class Test_Actions_BumpAction(unittest.TestCase):
         verify that a BumpAction performs the same as a MeleeAction
         basically a copy of Test_Actions_MeleeAction.test_perform_with_target
         '''
-        pl = Entity()  # player at 0,0
-        ent = Entity(x=1, y=1, blocks_movement=True)  # blocking entity at 1,1
+        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # player at 0,0
+        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -291,6 +315,8 @@ class Test_Actions_BumpAction(unittest.TestCase):
         # verify that print was called as it will only be called if there
         # is a blocking entity
         mock_print.assert_called_once()
+        # make sure the target's hp is decreased from 10 to 5
+        self.assertEqual(ent.fighter.hp, 5)
 
     def test_perform_movement(self):
         '''
