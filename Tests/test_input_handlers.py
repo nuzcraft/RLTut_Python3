@@ -1,15 +1,13 @@
 import unittest
 import tcod.event
-from input_handlers import EventHandler
+from input_handlers import EventHandler, MainGameEventHandler, GameOverEventHandler
 
 from actions import EscapeAction, BumpAction, WaitAction
 from engine import Engine
 from entity import Entity
 
-# TODO: rewrite all of these once new engine code is in place
 
-
-class Test_Input_Handlers(unittest.TestCase):
+class Test_EventHandler(unittest.TestCase):
     def test_init(self):
         '''
         test that initializing the event handler sets correctly
@@ -18,6 +16,16 @@ class Test_Input_Handlers(unittest.TestCase):
         eng = Engine(player=ent)
         event_handler = EventHandler(engine=eng)
         self.assertEqual(event_handler.engine, eng)
+
+    def test_handle_events(self):
+        '''
+        test that the handle_events function returns a not implemented error
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = EventHandler(engine=eng)
+        with self.assertRaises(NotImplementedError):
+            event_handler.handle_events()
 
     # ev_quit will only trigger on tcod.event.Quit() events, no need to negative test
     def test_ev_quit(self):
@@ -34,6 +42,7 @@ class Test_Input_Handlers(unittest.TestCase):
             event_handler.dispatch(event)
         self.assertEqual(action.exception.code, None)
 
+class Test_MainGameEventHandler(unittest.TestCase):
     # tcod.event.KeyDown() events will trigger ev_keydown
     def test_ev_keydown_up(self):
         '''
@@ -41,7 +50,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -55,7 +64,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.DOWN, sym=tcod.event.K_DOWN, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -69,7 +78,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.LEFT, sym=tcod.event.K_LEFT, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -83,7 +92,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.RIGHT, sym=tcod.event.K_RIGHT, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -97,7 +106,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.HOME, sym=tcod.event.K_HOME, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -111,7 +120,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.END, sym=tcod.event.K_END, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -125,7 +134,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.PAGEUP, sym=tcod.event.K_PAGEUP, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -139,7 +148,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.PAGEDOWN, sym=tcod.event.K_PAGEDOWN, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -153,7 +162,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.KP_8, sym=tcod.event.K_KP_8, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -167,7 +176,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.KP_2, sym=tcod.event.K_KP_2, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -181,7 +190,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.KP_4, sym=tcod.event.K_KP_4, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -195,7 +204,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.KP_6, sym=tcod.event.K_KP_6, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -209,7 +218,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.KP_7, sym=tcod.event.K_KP_7, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -223,7 +232,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.KP_1, sym=tcod.event.K_KP_1, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -237,7 +246,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.KP_9, sym=tcod.event.K_KP_9, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -251,7 +260,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.KP_3, sym=tcod.event.K_KP_3, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -265,7 +274,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.K, sym=tcod.event.K_k, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -279,7 +288,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.J, sym=tcod.event.K_j, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -293,7 +302,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.H, sym=tcod.event.K_h, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -307,7 +316,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.L, sym=tcod.event.K_l, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -321,7 +330,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.Y, sym=tcod.event.K_y, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -335,7 +344,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.B, sym=tcod.event.K_b, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -349,7 +358,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.U, sym=tcod.event.K_u, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -363,7 +372,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.N, sym=tcod.event.K_n, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -377,7 +386,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.PERIOD, sym=tcod.event.K_PERIOD, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -389,7 +398,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.KP_5, sym=tcod.event.K_KP_5, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -401,7 +410,7 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.CLEAR, sym=tcod.event.K_CLEAR, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
@@ -413,22 +422,62 @@ class Test_Input_Handlers(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.ESCAPE, sym=tcod.event.K_ESCAPE, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
         self.assertIsInstance(action, EscapeAction)
 
-    # using the HOME button as an unassigned button
+    # using the backslash button as an unassigned button
     def test_ev_keydown_other(self):
         '''
         tests that pressing an unassigned button will do nothing
         '''
         ent = Entity()
         eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
+        event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.BACKSLASH, sym=tcod.event.K_BACKSLASH, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsNone(action)
+
+    def test_handle_events(self):
+        '''
+        TODO: implement this test
+        this is predicated on being able to add events to the tcod event list
+        and I'm not sure how to do that, so this will need to wait
+        '''
+
+class Test_GameOverEventHandler(unittest.TestCase):
+    def test_handle_events(self):
+        '''
+        TODO: implement this test
+        this is predicated on being able to add events to the tcod event list
+        and I'm not sure how to do that, so this will need to wait
+        '''
+
+    def test_ev_keydown_escape(self):
+        '''
+        tests that pressing escape results in an EscapeAction
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = GameOverEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.ESCAPE, sym=tcod.event.K_ESCAPE, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(action, EscapeAction)
+
+    def test_ev_keydown_other(self):
+        '''
+        tests that pressing an unassigned button will do nothing
+        note that we're using UP, which will do something in other event handlers
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = GameOverEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
         self.assertIsNone(action)
 

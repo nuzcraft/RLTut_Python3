@@ -131,7 +131,7 @@ class Test_Engine(unittest.TestCase):
         mock a few of the functions and make sure they are called
         UPDATE: remove the print assert bc it was unreliable
         '''
-        ent1 = Entity()
+        ent1 = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
         eng = Engine(player=ent1)
         eng.game_map = GameMap(engine=eng, width=50, height=50)
 
