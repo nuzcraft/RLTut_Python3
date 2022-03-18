@@ -6,6 +6,7 @@ from components.ai import HostileEnemy
 from entity import Actor
 from engine import Engine
 from game_map import GameMap
+from render_order import RenderOrder
 
 
 class Test_Fighter(unittest.TestCase):
@@ -51,6 +52,14 @@ class Test_Fighter(unittest.TestCase):
         when setting below 0
         '''
         ft = Fighter(hp=10, defense=10, power=10)
+        act = Actor(ai_cls=HostileEnemy, fighter=ft)
+        ft.entity = act
+
+        eng = Engine(player=act)
+        gm = GameMap(engine=eng, width=10, height=10)
+        act.gamemap = gm
+        eng.game_map = gm
+
         ft.hp = -5
         self.assertEqual(ft.hp, 0)
 
@@ -103,6 +112,7 @@ class Test_Fighter(unittest.TestCase):
         self.assertFalse(ft.entity.blocks_movement)
         self.assertIsNone(ft.entity.ai)
         self.assertEqual(ft.entity.name, "remains of player")
+        self.assertEqual(ft.entity.render_order, RenderOrder.CORPSE)
         mock_print.assert_called_with("You died!")
 
     @patch('builtins.print')
@@ -131,4 +141,5 @@ class Test_Fighter(unittest.TestCase):
         self.assertFalse(ft.entity.blocks_movement)
         self.assertIsNone(ft.entity.ai)
         self.assertEqual(ft.entity.name, "remains of actor")
+        self.assertEqual(ft.entity.render_order, RenderOrder.CORPSE)
         mock_print.assert_called_with("actor is dead!")
