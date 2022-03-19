@@ -104,3 +104,11 @@ I spent an evening futzing around with a couple things here that I want to docum
 This will build the python codebase and add the font file to the root of the folder. This goes into a 'dist' folder -> I can zip this up and distribute it as a release on GitHub!.
 
 That's everything for this section I think. Any new unit tests I add should automatically be ran by the GitHub action. I may need to adjust my pyinstaller commands, especially as I add/alter external font files.
+
+## Part 7 Dev Notes
+
+### Creating the Interface
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-7/
+
+Heyo, it looks like this part will be focused on the UI. I'm looking forward to adding a bit of polish :). I'm also going to reorganize my Dev Notes so that the more recent dev notes show up on top.
