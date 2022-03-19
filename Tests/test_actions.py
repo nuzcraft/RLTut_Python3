@@ -179,8 +179,10 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         '''
         test that a Melee Action with a target will do damage and print
         '''
-        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # player at 0,0
-        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # blocking entity at 1,1
+        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=0, power=5))  # player at 0,0
+        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=0, power=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -201,8 +203,10 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         '''
         test that a Melee Action with a target will print when no damage is done
         '''
-        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # player at 0,0
-        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=5, power=5))  # blocking entity at 1,1
+        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=0, power=5))  # player at 0,0
+        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=5, power=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -301,8 +305,10 @@ class Test_Actions_BumpAction(unittest.TestCase):
         verify that a BumpAction performs the same as a MeleeAction
         basically a copy of Test_Actions_MeleeAction.test_perform_with_target
         '''
-        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # player at 0,0
-        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=0, power=5))  # blocking entity at 1,1
+        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=0, power=5))  # player at 0,0
+        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=0, power=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -335,3 +341,7 @@ class Test_Actions_BumpAction(unittest.TestCase):
         # since the goal x, y is walkable, make sure the entity moved there
         self.assertEqual(pl.x, 1)
         self.assertEqual(pl.y, 1)
+
+
+if __name__ == '__main__':
+    unittest.main()

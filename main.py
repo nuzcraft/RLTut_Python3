@@ -40,9 +40,9 @@ def main() -> None:
     )
     engine.update_fov()
 
-    with tcod.context.new_terminal(
-        screen_width,
-        screen_height,
+    with tcod.context.new(
+        columns=screen_width,
+        rows=screen_height,
         tileset=tileset,
         title="Yet Another Roguelike Tutorial",
         vsync=True,

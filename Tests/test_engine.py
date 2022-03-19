@@ -36,10 +36,11 @@ class Test_Engine(unittest.TestCase):
         tests that an enemy taking its turn will print
         '''
         ent1 = Entity()
-        ent2 = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        ent2 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10))
         eng = Engine(player=ent1)
         gm = GameMap(engine=eng, width=10,
-                               height=10, entities={ent2})
+                     height=10, entities={ent2})
         eng.game_map = gm
         ent1.gamemap = gm
         ent2.gamemap = gm
@@ -49,7 +50,6 @@ class Test_Engine(unittest.TestCase):
 
         # verify the WaitAction.perform was called
         mock_ai_perform.assert_called_once()
-        
 
     # def test_handle_events_MovementAction(self):
     #     '''
@@ -131,11 +131,12 @@ class Test_Engine(unittest.TestCase):
         mock a few of the functions and make sure they are called
         UPDATE: remove the print assert bc it was unreliable
         '''
-        ent1 = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        ent1 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10))
         eng = Engine(player=ent1)
         eng.game_map = GameMap(engine=eng, width=50, height=50)
 
-        with tcod.context.new_terminal(50, 50) as context:
+        with tcod.context.new(columns=50, rows=50) as context:
             console = tcod.Console(50, 50)
             # console.print = Mock()
             context.present = Mock()
