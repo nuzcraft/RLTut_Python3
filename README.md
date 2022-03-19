@@ -94,3 +94,13 @@ We're making progress. There have been a couple things I've had issues adding un
 And we're done!! I don't remember exactly how much time I spent on this part, I would hazard a week or so? The initial refactor and fixing of unit tests was pretty intense, then the subsequent code changes were pretty intense to! I've very happy with the results, and am reasonably confident in my learning progress so far. One thing I've got on my brain... this tutorial code IS NOT written to be robust, it's written to accept expected inputs and use them. As such, there is probably a lot of coding and testing that could be done to ensure that functions are only used as intended... that is extra work I'm not intending to do. I will implement positive and negative tests where applicable, but will likely not alter existing code to handle extra weird inputs at this time (nor look to test for them).
 
 At the moment, I think the project is in a good spot where I can look to build up a deployment pipeline of some sort. I've never created releases for a python project, so this should be interesting.
+
+## Part 6.5 Building, Testing, Releasing, etc
+
+I spent an evening futzing around with a couple things here that I want to document. Firstly, I set up a GitHub action that will very specifically build the project and run all my unit test whenever I commit to main! This is really nice as it will let me know if any code makes it to the repo that breaks some functions. This is a really important part of continuous integration even if I'm not really trying to continuously integrate this code anywhere. Secondly, I figured out how to use pyinstaller to build an executable of my python project. This has been difficult for me to do in the past, so it was really nice to get it somewhat figured out. The pyinstaller command I use to build is:
+
+- pyinstaller --add-data "dejavu10x10_gs_tc.png;." main.py
+
+This will build the python codebase and add the font file to the root of the folder. This goes into a 'dist' folder -> I can zip this up and distribute it as a release on GitHub!.
+
+That's everything for this section I think. Any new unit tests I add should automatically be ran by the GitHub action. I may need to adjust my pyinstaller commands, especially as I add/alter external font files.
