@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from tcod.context import Context
 from tcod.console import Console
 from tcod.map import compute_fov
+import tcod
 
 from input_handlers import MainGameEventHandler
 
@@ -33,6 +34,7 @@ class Engine:
             (self.player.x, self.player.y),
             radius=8
         )
+
         # if a tile is "visible" it should be added to "explored"
         self.game_map.explored |= self.game_map.visible
 
