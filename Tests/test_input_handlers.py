@@ -17,15 +17,16 @@ class Test_EventHandler(unittest.TestCase):
         event_handler = EventHandler(engine=eng)
         self.assertEqual(event_handler.engine, eng)
 
-    def test_handle_events(self):
-        '''
-        test that the handle_events function returns a not implemented error
-        '''
-        ent = Entity()
-        eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
-        with self.assertRaises(NotImplementedError):
-            event_handler.handle_events()
+    # def test_handle_events(self):
+    #     '''
+    #     test that the handle_events function returns a not implemented error
+    #     UPDATE: removed after updating this function, not sure how to test it
+    #     '''
+    #     ent = Entity()
+    #     eng = Engine(player=ent)
+    #     event_handler = EventHandler(engine=eng)
+    #     with self.assertRaises(NotImplementedError):
+    #         event_handler.handle_events()
 
     # ev_quit will only trigger on tcod.event.Quit() events, no need to negative test
     def test_ev_quit(self):
@@ -41,6 +42,7 @@ class Test_EventHandler(unittest.TestCase):
         with self.assertRaises(SystemExit) as action:
             event_handler.dispatch(event)
         self.assertEqual(action.exception.code, None)
+
 
 class Test_MainGameEventHandler(unittest.TestCase):
     # tcod.event.KeyDown() events will trigger ev_keydown
@@ -447,6 +449,7 @@ class Test_MainGameEventHandler(unittest.TestCase):
         this is predicated on being able to add events to the tcod event list
         and I'm not sure how to do that, so this will need to wait
         '''
+
 
 class Test_GameOverEventHandler(unittest.TestCase):
     def test_handle_events(self):

@@ -11,6 +11,7 @@ import tcod
 from entity import Entity, Actor
 from components.ai import HostileEnemy
 from components.fighter import Fighter
+from message_log import MessageLog
 
 
 class Test_Engine(unittest.TestCase):
@@ -21,6 +22,8 @@ class Test_Engine(unittest.TestCase):
         ent1 = Entity()
         eng = Engine(ent1)
         self.assertEqual(eng.player, ent1)
+        self.assertIsInstance(eng.message_log, MessageLog)
+        self.assertEqual(eng.mouse_location, (0, 0))
 
     def test_gamemap_set(self):
         '''
@@ -78,9 +81,7 @@ class Test_Engine(unittest.TestCase):
     @patch('game_map.GameMap.render')
     @patch('message_log.MessageLog.render')
     @patch('render_functions.render_bar')
-    @patch('tcod.context.Context.present')
-    @patch('tcod.console.Console.clear')
-    def test_render(self, patch_render, patch_MessageLog_render, patch_render_bar, patch_present, patch_clear):
+    def test_render(self, patch_render, patch_MessageLog_render, patch_render_bar):
         '''
         test that the render function will call the print, present, clear functions
         this one may still break the github actions, but it works fine here
@@ -92,12 +93,9 @@ class Test_Engine(unittest.TestCase):
         eng.game_map = GameMap(engine=eng, width=10, height=10)
 
         console = tcod.Console(10, 10)
-        context = tcod.context.new(columns=10, rows=10)
 
-        eng.render(console=console, context=context)
+        eng.render(console=console)
 
         patch_render.assert_called()
         patch_MessageLog_render.assert_called()
         patch_render_bar.assert_called()
-        patch_present.assert_called()
-        patch_clear.assert_called()
