@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 from tcod.context import Context
 from tcod.console import Console
-from tcod.map import compute_fov
 import tcod
 
 from input_handlers import MainGameEventHandler
+import render_functions
 
 if TYPE_CHECKING:
     from entity import Actor
@@ -29,7 +29,7 @@ class Engine:
 
     def update_fov(self) -> None:
         """Recompute the visible area based on the players point of view."""
-        self.game_map.visible[:] = compute_fov(
+        self.game_map.visible[:] = tcod.map.compute_fov(
             self.game_map.tiles["transparent"],
             (self.player.x, self.player.y),
             radius=8
@@ -41,10 +41,11 @@ class Engine:
     def render(self, console: Console, context: Context) -> None:
         self.game_map.render(console)
 
-        console.print(
-            x=1,
-            y=47,
-            string=f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}"
+        render_functions.render_bar(
+            console=console,
+            current_value=self.player.fighter.hp,
+            maximum_value=self.player.fighter.max_hp,
+            total_width=20,
         )
 
         context.present(console)
