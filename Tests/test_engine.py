@@ -76,10 +76,11 @@ class Test_Engine(unittest.TestCase):
         patch_compute_fov.assert_called_once()
 
     @patch('game_map.GameMap.render')
+    @patch('message_log.MessageLog.render')
     @patch('render_functions.render_bar')
     @patch('tcod.context.Context.present')
     @patch('tcod.console.Console.clear')
-    def test_render(self, patch_render, patch_render_bar, patch_present, patch_clear):
+    def test_render(self, patch_render, patch_MessageLog_render, patch_render_bar, patch_present, patch_clear):
         '''
         test that the render function will call the print, present, clear functions
         this one may still break the github actions, but it works fine here
@@ -96,6 +97,7 @@ class Test_Engine(unittest.TestCase):
         eng.render(console=console, context=context)
 
         patch_render.assert_called()
+        patch_MessageLog_render.assert_called()
         patch_render_bar.assert_called()
         patch_present.assert_called()
         patch_clear.assert_called()
