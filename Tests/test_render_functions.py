@@ -1,3 +1,4 @@
+from turtle import width
 import unittest
 from unittest.mock import patch
 
@@ -93,3 +94,28 @@ class Test_Render_Functions(unittest.TestCase):
             x=0, y=45, width=10, height=1, ch=1, bg=color.bar_empty)
 
         patch_print.assert_called_once()
+
+    @patch("tcod.console.Console.print")
+    def test_render_names_at_mouse_location(self, patch_print):
+        '''
+        tests that the function will render names returned by
+        get_names_at_location. This function has already been tested,
+        so we'll just check that the functions were called okay
+        '''
+        console = tcod.Console(width=10, height=10)
+        ent = Entity()
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+
+        with patch('render_functions.get_names_at_location') as patch_get_names:
+            patch_get_names.return_value = "entity1"
+
+            render_functions.render_names_at_mouse_location(
+                console=console, x=5, y=5, engine=eng)
+
+        patch_get_names.assert_called()
+
+        patch_print.assert_any_call(
+            x=5, y=5, string="entity1"
+        )
