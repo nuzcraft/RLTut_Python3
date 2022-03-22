@@ -1,3 +1,4 @@
+from multiprocessing import Event
 import unittest
 import tcod.event
 from input_handlers import EventHandler, MainGameEventHandler, GameOverEventHandler
@@ -5,6 +6,7 @@ from input_handlers import EventHandler, MainGameEventHandler, GameOverEventHand
 from actions import EscapeAction, BumpAction, WaitAction
 from engine import Engine
 from entity import Entity
+from game_map import GameMap
 
 
 class Test_EventHandler(unittest.TestCase):
@@ -21,12 +23,41 @@ class Test_EventHandler(unittest.TestCase):
     #     '''
     #     test that the handle_events function returns a not implemented error
     #     UPDATE: removed after updating this function, not sure how to test it
+    #     since I'm not sure how to add events to the tcod event list
     #     '''
     #     ent = Entity()
     #     eng = Engine(player=ent)
     #     event_handler = EventHandler(engine=eng)
     #     with self.assertRaises(NotImplementedError):
     #         event_handler.handle_events()
+
+    def test_ev_mousemotion_in_bounds(self):
+        '''
+        test that moving the mouse will set the engine.mouse_location
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        event_handler = EventHandler(engine=eng)
+        event = tcod.event.MouseMotion(tile=(5, 6))
+        event_handler.ev_mousemotion(event=event)
+        self.assertEqual(event_handler.engine.mouse_location, (5, 6))
+
+    def test_ev_mousemotion_not_in_bounds(self):
+        '''
+        test that moving the mouse out of bounds 
+        will not set the engine.mouse_location
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        event_handler = EventHandler(engine=eng)
+        event = tcod.event.MouseMotion(tile=(12, 12))
+        event_handler.ev_mousemotion(event=event)
+        # check for 0,0 to assert that the mouse_location did not move
+        self.assertEqual(event_handler.engine.mouse_location, (0, 0))
 
     # ev_quit will only trigger on tcod.event.Quit() events, no need to negative test
     def test_ev_quit(self):
