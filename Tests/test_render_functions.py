@@ -1,12 +1,59 @@
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import render_functions
 import tcod
 import color
+from game_map import GameMap
+from engine import Engine
+from entity import Entity
 
 
 class Test_Render_Functions(unittest.TestCase):
+    def test_get_names_at_location_out_of_bounds(self):
+        '''
+        test that get_names_at_location will return a blank string
+        when searching out of bounds
+        '''
+        ent = Entity()
+        ent1 = Entity(x=12, y=13, name="entity1")
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        gm.entities = {ent1}
+        names = render_functions.get_names_at_location(12, 13, gm)
+        self.assertEqual(names, "")
+
+    def test_get_names_at_location_not_visible(self):
+        '''
+        test that get_names_at_location will return a blank string
+        when searching in bounds, but the tiles are not visible
+        '''
+        ent = Entity()
+        ent1 = Entity(x=5, y=6, name="entity1")
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # gm.visible[:] = True
+        gm.entities = {ent1}
+        names = render_functions.get_names_at_location(5, 6, gm)
+        self.assertEqual(names, "")
+
+    def test_get_names_at_location_multiple_entities(self):
+        '''
+        test that get_names_at_location will return the names of
+        all entities at that location, comma delimited
+        '''
+        ent = Entity()
+        ent1 = Entity(x=5, y=6, name="entity1")
+        ent2 = Entity(x=5, y=6, name="entity2")
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        gm.entities = {ent1, ent2}
+        names = render_functions.get_names_at_location(5, 6, gm)
+        # notice that the first letter is capitalized
+        self.assertEqual(names, "Entity1, entity2")
+
     def test_render_bar_value_0(self):
         '''
         verify that the hp bar is rendered with 2 rectangles
