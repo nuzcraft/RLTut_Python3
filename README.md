@@ -12,6 +12,12 @@ I want to use this as an opportunity to:
 4. make a roguelike
 5. practice with git
 
+## Part 8 Dev Notes
+
+### Items and Inventory
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-8/
+
 ## Part 7 Dev Notes
 
 ### Creating the Interface
