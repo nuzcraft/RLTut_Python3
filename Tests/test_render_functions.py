@@ -99,7 +99,7 @@ class Test_Render_Functions(unittest.TestCase):
     def test_render_names_at_mouse_location(self, patch_print):
         '''
         tests that the function will render names returned by
-        get_names_at_location. This function has already been tested,
+        get_names_at_location. The called function has already been tested,
         so we'll just check that the functions were called okay
         '''
         console = tcod.Console(width=10, height=10)
