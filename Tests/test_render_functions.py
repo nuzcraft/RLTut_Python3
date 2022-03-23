@@ -46,14 +46,14 @@ class Test_Render_Functions(unittest.TestCase):
         '''
         ent = Entity()
         ent1 = Entity(x=5, y=6, name="entity1")
-        ent2 = Entity(x=5, y=6, name="entity2")
+        ent2 = Entity(x=5, y=6, name="entity1")
         eng = Engine(player=ent)
         gm = GameMap(engine=eng, width=10, height=10)
         gm.visible[:] = True
         gm.entities = {ent1, ent2}
         names = render_functions.get_names_at_location(5, 6, gm)
         # notice that the first letter is capitalized
-        self.assertEqual(names, "Entity1, entity2")
+        self.assertEqual(names, "Entity1, entity1")
 
     def test_render_bar_value_0(self):
         '''
