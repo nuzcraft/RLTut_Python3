@@ -97,6 +97,9 @@ class MainGameEventHandler(EventHandler):
         elif key == tcod.event.K_ESCAPE:
             action = EscapeAction(player)
 
+        elif key == tcod.event.K_v:
+            self.engine.event_handler = HistoryViewer(self.engine)
+
         return action
 
 
@@ -146,7 +149,7 @@ class HistoryViewer(EventHandler):
         # draw a frame with a custom banner title
         log_console.draw_frame(0, 0, log_console.width, log_console.height)
         log_console.print_box(
-            0, 0, log_console.width, 1, "┤Message History├", alignment=tcod.Center
+            0, 0, log_console.width, 1, "┤Message History├", alignment=tcod.CENTER
         )
 
         # Render the message log using the cursor parameter

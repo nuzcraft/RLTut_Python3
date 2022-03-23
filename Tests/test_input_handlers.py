@@ -461,6 +461,19 @@ class Test_MainGameEventHandler(unittest.TestCase):
         action = event_handler.dispatch(event)
         self.assertIsInstance(action, EscapeAction)
 
+    def test_ev_keydown_v(self):
+        '''
+        tests that pressing v results in opening up the history viewer
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.V, sym=tcod.event.K_v, mod=tcod.event.Modifier.NONE)
+        event_handler.ev_keydown(event=event)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, HistoryViewer)
+
     # using the backslash button as an unassigned button
     def test_ev_keydown_other(self):
         '''
