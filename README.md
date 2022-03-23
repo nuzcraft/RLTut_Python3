@@ -20,6 +20,10 @@ https://rogueliketutorials.com/tutorials/tcod/v2/part-7/
 
 Heyo, it looks like this part will be focused on the UI. I'm looking forward to adding a bit of polish :). I'm also going to reorganize my Dev Notes so that the more recent dev notes show up on top.
 
+Interestingly (or not I guess) I found it difficult to focus on part 7, and I think some of it was analysis paralysis on unit testing. I'm finding there are more and more things I want to unit test, but don't quite have the skills/experience to make it work; I don't understand what all unittest can do so my unit tests are pretty basic.
+
+I think the above was compounded by UI work being a bit more cumbersome to unit test. This section did a lot of good work to make things look nice on the screen and in the end, I enjoyed making it happen.
+
 ## Part 6.5 Building, Testing, Releasing, etc
 
 I spent an evening futzing around with a couple things here that I want to document. Firstly, I set up a GitHub action that will very specifically build the project and run all my unit test whenever I commit to main! This is really nice as it will let me know if any code makes it to the repo that breaks some functions. This is a really important part of continuous integration even if I'm not really trying to continuously integrate this code anywhere. Secondly, I figured out how to use pyinstaller to build an executable of my python project. This has been difficult for me to do in the past, so it was really nice to get it somewhat figured out. The pyinstaller command I use to build is:
@@ -112,4 +116,3 @@ It has been a long time since I did anything significant with python or tcod, so
 Welp, after finishing part one, there is a lot of syntax in here that I'm not very familiar with. I think I understand the gist of what's happening, but it will take some work before I'm fully comfortable with it. Regardless, I'm really enjoying how this is going!
 
 I got movin' and groovin' on unit testing and after some finagling I got a suite of unit tests running on the overwritten ev_quit and ev_keydown functions. I found this to be an educational experience, and look forward to setting up more unit tests as the codebase grows.
-
