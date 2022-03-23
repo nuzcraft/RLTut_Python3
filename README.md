@@ -18,6 +18,8 @@ I want to use this as an opportunity to:
 
 https://rogueliketutorials.com/tutorials/tcod/v2/part-8/
 
+It looks like this is going to start off with a refactor(similar to part 6). Hopefully it doesn't result in quite as extensive of a unit test rewrite as the engine class rewrite.
+
 ## Part 7 Dev Notes
 
 ### Creating the Interface
@@ -29,6 +31,8 @@ Heyo, it looks like this part will be focused on the UI. I'm looking forward to 
 Interestingly (or not I guess) I found it difficult to focus on part 7, and I think some of it was analysis paralysis on unit testing. I'm finding there are more and more things I want to unit test, but don't quite have the skills/experience to make it work; I don't understand what all unittest can do so my unit tests are pretty basic.
 
 I think the above was compounded by UI work being a bit more cumbersome to unit test. This section did a lot of good work to make things look nice on the screen and in the end, I enjoyed making it happen.
+
+Finally, merging the part 7 pull request was really nice :) the python unit testing code ran on its own, alerted me to a minor issue that kept me from merging until I fixed it. Very cool!
 
 ## Part 6.5 Building, Testing, Releasing, etc
 
