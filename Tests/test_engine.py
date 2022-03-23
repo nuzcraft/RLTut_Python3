@@ -81,7 +81,8 @@ class Test_Engine(unittest.TestCase):
     @patch('game_map.GameMap.render')
     @patch('message_log.MessageLog.render')
     @patch('render_functions.render_bar')
-    def test_render(self, patch_render, patch_MessageLog_render, patch_render_bar):
+    @patch('render_functions.render_names_at_mouse_location')
+    def test_render(self, patch_render, patch_MessageLog_render, patch_render_bar, patch_render_names):
         '''
         test that the render function will call the print, present, clear functions
         this one may still break the github actions, but it works fine here
@@ -99,3 +100,4 @@ class Test_Engine(unittest.TestCase):
         patch_render.assert_called()
         patch_MessageLog_render.assert_called()
         patch_render_bar.assert_called()
+        patch_render_names.assert_called()
