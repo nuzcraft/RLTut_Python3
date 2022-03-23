@@ -8,6 +8,7 @@ from engine import Engine
 from game_map import GameMap
 from render_order import RenderOrder
 from input_handlers import GameOverEventHandler
+import color
 
 
 class Test_Fighter(unittest.TestCase):
@@ -91,10 +92,11 @@ class Test_Fighter(unittest.TestCase):
         # triggering 'die' should remove the ai component
         self.assertIsNone(ft.entity.ai)
 
-    @patch('builtins.print')
-    def test_die_player(self, mock_print):
+    @patch('message_log.MessageLog.add_message')
+    def test_die_player(self, mock_add_message):
         '''
         test that when a player dies, they get set well
+        and a message of the correct color is added to the message log
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
@@ -115,10 +117,10 @@ class Test_Fighter(unittest.TestCase):
         self.assertEqual(ft.entity.name, "remains of player")
         self.assertEqual(ft.entity.render_order, RenderOrder.CORPSE)
         self.assertIsInstance(ft.engine.event_handler, GameOverEventHandler)
-        mock_print.assert_called_with("You died!")
+        mock_add_message.assert_called_with("You died!", color.player_die)
 
-    @patch('builtins.print')
-    def test_die_other_actor(self, mock_print):
+    @patch('message_log.MessageLog.add_message')
+    def test_die_other_actor(self, mock_add_message):
         '''
         test that when an actor (not player) dies, they get set well
         '''
@@ -144,4 +146,4 @@ class Test_Fighter(unittest.TestCase):
         self.assertIsNone(ft.entity.ai)
         self.assertEqual(ft.entity.name, "remains of actor")
         self.assertEqual(ft.entity.render_order, RenderOrder.CORPSE)
-        mock_print.assert_called_with("actor is dead!")
+        mock_add_message.assert_called_with("actor is dead!", color.enemy_die)
