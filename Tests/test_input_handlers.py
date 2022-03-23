@@ -1,7 +1,7 @@
 from multiprocessing import Event
 import unittest
 import tcod.event
-from input_handlers import EventHandler, MainGameEventHandler, GameOverEventHandler
+from input_handlers import EventHandler, MainGameEventHandler, GameOverEventHandler, HistoryViewer
 
 from actions import EscapeAction, BumpAction, WaitAction
 from engine import Engine
@@ -514,6 +514,172 @@ class Test_GameOverEventHandler(unittest.TestCase):
             scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
         self.assertIsNone(action)
+
+
+class Test_HistoryViewer(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that the HistoryViewer class can be initialized
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        eng.message_log.add_message('Hello')
+        eng.message_log.add_message('World')
+        eng.message_log.add_message('by Nuzcraft')
+        event_handler = HistoryViewer(engine=eng)
+        self.assertEqual(event_handler.log_length, 3)
+        self.assertEqual(event_handler.cursor, 2)
+
+    def test_on_render(self):
+        '''
+        I'm not actually sure what's worth testing here :/
+        we could make sure all the tcod.console commands are ran,
+        but there's no logic here to break. either they work or they dont
+        '''
+
+    def test_ev_keydown_top_to_bottom(self):
+        '''
+        test that moving up while at the top will push us to the bottom 
+        i.e. set the cursor equal to the length of the log - 1
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        eng.message_log.add_message('Hello')
+        eng.message_log.add_message('World')
+        eng.message_log.add_message('by Nuzcraft')
+        event_handler = HistoryViewer(engine=eng)
+        event_handler.cursor = 0
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE)
+
+        event_handler.ev_keydown(event=event)
+        self.assertEqual(event_handler.cursor, event_handler.log_length - 1)
+
+    def test_ev_keydown_bottom_to_top(self):
+        '''
+        test that moving down while at the bottom will push us to the top 
+        i.e. set the cursor equal to 0
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        eng.message_log.add_message('Hello')
+        eng.message_log.add_message('World')
+        eng.message_log.add_message('by Nuzcraft')
+        event_handler = HistoryViewer(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.DOWN, sym=tcod.event.K_DOWN, mod=tcod.event.Modifier.NONE)
+
+        event_handler.ev_keydown(event=event)
+        self.assertEqual(event_handler.cursor, 0)
+
+    def test_ev_keydown_up(self):
+        '''
+        test that moving up will push the cursor up 1
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        for x in range(0, 20):  # 20 messages
+            eng.message_log.add_message('Message Number: %d' % x)
+        event_handler = HistoryViewer(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE)
+        self.assertEqual(event_handler.cursor, 19)
+        event_handler.ev_keydown(event=event)
+        self.assertEqual(event_handler.cursor, 18)
+
+    def test_ev_keydown_pg_up(self):
+        '''
+        test that pushing pgup will push the cursor up 10
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        for x in range(0, 20):  # 20 messages
+            eng.message_log.add_message('Message Number: %d' % x)
+        event_handler = HistoryViewer(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.PAGEUP, sym=tcod.event.K_PAGEUP, mod=tcod.event.Modifier.NONE)
+        self.assertEqual(event_handler.cursor, 19)
+        event_handler.ev_keydown(event=event)
+        self.assertEqual(event_handler.cursor, 9)
+
+    def test_ev_keydown_down(self):
+        '''
+        test that pushing down will push the cursor down 1
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        for x in range(0, 20):  # 20 messages
+            eng.message_log.add_message('Message Number: %d' % x)
+        event_handler = HistoryViewer(engine=eng)
+        event_handler.cursor = 0
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.DOWN, sym=tcod.event.K_DOWN, mod=tcod.event.Modifier.NONE)
+        self.assertEqual(event_handler.cursor, 0)
+        event_handler.ev_keydown(event=event)
+        self.assertEqual(event_handler.cursor, 1)
+
+    def test_ev_keydown_pg_down(self):
+        '''
+        test that pushing pgdown will push the cursor down 10
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        for x in range(0, 20):  # 20 messages
+            eng.message_log.add_message('Message Number: %d' % x)
+        event_handler = HistoryViewer(engine=eng)
+        event_handler.cursor = 0
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.PAGEDOWN, sym=tcod.event.K_PAGEDOWN, mod=tcod.event.Modifier.NONE)
+        self.assertEqual(event_handler.cursor, 0)
+        event_handler.ev_keydown(event=event)
+        self.assertEqual(event_handler.cursor, 10)
+
+    def test_ev_keydown_home(self):
+        '''
+        test that pushing home will move the cursor to the top 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        for x in range(0, 20):  # 20 messages
+            eng.message_log.add_message('Message Number: %d' % x)
+        event_handler = HistoryViewer(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.HOME, sym=tcod.event.K_HOME, mod=tcod.event.Modifier.NONE)
+        self.assertEqual(event_handler.cursor, 19)
+        event_handler.ev_keydown(event=event)
+        self.assertEqual(event_handler.cursor, 0)
+
+    def test_ev_keydown_end(self):
+        '''
+        test that pushing end will move the cursor to the bottom
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        for x in range(0, 20):  # 20 messages
+            eng.message_log.add_message('Message Number: %d' % x)
+        event_handler = HistoryViewer(engine=eng)
+        event_handler.cursor = 5
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.END, sym=tcod.event.K_END, mod=tcod.event.Modifier.NONE)
+        self.assertEqual(event_handler.cursor, 5)
+        event_handler.ev_keydown(event=event)
+        self.assertEqual(event_handler.cursor, 19)
+
+    def test_ev_keydown_other(self):
+        '''
+        test that pushing any other button will exit the event
+        and set the engine event handler to MainGameEventHander
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        for x in range(0, 20):  # 20 messages
+            eng.message_log.add_message('Message Number: %d' % x)
+        event_handler = HistoryViewer(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.K, sym=tcod.event.K_k, mod=tcod.event.Modifier.NONE)
+        event_handler.ev_keydown(event=event)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, MainGameEventHandler)
 
 
 if __name__ == '__main__':
