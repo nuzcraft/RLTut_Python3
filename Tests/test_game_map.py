@@ -1,3 +1,4 @@
+from turtle import window_width
 import unittest
 from game_map import GameMap
 from entity import Entity, Actor
@@ -33,6 +34,15 @@ class Test_Game_Map(unittest.TestCase):
         # check that the entities set was created
         self.assertIn(ent1, gm.entities)
         self.assertIn(ent2, gm.entities)
+
+    def test_property_gamemap(self):
+        '''
+        test that the gamemap property returns the self
+        '''
+        player = Entity()
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        self.assertEqual(gm, gm.gamemap)
 
     def test_property_actors(self):
         '''
@@ -139,7 +149,8 @@ class Test_Game_Map(unittest.TestCase):
         tests that checking a location with an actor
         will return that actor
         '''
-        act = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        act = Actor(x=5, y=6, ai_cls=HostileEnemy,
+                    fighter=Fighter(hp=10, defense=10, power=10))
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
         act.gamemap = gm
@@ -153,7 +164,8 @@ class Test_Game_Map(unittest.TestCase):
         tests that checking a location with an actor
         will return that actor
         '''
-        act = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        act = Actor(x=5, y=6, ai_cls=HostileEnemy,
+                    fighter=Fighter(hp=10, defense=10, power=10))
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
         act.gamemap = gm
