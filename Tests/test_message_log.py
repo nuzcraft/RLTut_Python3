@@ -111,6 +111,52 @@ class Test_MessageLog(unittest.TestCase):
         self.assertEqual(ml.messages[0].full_text, text)
         self.assertEqual(ml.messages[1].full_text, text_2)
 
+    def test_wrap_no_wrap(self):
+        '''
+        test that the wrap method won't wrap when it doesn't need to
+        '''
+        ml = MessageLog()
+        str_for_content = ml.wrap('hello world', 15)
+        str_for_count = ml.wrap('hello world', 15)
+        # since this returns and iterator, checking it in any capacity
+        # consumes it, therefore we create 2 and check them independently
+        self.assertIn('hello world', str_for_content)
+        self.assertEqual(len(list(str_for_count)), 1)
+
+    def test_wrap_with_wrap(self):
+        '''
+        test that wrap works when it needs to
+        '''
+        ml = MessageLog()
+        str_for_content = ml.wrap('hello world', 5)
+        str_for_count = ml.wrap('hello world', 5)
+        self.assertIn('hello', str_for_content)
+        self.assertIn('world', str_for_content)
+        self.assertEqual(len(list(str_for_count)), 2)
+
+    def test_wrap_with_new_lines(self):
+        '''
+        test that wrap works when it needs to when newlines are present
+        '''
+        ml = MessageLog()
+        str_for_content = ml.wrap('hello world\nBy Nuz', 6)
+        str_for_count = ml.wrap('hello world\nBy Nuz', 6)
+        self.assertIn('hello', str_for_content)
+        self.assertIn('world', str_for_content)
+        self.assertIn('By Nuz', str_for_content)
+        self.assertEqual(len(list(str_for_count)), 3)
+
+    def test_wrap_with_new_lines_2(self):
+        '''
+        test that wrap works when it needs to when newlines are present
+        '''
+        ml = MessageLog()
+        str_for_content = ml.wrap('hello world\nBy Nuz', 25)
+        str_for_count = ml.wrap('hello world\nBy Nuz', 25)
+        self.assertIn('hello world', str_for_content)
+        self.assertIn('By Nuz', str_for_content)
+        self.assertEqual(len(list(str_for_count)), 2)
+
     def test_render(self):
         '''
         test that calling render will call render_messages
