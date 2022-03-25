@@ -153,7 +153,7 @@ class Test_Game_Map(unittest.TestCase):
                     fighter=Fighter(hp=10, defense=10, power=10))
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
 
         returned_act = gm.get_actor_at_location(x=5, y=6)
@@ -168,7 +168,7 @@ class Test_Game_Map(unittest.TestCase):
                     fighter=Fighter(hp=10, defense=10, power=10))
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
         # check an empty location
         returned_act = gm.get_actor_at_location(x=6, y=7)

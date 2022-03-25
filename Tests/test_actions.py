@@ -29,7 +29,7 @@ class Test_Actions_Action(unittest.TestCase):
         ent = Entity()
         eng = Engine(player=ent)
         gm = GameMap(engine=eng, width=10, height=10)
-        ent.gamemap = gm
+        ent.parent = gm
         action = Action(ent)
         self.assertEqual(eng, action.engine)
 
@@ -97,7 +97,7 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = ActionWithDirection(entity=pl, dx=dx, dy=dy)
         self.assertEqual(ent, action.blocking_entity)
@@ -115,7 +115,7 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         # add non-blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = ActionWithDirection(entity=pl, dx=dx, dy=dy)
         self.assertIsNone(action.blocking_entity)
@@ -133,7 +133,7 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         gm = GameMap(engine=eng, width=10, height=10)
         gm.entities = {pl, ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         action = ActionWithDirection(entity=pl, dx=1, dy=1)
         returned_actor = action.target_actor
         self.assertEqual(returned_actor, ent)
@@ -149,7 +149,7 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         gm = GameMap(engine=eng, width=10, height=10)
         gm.entities = {pl, }
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         action = ActionWithDirection(entity=pl, dx=1, dy=1)
         returned_actor = action.target_actor
         self.assertIsNone(returned_actor)
@@ -168,7 +168,7 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MeleeAction(entity=pl, dx=dx, dy=dy)
         action.perform()
@@ -190,7 +190,7 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
 
         attack_desc = f"{pl.name.capitalize()} attacks {ent.name} for 5 hit points."
@@ -221,8 +221,8 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent, ent2}
         eng.game_map = gm
-        pl.gamemap = gm
-        ent.gamemap = gm
+        pl.parent = gm
+        ent.parent = gm
         dx, dy = 1, 1
 
         attack_desc = f"{ent.name.capitalize()} attacks {ent2.name} for 5 hit points."
@@ -250,7 +250,7 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MeleeAction(entity=pl, dx=dx, dy=dy)
         action.perform()
@@ -270,7 +270,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = -1, -1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
         action.perform()
@@ -289,7 +289,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         # set the goal to a wall
         gm.tiles[goal_x, goal_y] = tile_types.wall
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
         action.perform()
@@ -310,7 +310,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
         action.perform()
@@ -327,7 +327,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         gm = GameMap(engine=eng, width=10, height=10)
         gm.tiles[1, 1] = tile_types.floor
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
         action.perform()
@@ -352,7 +352,7 @@ class Test_Actions_BumpAction(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
 
         attack_desc = f"{pl.name.capitalize()} attacks {ent.name} for 5 hit points."
@@ -376,7 +376,7 @@ class Test_Actions_BumpAction(unittest.TestCase):
         gm = GameMap(engine=eng, width=10, height=10)
         gm.tiles[1, 1] = tile_types.floor
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
         action.perform()

@@ -46,8 +46,8 @@ class Test_Engine(unittest.TestCase):
         gm = GameMap(engine=eng, width=10,
                      height=10, entities={ent2})
         eng.game_map = gm
-        ent1.gamemap = gm
-        ent2.gamemap = gm
+        ent1.parent = gm
+        ent2.parent = gm
 
         with patch('components.ai.HostileEnemy.perform') as mock_ai_perform:
             eng.handle_enemy_turns()
@@ -67,7 +67,7 @@ class Test_Engine(unittest.TestCase):
             hp=10, defense=10, power=10))
         eng = Engine(player=ent)
         gm = GameMap(engine=eng, width=10, height=10)
-        ent.gamemap = gm
+        ent.parent = gm
         eng.game_map = gm
 
         with patch('tcod.map.compute_fov') as patch_compute_fov:

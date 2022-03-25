@@ -39,7 +39,7 @@ class Entity:
         self.render_order = render_order
         if parent:
             # if gamemap isn't provided now then it will be set later.
-            self.gamemap = parent
+            self.parent = parent
             parent.entities.add(self)
 
     @property

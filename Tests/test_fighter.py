@@ -59,7 +59,7 @@ class Test_Fighter(unittest.TestCase):
 
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10)
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
 
         ft.hp = -5
@@ -81,16 +81,16 @@ class Test_Fighter(unittest.TestCase):
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
         act = Actor(ai_cls=HostileEnemy, fighter=ft)
-        ft.entity = act
+        ft.parent = act
 
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10)
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
 
         ft.hp = 0
         # triggering 'die' should remove the ai component
-        self.assertIsNone(ft.entity.ai)
+        self.assertIsNone(ft.parent.ai)
 
     @patch('message_log.MessageLog.add_message')
     def test_die_player(self, mock_add_message):
@@ -101,21 +101,21 @@ class Test_Fighter(unittest.TestCase):
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
         act = Actor(name="player", ai_cls=HostileEnemy, fighter=ft)
-        ft.entity = act
+        ft.parent = act
 
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10)
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
 
         ft.die()
 
-        self.assertEqual(ft.entity.char, "%")
-        self.assertEqual(ft.entity.color, (191, 0, 0))
-        self.assertFalse(ft.entity.blocks_movement)
-        self.assertIsNone(ft.entity.ai)
-        self.assertEqual(ft.entity.name, "remains of player")
-        self.assertEqual(ft.entity.render_order, RenderOrder.CORPSE)
+        self.assertEqual(ft.parent.char, "%")
+        self.assertEqual(ft.parent.color, (191, 0, 0))
+        self.assertFalse(ft.parent.blocks_movement)
+        self.assertIsNone(ft.parent.ai)
+        self.assertEqual(ft.parent.name, "remains of player")
+        self.assertEqual(ft.parent.render_order, RenderOrder.CORPSE)
         self.assertIsInstance(ft.engine.event_handler, GameOverEventHandler)
         mock_add_message.assert_called_with("You died!", color.player_die)
 
@@ -126,24 +126,24 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         act = Actor(name="actor", ai_cls=HostileEnemy, fighter=ft)
-        ft.entity = act
+        ft.parent = act
 
         ft2 = Fighter(hp=10, defense=10, power=10)
         act2 = Actor(name="player", ai_cls=HostileEnemy, fighter=ft2)
-        ft2.entity = act2
+        ft2.parent = act2
 
         eng = Engine(player=act2)
         gm = GameMap(engine=eng, width=10, height=10)
-        act.gamemap = gm
-        act2.gamemap = gm
+        act.parent = gm
+        act2.parent = gm
         eng.game_map = gm
 
         ft.die()
 
-        self.assertEqual(ft.entity.char, "%")
-        self.assertEqual(ft.entity.color, (191, 0, 0))
-        self.assertFalse(ft.entity.blocks_movement)
-        self.assertIsNone(ft.entity.ai)
-        self.assertEqual(ft.entity.name, "remains of actor")
-        self.assertEqual(ft.entity.render_order, RenderOrder.CORPSE)
+        self.assertEqual(ft.parent.char, "%")
+        self.assertEqual(ft.parent.color, (191, 0, 0))
+        self.assertFalse(ft.parent.blocks_movement)
+        self.assertIsNone(ft.parent.ai)
+        self.assertEqual(ft.parent.name, "remains of actor")
+        self.assertEqual(ft.parent.render_order, RenderOrder.CORPSE)
         mock_add_message.assert_called_with("actor is dead!", color.enemy_die)
