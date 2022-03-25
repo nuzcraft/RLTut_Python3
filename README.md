@@ -20,6 +20,8 @@ https://rogueliketutorials.com/tutorials/tcod/v2/part-8/
 
 It looks like this is going to start off with a refactor(similar to part 6). Hopefully it doesn't result in quite as extensive of a unit test rewrite as the engine class rewrite.
 
+Refactor complete. It wasn't nearly as broad as the engine refactor, and I like a lot of the ideas here. Make it clearer that certain things have parents to define that relationship (specifically to maps) but still allow entities to easily get the gamemap they're associated with. From a unit test perpsective, this broke ~25% of the tests, but they were easily fixed by swapping out 'gamemap' with 'parent' in almost all cases
+
 ## Part 7 Dev Notes
 
 ### Creating the Interface
