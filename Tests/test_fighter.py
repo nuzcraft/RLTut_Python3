@@ -147,3 +147,39 @@ class Test_Fighter(unittest.TestCase):
         self.assertEqual(ft.parent.name, "remains of actor")
         self.assertEqual(ft.parent.render_order, RenderOrder.CORPSE)
         mock_add_message.assert_called_with("actor is dead!", color.enemy_die)
+
+    def test_heal_max_hp(self):
+        '''
+        test that healing any amount while at max hp will heal 0
+        '''
+        ft = Fighter(hp=10, defense=10, power=10)
+        amount_recovered = ft.heal(10)
+        self.assertEqual(amount_recovered, 0)
+
+    def test_heal_up_to_max(self):
+        '''
+        test that healing more than necessary will cap at max hp
+        '''
+        ft = Fighter(hp=10, defense=10, power=10)
+        ft.hp = 5
+        amount_recovered = ft.heal(10)
+        self.assertEqual(amount_recovered, 5)
+        self.assertEqual(ft.hp, ft.max_hp)
+
+    def test_heal_some(self):
+        '''
+        test that healing some will increase the hp
+        '''
+        ft = Fighter(hp=10, defense=10, power=10)
+        ft.hp = 5
+        amount_recovered = ft.heal(3)
+        self.assertEqual(amount_recovered, 3)
+        self.assertEqual(ft.hp, 8)
+
+    def test_take_damage(self):
+        '''
+        test that taking damage will reduce the hp
+        '''
+        ft = Fighter(hp=10, defense=10, power=10)
+        ft.take_damage(2)
+        self.assertEqual(ft.hp, 8)
