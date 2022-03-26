@@ -1,12 +1,11 @@
-from html import entities
-from lib2to3.pytree import Base
-from entity import Entity, Actor
+from entity import Entity, Actor, Item
 from game_map import GameMap
 from engine import Engine
 from render_order import RenderOrder
 
 from components.ai import BaseAI
 from components.fighter import Fighter
+from components.consumable import Consumable
 
 import unittest
 
@@ -158,3 +157,20 @@ class TestActor(unittest.TestCase):
         actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10))
         actor.ai = None  # remove the ai component
         self.assertFalse(actor.is_alive)
+
+class TestItem(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that items can get initialized without issues
+        '''
+        cm = Consumable()
+        itm = Item(consumable=cm)
+        self.assertEqual(itm.x, 0)
+        self.assertEqual(itm.y, 0)
+        self.assertEqual(itm.char, '?')
+        self.assertEqual(itm.color, (255, 255, 255))
+        self.assertEqual(itm.name, '<Unnamed>')
+        self.assertIsInstance(itm.consumable, Consumable)
+        self.assertEqual(itm.consumable.parent, itm)
+        self.assertFalse(itm.blocks_movement)
+        self.assertEqual(itm.render_order, RenderOrder.ITEM)
