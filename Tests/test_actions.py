@@ -2,12 +2,20 @@ from turtle import width
 import unittest
 from unittest.mock import patch
 
-from actions import Action, ActionWithDirection, MovementAction, EscapeAction, MeleeAction, BumpAction
-from entity import Entity, Actor
+from actions import (
+    Action, ActionWithDirection, 
+    MovementAction, 
+    EscapeAction, 
+    MeleeAction, 
+    BumpAction, 
+    ItemAction,
+)
+from entity import Entity, Actor, Item
 from game_map import GameMap
 from engine import Engine
 from components.ai import BaseAI, HostileEnemy
 from components.fighter import Fighter
+from components.consumable import Consumable
 import tile_types
 import color
 from exceptions import Impossible
@@ -366,7 +374,7 @@ class Test_Actions_BumpAction(unittest.TestCase):
         attack_desc = f"{pl.name.capitalize()} attacks {ent.name} for 5 hit points."
         attack_color = color.player_atk
 
-        action = MeleeAction(entity=pl, dx=dx, dy=dy)
+        action = BumpAction(entity=pl, dx=dx, dy=dy)
         action.perform()
         # verify that print was called as it will only be called if there
         # is a blocking entity
@@ -386,12 +394,66 @@ class Test_Actions_BumpAction(unittest.TestCase):
         eng.game_map = gm
         pl.parent = gm
         dx, dy = 1, 1
-        action = MovementAction(entity=pl, dx=dx, dy=dy)
+        action = BumpAction(entity=pl, dx=dx, dy=dy)
         action.perform()
         # since the goal x, y is walkable, make sure the entity moved there
         self.assertEqual(pl.x, 1)
         self.assertEqual(pl.y, 1)
 
+class TestItemAction(unittest.TestCase):
+    def test_init_no_targetxy(self):
+        '''
+        test that an item action can get initialized okay
+        and the target_xy gets set to the x, y of the entity
+        '''
+        actor = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        item = Item(consumable=Consumable())
+        item_action = ItemAction(entity=actor, item=item)
+        self.assertEqual(item_action.item, item)
+        self.assertEqual(item_action.target_xy, (5, 6))
+
+    def test_init_with_targetxy(self):
+        '''
+        test that an item action can get initialized okay
+        and the target_xy gets set
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        item = Item(consumable=Consumable())
+        item_action = ItemAction(entity=actor, item=item, target_xy=(5, 6))
+        self.assertEqual(item_action.item, item)
+        self.assertEqual(item_action.target_xy, (5, 6))
+
+    def test_property_target_actor(self):
+        '''
+        test that get_actor_at_location is called with the correct inputs
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        item = Item(consumable=Consumable())
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        actor.parent = gm
+        item_action = ItemAction(entity=actor, item=item, target_xy=(5, 6))
+
+        with patch('game_map.GameMap.get_actor_at_location') as patch_get_actor:
+            target = item_action.target_actor()
+
+        patch_get_actor.assert_called_once_with(5,6)
+
+    def test_perform(self):
+        '''
+        test that the activeate command on the consumable is called
+        passing in the existing itemAction
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        item = Item(consumable=Consumable())
+        item_action = ItemAction(entity=actor, item=item)
+
+        with patch('components.consumable.Consumable.activate') as patch_activate:
+            item_action.perform()
+
+        patch_activate.assert_called_once_with(item_action)
+        
 
 if __name__ == '__main__':
     unittest.main()
