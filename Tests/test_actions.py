@@ -10,6 +10,7 @@ from components.ai import BaseAI, HostileEnemy
 from components.fighter import Fighter
 import tile_types
 import color
+from exceptions import Impossible
 
 
 class Test_Actions_Action(unittest.TestCase):
@@ -158,7 +159,8 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
 class Test_Actions_MeleeAction(unittest.TestCase):
     def test_perform_no_target(self):
         '''
-        test that a MeleeAction with no target returns with no change
+        test that a MeleeAction with no target raises an
+        exception and the entity does not move
         '''
         pl = Entity()  # player at 0,0
         # nonblocking entity at 1,1
@@ -171,7 +173,8 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         pl.parent = gm
         dx, dy = 1, 1
         action = MeleeAction(entity=pl, dx=dx, dy=dy)
-        action.perform()
+        with self.assertRaises(Impossible):
+            action.perform()
         self.assertEqual(pl.x, 0)
         self.assertEqual(pl.y, 0)
 
@@ -265,6 +268,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
     def test_perform_out_of_bounds(self):
         '''
         test that moving a player out of bounds does nothing
+        and raises an exception
         '''
         pl = Entity()  # player at 0,0
         eng = Engine(player=pl)
@@ -273,7 +277,9 @@ class Test_Actions_MovementAction(unittest.TestCase):
         pl.parent = gm
         dx, dy = -1, -1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
-        action.perform()
+        
+        with self.assertRaises(Impossible):
+            action.perform()
         # moving out of bounds will do nothing, so x, y should still be 0, 0
         self.assertEqual(pl.x, 0)
         self.assertEqual(pl.y, 0)
@@ -292,7 +298,8 @@ class Test_Actions_MovementAction(unittest.TestCase):
         pl.parent = gm
         dx, dy = 1, 1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
-        action.perform()
+        with self.assertRaises(Impossible):
+            action.perform()
         # nothing changes because the goal is a wall
         self.assertEqual(pl.x, 0)
         self.assertEqual(pl.y, 0)
@@ -313,7 +320,8 @@ class Test_Actions_MovementAction(unittest.TestCase):
         pl.parent = gm
         dx, dy = 1, 1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
-        action.perform()
+        with self.assertRaises(Impossible):
+            action.perform()
         # nothing happens because the goal location is blocked by an entity
         self.assertEqual(pl.x, 0)
         self.assertEqual(pl.y, 0)
