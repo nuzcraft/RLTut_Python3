@@ -8,6 +8,7 @@ from actions import EscapeAction, BumpAction, WaitAction
 from engine import Engine
 from entity import Entity
 from game_map import GameMap
+from exceptions import Impossible
 
 
 class Test_EventHandler(unittest.TestCase):
@@ -64,6 +65,28 @@ class Test_EventHandler(unittest.TestCase):
         self.assertTrue(pass_turn_bool)
         patch_handle_enemy_turns.assert_called_once()
         patch_update_fov.assert_called_once()
+
+    @patch('engine.Engine.handle_enemy_turns')
+    @patch('engine.Engine.update_fov')
+    def test_handle_action_impossible(self, patch_handle_enemy_turns, patch_update_fov):
+        '''
+        tests that the handle_action function will return false
+        when the perform action excepts with an impossible exception
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        event_handler = EventHandler(engine=eng)
+        action = WaitAction(entity=ent)
+
+        with patch('actions.WaitAction.perform') as patch_peform:
+            patch_peform.side_effect = Impossible('lol, error')
+            pass_turn_bool = event_handler.handle_action(action)
+        self.assertFalse(pass_turn_bool)
+        self.assertEqual('lol, error', event_handler.engine.message_log.messages[0].full_text)
+        patch_handle_enemy_turns.assert_not_called()
+        patch_update_fov.assert_not_called()
 
     def test_ev_mousemotion_in_bounds(self):
         '''
