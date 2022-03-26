@@ -569,8 +569,10 @@ class Test_GameOverEventHandler(unittest.TestCase):
         event_handler = GameOverEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.ESCAPE, sym=tcod.event.K_ESCAPE, mod=tcod.event.Modifier.NONE)
-        action = event_handler.dispatch(event)
-        self.assertIsInstance(action, EscapeAction)
+        
+        with self.assertRaises(SystemExit):
+            event_handler.dispatch(event)
+    
 
     def test_ev_keydown_other(self):
         '''
