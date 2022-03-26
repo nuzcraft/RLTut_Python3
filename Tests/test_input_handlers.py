@@ -1,5 +1,6 @@
 from multiprocessing import Event
 import unittest
+from unittest.mock import patch
 import tcod.event
 from input_handlers import EventHandler, MainGameEventHandler, GameOverEventHandler, HistoryViewer
 
@@ -19,17 +20,50 @@ class Test_EventHandler(unittest.TestCase):
         event_handler = EventHandler(engine=eng)
         self.assertEqual(event_handler.engine, eng)
 
-    # def test_handle_events(self):
-    #     '''
-    #     test that the handle_events function returns a not implemented error
-    #     UPDATE: removed after updating this function, not sure how to test it
-    #     since I'm not sure how to add events to the tcod event list
-    #     '''
-    #     ent = Entity()
-    #     eng = Engine(player=ent)
-    #     event_handler = EventHandler(engine=eng)
-    #     with self.assertRaises(NotImplementedError):
-    #         event_handler.handle_events()
+    def test_handle_events(self):
+        '''
+        test that the handle_events function calls the handle_action
+        function
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = EventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+            event_handler.handle_events(event=event)
+
+        patch_handle_action.assert_called_once()
+
+    def test_handle_action_none(self):
+        '''
+        tests that the handle_action function will return false
+        if the action is none
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = EventHandler(engine=eng)
+        pass_turn_bool = event_handler.handle_action(None)
+        self.assertFalse(pass_turn_bool)
+
+    @patch('engine.Engine.handle_enemy_turns')
+    @patch('engine.Engine.update_fov')
+    def test_handle_action_any(self, patch_handle_enemy_turns, patch_update_fov):
+        '''
+        tests that the handle_action function will return true
+        when a real action is passed in
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        event_handler = EventHandler(engine=eng)
+        action = WaitAction(entity=ent)
+        pass_turn_bool = event_handler.handle_action(action)
+        self.assertTrue(pass_turn_bool)
+        patch_handle_enemy_turns.assert_called_once()
+        patch_update_fov.assert_called_once()
 
     def test_ev_mousemotion_in_bounds(self):
         '''
