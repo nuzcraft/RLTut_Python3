@@ -22,7 +22,7 @@ class TestInventory(unittest.TestCase):
         '''
         test that the parent (actor) of an inventory can be set without issues
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         inv = Inventory(capacity=5)
         inv.parent = actor
         self.assertEqual(inv.parent, actor)
@@ -32,7 +32,7 @@ class TestInventory(unittest.TestCase):
         test that an item can be dropped
         from the inventory and onto the map
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         inv = Inventory(capacity=5)
         inv.parent = actor
         item = Item(consumable=Consumable())

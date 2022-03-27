@@ -3,6 +3,7 @@ from unittest.mock import patch
 from components.consumable import Consumable, HealingConsumable
 from components.ai import BaseAI
 from components.fighter import Fighter
+from components.inventory import Inventory
 from entity import Item, Actor
 from actions import ItemAction
 from engine import Engine
@@ -25,7 +26,7 @@ class TestConsumable(unittest.TestCase):
         '''
         test that get action returns the correct item action
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         consumable = Consumable()
         item = Item(consumable=consumable)
         consumable.parent = item
@@ -38,7 +39,7 @@ class TestConsumable(unittest.TestCase):
         '''
         test that for a base consumable this returns an not implemented error
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         consumable = Consumable()
         item = Item(consumable=consumable)
         consumable.parent = item
@@ -60,7 +61,7 @@ class TestHealingConsumable(unittest.TestCase):
         '''
         test that activate will heal the fighter
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         actor.fighter.hp = 3
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -80,7 +81,7 @@ class TestHealingConsumable(unittest.TestCase):
         '''
         test that activate raise Impossible when it cannot heal
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
         consumable = HealingConsumable(amount=5)

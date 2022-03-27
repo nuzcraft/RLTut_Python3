@@ -6,6 +6,7 @@ from numpy import power
 
 from components.ai import BaseAI, HostileEnemy
 from components.fighter import Fighter
+from components.inventory import Inventory
 from entity import Entity, Actor
 from game_map import GameMap
 from engine import Engine
@@ -19,7 +20,7 @@ class Test_BaseAI(unittest.TestCase):
         tests that the entity can be set correctly
         '''
         actor = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         self.assertEqual(actor, actor.ai.entity)
 
         ai = BaseAI(actor)
@@ -115,7 +116,7 @@ class TestHostileEnemy(unittest.TestCase):
         '''
         # instantiating an actor will automatically instantiate the ai class under actor.ai
         actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         self.assertEqual(actor, actor.ai.entity)
         self.assertEqual([], actor.ai.path)
 
@@ -131,7 +132,7 @@ class TestHostileEnemy(unittest.TestCase):
         gm.entities.add(player)
 
         hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         gm.entities.add(hostile_ent)
 
         player.parent = gm
@@ -162,7 +163,7 @@ class TestHostileEnemy(unittest.TestCase):
 
         # hostile entity is 2 spaces away
         hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         gm.entities.add(hostile_ent)
 
         player.parent = gm
@@ -193,7 +194,7 @@ class TestHostileEnemy(unittest.TestCase):
 
         # hostile entity is 1 spaces away
         hostile_ent = Actor(x=0, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         gm.entities.add(hostile_ent)
 
         player.parent = gm

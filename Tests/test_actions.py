@@ -16,6 +16,7 @@ from engine import Engine
 from components.ai import BaseAI, HostileEnemy
 from components.fighter import Fighter
 from components.consumable import Consumable
+from components.inventory import Inventory
 import tile_types
 import color
 from exceptions import Impossible
@@ -135,9 +136,9 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         of the action
         '''
         pl = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10))  # player at 0, 0
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))  # player at 0, 0
         ent = Actor(x=1, y=1, ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10))  # entity at 1, 1
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))  # entity at 1, 1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         gm.entities = {pl, ent}
@@ -153,7 +154,7 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         of the action
         '''
         pl = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10))  # player at 0, 0
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))  # player at 0, 0
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         gm.entities = {pl, }
@@ -193,9 +194,9 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         put out a message with the correct color
         '''
         pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # player at 0,0
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # player at 0,0
         ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # blocking entity at 1,1
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -222,11 +223,11 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         put out a message with the correct color
         '''
         pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # player at 0,0
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # player at 0,0
         ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # blocking entity at 1,1
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         ent2 = Actor(x=2, y=2, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # blocking entity at 1,1
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -253,9 +254,9 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         test that a Melee Action with a target will print when no damage is done
         '''
         pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # player at 0,0
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # player at 0,0
         ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=5, power=5))  # blocking entity at 1,1
+            hp=10, defense=5, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -360,9 +361,9 @@ class Test_Actions_BumpAction(unittest.TestCase):
         basically a copy of Test_Actions_MeleeAction.test_perform_with_target
         '''
         pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # player at 0,0
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # player at 0,0
         ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # blocking entity at 1,1
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
@@ -406,7 +407,7 @@ class TestItemAction(unittest.TestCase):
         test that an item action can get initialized okay
         and the target_xy gets set to the x, y of the entity
         '''
-        actor = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         item = Item(consumable=Consumable())
         item_action = ItemAction(entity=actor, item=item)
         self.assertEqual(item_action.item, item)
@@ -417,7 +418,7 @@ class TestItemAction(unittest.TestCase):
         test that an item action can get initialized okay
         and the target_xy gets set
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         item = Item(consumable=Consumable())
         item_action = ItemAction(entity=actor, item=item, target_xy=(5, 6))
         self.assertEqual(item_action.item, item)
@@ -427,7 +428,7 @@ class TestItemAction(unittest.TestCase):
         '''
         test that get_actor_at_location is called with the correct inputs
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         item = Item(consumable=Consumable())
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -445,7 +446,7 @@ class TestItemAction(unittest.TestCase):
         test that the activeate command on the consumable is called
         passing in the existing itemAction
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         item = Item(consumable=Consumable())
         item_action = ItemAction(entity=actor, item=item)
 
