@@ -88,6 +88,7 @@ class Test_Generate_Dungeon(unittest.TestCase):
             map_width=50,
             map_height=50,
             max_monsters_per_room=3,
+            max_items_per_room=2,
             engine=eng
         )
         self.assertEqual(d.height, 50)
