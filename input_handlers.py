@@ -182,3 +182,39 @@ class HistoryViewer(EventHandler):
             self.cursor = self.log_length - 1  # move directly to the last message
         else:  # any other key moves back to the main game state
             self.engine.event_handler = MainGameEventHandler(self.engine)
+
+class AskUserEventHandler(EventHandler):
+    """handles user input for actions which require special input"""
+
+    def handle_action(self, action: Optional[Action]) -> bool:
+        """Return to the main event handler when a valid action was performed"""
+        if super().handle_action(action):
+            self.engine.event_handler = MainGameEventHandler(self.engine)
+            return True
+        return False
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
+        """By Default any key exits this input handler."""
+        if event.sym in { #Ignore modifier keys.
+            tcod.event.K_LSHIFT,
+            tcod.event.K_RSHIFT,
+            tcod.event.K_LCTRL,
+            tcod.event.K_RCTRL,
+            tcod.event.K_LALT,
+            tcod.event.K_RALT,
+        }:
+            return None
+        return self.on_exit()
+
+    def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[Action]:
+        """by default any mouse click exits this input handler"""
+        return self.on_exit()
+
+    def on_exit(self) -> Optional[Action]:
+        """
+        called when the user is trying to exit or cancel an action.
+        by default this returns the main event handler
+        """
+        self.engine.event_handler = MainGameEventHandler(self.engine)
+        return None
+
