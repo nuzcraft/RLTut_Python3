@@ -8,6 +8,7 @@ from actions import (
     EscapeAction, 
     MeleeAction, 
     BumpAction, 
+    PickupAction,
     ItemAction,
 )
 from entity import Entity, Actor, Item
@@ -400,6 +401,127 @@ class Test_Actions_BumpAction(unittest.TestCase):
         # since the goal x, y is walkable, make sure the entity moved there
         self.assertEqual(pl.x, 1)
         self.assertEqual(pl.y, 1)
+
+class TestPickupAction(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that a pickup action can be initialized okay
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        action = PickupAction(entity=actor)
+        self.assertIsInstance(action, PickupAction)
+
+    def test_perform_with_item_and_capacity(self):
+        '''
+        test that a pickup action (with an item at the correct location)
+        (and capacity in inventory) will remove the item from the gamemap
+        and add it to the inventory
+        '''
+        actor = Actor(
+            x=5, y=6,
+            ai_cls=HostileEnemy, 
+            fighter=Fighter(hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5))
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        item = Item(
+            x=5, y=6,
+            consumable=Consumable()
+        )
+        gm.entities = {item}
+        item.parent = gm
+        eng.game_map = gm
+        actor.parent = gm
+
+        action = PickupAction(entity=actor)
+
+        self.assertIn(item, gm.entities)
+        self.assertNotIn(item, actor.inventory.items)
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            action.perform()
+
+        self.assertNotIn(item, gm.entities)
+        self.assertIn(item, actor.inventory.items)
+        patch_add_message.assert_called_once()
+
+    def test_perform_with_no_item_on_map(self):
+        '''
+        test that a pickup action with no items on the map
+        will raise an exception
+        '''
+        actor = Actor(
+            x=5, y=6,
+            ai_cls=HostileEnemy, 
+            fighter=Fighter(hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5))
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # item = Item(
+        #     x=5, y=6,
+        #     consumable=Consumable()
+        # )
+        # gm.entities = {item}
+        # item.parent = gm
+        eng.game_map = gm
+        actor.parent = gm
+
+        action = PickupAction(entity=actor)
+
+        with self.assertRaises(Impossible):
+            action.perform()
+
+    def test_perform_with_item_in_wrong_spot(self):
+        '''
+        test that a pickup action with an item on the map,
+        but not at the entity's location will raise an exception
+        '''
+        actor = Actor(
+            x=5, y=6,
+            ai_cls=HostileEnemy, 
+            fighter=Fighter(hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5))
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        item = Item(
+            x=3, y=4,
+            consumable=Consumable()
+        )
+        gm.entities = {item}
+        item.parent = gm
+        eng.game_map = gm
+        actor.parent = gm
+
+        action = PickupAction(entity=actor)
+
+        with self.assertRaises(Impossible):
+            action.perform()
+        
+    def test_perform_with_no_capacity(self):
+        '''
+        test that a pickup action with the actor having no capacity
+        will raise an exception
+        '''
+        actor = Actor(
+            x=5, y=6,
+            ai_cls=HostileEnemy, 
+            fighter=Fighter(hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=0))
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        item = Item(
+            x=5, y=6,
+            consumable=Consumable()
+        )
+        gm.entities = {item}
+        item.parent = gm
+        eng.game_map = gm
+        actor.parent = gm
+
+        action = PickupAction(entity=actor)
+
+        with self.assertRaises(Impossible):
+            action.perform()
 
 class TestItemAction(unittest.TestCase):
     def test_init_no_targetxy(self):
