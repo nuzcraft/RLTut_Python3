@@ -7,7 +7,8 @@ import tcod
 from actions import (
     Action, 
     EscapeAction, 
-    BumpAction, 
+    BumpAction,
+    PickupAction, 
     WaitAction,
 )
 import color
@@ -110,6 +111,9 @@ class MainGameEventHandler(EventHandler):
 
         elif key == tcod.event.K_v:
             self.engine.event_handler = HistoryViewer(self.engine)
+
+        elif key == tcod.event.K_g:
+            action = PickupAction(entity=player)
 
         return action
 
