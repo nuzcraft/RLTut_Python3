@@ -4,7 +4,7 @@ from unittest.mock import patch
 import tcod.event
 from input_handlers import EventHandler, MainGameEventHandler, GameOverEventHandler, HistoryViewer
 
-from actions import EscapeAction, BumpAction, WaitAction
+from actions import EscapeAction, BumpAction, WaitAction, PickupAction
 from engine import Engine
 from entity import Entity
 from game_map import GameMap
@@ -530,6 +530,18 @@ class Test_MainGameEventHandler(unittest.TestCase):
         event_handler.ev_keydown(event=event)
         self.assertIsInstance(
             event_handler.engine.event_handler, HistoryViewer)
+
+    def test_ev_keydown_g(self):
+        '''
+        tests that pressing g returns a pickup action
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.G, sym=tcod.event.K_g, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(action, PickupAction)
 
     # using the backslash button as an unassigned button
     def test_ev_keydown_other(self):
