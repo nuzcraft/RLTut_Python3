@@ -1,8 +1,15 @@
+from argparse import Action
 from multiprocessing import Event
 import unittest
 from unittest.mock import patch
 import tcod.event
-from input_handlers import EventHandler, MainGameEventHandler, GameOverEventHandler, HistoryViewer
+from input_handlers import (
+    EventHandler, 
+    MainGameEventHandler, 
+    GameOverEventHandler, 
+    HistoryViewer,
+    AskUserEventHandler,
+)
 
 from actions import EscapeAction, BumpAction, WaitAction, PickupAction
 from engine import Engine
@@ -764,6 +771,42 @@ class Test_HistoryViewer(unittest.TestCase):
         event_handler.ev_keydown(event=event)
         self.assertIsInstance(
             event_handler.engine.event_handler, MainGameEventHandler)
+
+class TestAskUserEventHandler(unittest.TestCase):
+    def test_handle_action_True(self):
+        '''
+        test that the handle action function resets the event handler of the engine
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        action = WaitAction(entity=ent)
+
+        with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+            patch_handle_action.return_value = True
+            ret = event_handler.handle_action(action=action)
+
+        self.assertTrue(ret)
+        self.assertIsInstance(event_handler.engine.event_handler, MainGameEventHandler)
+
+    def test_handle_action_False(self):
+        '''
+        test that the handle action function does not reset the event handler of the engine
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        action = WaitAction(entity=ent)
+
+        with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+            patch_handle_action.return_value = False
+            ret = event_handler.handle_action(action=action)
+
+        self.assertFalse(ret)
+        self.assertNotIsInstance(event_handler.engine.event_handler, MainGameEventHandler)
+        self.assertIsInstance(event_handler.engine.event_handler, AskUserEventHandler)
 
 
 if __name__ == '__main__':
