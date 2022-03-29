@@ -563,6 +563,32 @@ class Test_MainGameEventHandler(unittest.TestCase):
         action = event_handler.dispatch(event)
         self.assertIsInstance(action, PickupAction)
 
+    def test_ev_keydown_i(self):
+        '''
+        tests that pressing i will update the event_handler to InventoryActivateHandler
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.I, sym=tcod.event.K_i, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, InventoryActivateHandler)
+
+    def test_ev_keydown_d(self):
+        '''
+        tests that pressing d will update the event_handler to InventoryDropHandler
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.D, sym=tcod.event.K_d, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, InventoryDropHandler)
+
     # using the backslash button as an unassigned button
     def test_ev_keydown_other(self):
         '''
