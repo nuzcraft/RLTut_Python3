@@ -26,7 +26,8 @@ class TestConsumable(unittest.TestCase):
         '''
         test that get action returns the correct item action
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         consumable = Consumable()
         item = Item(consumable=consumable)
         consumable.parent = item
@@ -39,7 +40,8 @@ class TestConsumable(unittest.TestCase):
         '''
         test that for a base consumable this returns an not implemented error
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         consumable = Consumable()
         item = Item(consumable=consumable)
         consumable.parent = item
@@ -47,6 +49,25 @@ class TestConsumable(unittest.TestCase):
 
         with self.assertRaises(NotImplementedError):
             consumable.activate(action)
+
+    def test_consume(self):
+        '''
+        test that consume will remove item from inventory
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        consumable = Consumable()
+        item = Item(consumable=consumable)
+        consumable.parent = item
+        item.parent = actor.inventory
+        actor.inventory.items.append(item)
+        self.assertIn(item, actor.inventory.items)
+        consumable.consume()
+        self.assertNotIn(item, actor.inventory.items)
+
 
 class TestHealingConsumable(unittest.TestCase):
     def test_init(self):
@@ -61,14 +82,20 @@ class TestHealingConsumable(unittest.TestCase):
         '''
         test that activate will heal the fighter
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
         actor.fighter.hp = 3
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
         consumable = HealingConsumable(amount=5)
         item = Item(consumable=consumable)
-        item.parent = gm
+        actor.parent = gm
+        item.parent = actor.inventory
         consumable.parent = item
+        actor.inventory.items.append(item)
         action = consumable.get_action(consumer=actor)
 
         with patch('message_log.MessageLog.add_message') as patch_add_message:
@@ -76,12 +103,14 @@ class TestHealingConsumable(unittest.TestCase):
 
         patch_add_message.assert_called_once()
         self.assertEqual(actor.fighter.hp, 8)
+        self.assertNotIn(item, actor.inventory.items)
 
     def test_activate_without_recovery(self):
         '''
         test that activate raise Impossible when it cannot heal
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
         consumable = HealingConsumable(amount=5)
@@ -92,6 +121,3 @@ class TestHealingConsumable(unittest.TestCase):
 
         with self.assertRaises(Impossible):
             consumable.activate(action=action)
-
-
-
