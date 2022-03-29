@@ -4,9 +4,9 @@ import unittest
 from unittest.mock import patch
 import tcod.event
 from input_handlers import (
-    EventHandler, 
-    MainGameEventHandler, 
-    GameOverEventHandler, 
+    EventHandler,
+    MainGameEventHandler,
+    GameOverEventHandler,
     HistoryViewer,
     AskUserEventHandler,
 )
@@ -91,7 +91,8 @@ class Test_EventHandler(unittest.TestCase):
             patch_peform.side_effect = Impossible('lol, error')
             pass_turn_bool = event_handler.handle_action(action)
         self.assertFalse(pass_turn_bool)
-        self.assertEqual('lol, error', event_handler.engine.message_log.messages[0].full_text)
+        self.assertEqual(
+            'lol, error', event_handler.engine.message_log.messages[0].full_text)
         patch_handle_enemy_turns.assert_not_called()
         patch_update_fov.assert_not_called()
 
@@ -588,10 +589,9 @@ class Test_GameOverEventHandler(unittest.TestCase):
         event_handler = GameOverEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.ESCAPE, sym=tcod.event.K_ESCAPE, mod=tcod.event.Modifier.NONE)
-        
+
         with self.assertRaises(SystemExit):
             event_handler.dispatch(event)
-    
 
     def test_ev_keydown_other(self):
         '''
@@ -772,6 +772,7 @@ class Test_HistoryViewer(unittest.TestCase):
         self.assertIsInstance(
             event_handler.engine.event_handler, MainGameEventHandler)
 
+
 class TestAskUserEventHandler(unittest.TestCase):
     def test_handle_action_True(self):
         '''
@@ -788,7 +789,8 @@ class TestAskUserEventHandler(unittest.TestCase):
             ret = event_handler.handle_action(action=action)
 
         self.assertTrue(ret)
-        self.assertIsInstance(event_handler.engine.event_handler, MainGameEventHandler)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, MainGameEventHandler)
 
     def test_handle_action_False(self):
         '''
@@ -805,8 +807,10 @@ class TestAskUserEventHandler(unittest.TestCase):
             ret = event_handler.handle_action(action=action)
 
         self.assertFalse(ret)
-        self.assertNotIsInstance(event_handler.engine.event_handler, MainGameEventHandler)
-        self.assertIsInstance(event_handler.engine.event_handler, AskUserEventHandler)
+        self.assertNotIsInstance(
+            event_handler.engine.event_handler, MainGameEventHandler)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, AskUserEventHandler)
 
     def test_ev_keydown_LSHIFT(self):
         '''
@@ -823,7 +827,7 @@ class TestAskUserEventHandler(unittest.TestCase):
 
     def test_ev_keydown_RSHIFT(self):
         '''
-        test that sending a keydown event for LSHIFT will return none 
+        test that sending a keydown event for RSHIFT will return none 
         '''
         ent = Entity()
         eng = Engine(player=ent)
@@ -832,6 +836,98 @@ class TestAskUserEventHandler(unittest.TestCase):
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.RSHIFT, sym=tcod.event.K_RSHIFT, mod=tcod.event.Modifier.NONE)
         ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_LCTRL(self):
+        '''
+        test that sending a keydown event for LCTRL will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.LCTRL, sym=tcod.event.K_LCTRL, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_RCTRL(self):
+        '''
+        test that sending a keydown event for RCTRL will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.RCTRL, sym=tcod.event.K_RCTRL, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_LALT(self):
+        '''
+        test that sending a keydown event for LALT will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.LALT, sym=tcod.event.K_LALT, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_RALT(self):
+        '''
+        test that sending a keydown event for RALT will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.RALT, sym=tcod.event.K_RALT, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_other(self):
+        '''
+        test that sending a keydown event for g will call self.on_exit 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.G, sym=tcod.event.K_g, mod=tcod.event.Modifier.NONE)
+        with patch("input_handlers.AskUserEventHandler.on_exit") as patch_on_exit:
+            ret = event_handler.ev_keydown(event=event)
+        patch_on_exit.assert_called_once()
+
+    def test_ev_mousebuttondown(self):
+        '''
+        test that sending a mouse click will call self.on_exit 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.MouseButtonDown()
+        with patch("input_handlers.AskUserEventHandler.on_exit") as patch_on_exit:
+            ret = event_handler.ev_mousebuttondown(event=event)
+        patch_on_exit.assert_called_once()
+
+    def test_on_exit(self):
+        '''
+        test that on_exit will update the engine event handler and return none
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        ret = event_handler.on_exit()
+        self.assertIsInstance(
+            event_handler.engine.event_handler, MainGameEventHandler)
         self.assertIsNone(ret)
 
 
