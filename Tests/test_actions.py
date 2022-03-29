@@ -2,14 +2,25 @@ from turtle import width
 import unittest
 from unittest.mock import patch
 
-from actions import Action, ActionWithDirection, MovementAction, EscapeAction, MeleeAction, BumpAction
-from entity import Entity, Actor
+from actions import (
+    Action, ActionWithDirection,
+    MovementAction,
+    MeleeAction,
+    BumpAction,
+    PickupAction,
+    ItemAction,
+    DropItem,
+)
+from entity import Entity, Actor, Item
 from game_map import GameMap
 from engine import Engine
 from components.ai import BaseAI, HostileEnemy
 from components.fighter import Fighter
+from components.consumable import Consumable
+from components.inventory import Inventory
 import tile_types
 import color
+from exceptions import Impossible
 
 
 class Test_Actions_Action(unittest.TestCase):
@@ -29,7 +40,7 @@ class Test_Actions_Action(unittest.TestCase):
         ent = Entity()
         eng = Engine(player=ent)
         gm = GameMap(engine=eng, width=10, height=10)
-        ent.gamemap = gm
+        ent.parent = gm
         action = Action(ent)
         self.assertEqual(eng, action.engine)
 
@@ -40,17 +51,6 @@ class Test_Actions_Action(unittest.TestCase):
         ent = Entity()
         action = Action(entity=ent)
         with self.assertRaises(NotImplementedError):
-            action.perform()
-
-
-class Test_Actions_EscapeAction(unittest.TestCase):
-    def test_perform(self):
-        '''
-        make sure an EscapeAction will return a SystemExit
-        '''
-        ent1 = Entity()
-        action = EscapeAction(ent1)
-        with self.assertRaises(SystemExit):
             action.perform()
 
 
@@ -97,7 +97,7 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = ActionWithDirection(entity=pl, dx=dx, dy=dy)
         self.assertEqual(ent, action.blocking_entity)
@@ -115,7 +115,7 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         # add non-blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = ActionWithDirection(entity=pl, dx=dx, dy=dy)
         self.assertIsNone(action.blocking_entity)
@@ -126,14 +126,14 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         of the action
         '''
         pl = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10))  # player at 0, 0
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))  # player at 0, 0
         ent = Actor(x=1, y=1, ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10))  # entity at 1, 1
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))  # entity at 1, 1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         gm.entities = {pl, ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         action = ActionWithDirection(entity=pl, dx=1, dy=1)
         returned_actor = action.target_actor
         self.assertEqual(returned_actor, ent)
@@ -144,12 +144,12 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         of the action
         '''
         pl = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10))  # player at 0, 0
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))  # player at 0, 0
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         gm.entities = {pl, }
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         action = ActionWithDirection(entity=pl, dx=1, dy=1)
         returned_actor = action.target_actor
         self.assertIsNone(returned_actor)
@@ -158,7 +158,8 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
 class Test_Actions_MeleeAction(unittest.TestCase):
     def test_perform_no_target(self):
         '''
-        test that a MeleeAction with no target returns with no change
+        test that a MeleeAction with no target raises an
+        exception and the entity does not move
         '''
         pl = Entity()  # player at 0,0
         # nonblocking entity at 1,1
@@ -168,10 +169,11 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MeleeAction(entity=pl, dx=dx, dy=dy)
-        action.perform()
+        with self.assertRaises(Impossible):
+            action.perform()
         self.assertEqual(pl.x, 0)
         self.assertEqual(pl.y, 0)
 
@@ -182,15 +184,15 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         put out a message with the correct color
         '''
         pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # player at 0,0
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # player at 0,0
         ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # blocking entity at 1,1
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
 
         attack_desc = f"{pl.name.capitalize()} attacks {ent.name} for 5 hit points."
@@ -211,18 +213,18 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         put out a message with the correct color
         '''
         pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # player at 0,0
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # player at 0,0
         ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # blocking entity at 1,1
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         ent2 = Actor(x=2, y=2, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # blocking entity at 1,1
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent, ent2}
         eng.game_map = gm
-        pl.gamemap = gm
-        ent.gamemap = gm
+        pl.parent = gm
+        ent.parent = gm
         dx, dy = 1, 1
 
         attack_desc = f"{ent.name.capitalize()} attacks {ent2.name} for 5 hit points."
@@ -242,15 +244,15 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         test that a Melee Action with a target will print when no damage is done
         '''
         pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # player at 0,0
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # player at 0,0
         ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=5, power=5))  # blocking entity at 1,1
+            hp=10, defense=5, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MeleeAction(entity=pl, dx=dx, dy=dy)
         action.perform()
@@ -265,15 +267,18 @@ class Test_Actions_MovementAction(unittest.TestCase):
     def test_perform_out_of_bounds(self):
         '''
         test that moving a player out of bounds does nothing
+        and raises an exception
         '''
         pl = Entity()  # player at 0,0
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = -1, -1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
-        action.perform()
+
+        with self.assertRaises(Impossible):
+            action.perform()
         # moving out of bounds will do nothing, so x, y should still be 0, 0
         self.assertEqual(pl.x, 0)
         self.assertEqual(pl.y, 0)
@@ -289,10 +294,11 @@ class Test_Actions_MovementAction(unittest.TestCase):
         # set the goal to a wall
         gm.tiles[goal_x, goal_y] = tile_types.wall
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
-        action.perform()
+        with self.assertRaises(Impossible):
+            action.perform()
         # nothing changes because the goal is a wall
         self.assertEqual(pl.x, 0)
         self.assertEqual(pl.y, 0)
@@ -310,10 +316,11 @@ class Test_Actions_MovementAction(unittest.TestCase):
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
-        action.perform()
+        with self.assertRaises(Impossible):
+            action.perform()
         # nothing happens because the goal location is blocked by an entity
         self.assertEqual(pl.x, 0)
         self.assertEqual(pl.y, 0)
@@ -327,7 +334,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         gm = GameMap(engine=eng, width=10, height=10)
         gm.tiles[1, 1] = tile_types.floor
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
         action.perform()
@@ -344,21 +351,21 @@ class Test_Actions_BumpAction(unittest.TestCase):
         basically a copy of Test_Actions_MeleeAction.test_perform_with_target
         '''
         pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # player at 0,0
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # player at 0,0
         ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5))  # blocking entity at 1,1
+            hp=10, defense=0, power=5), inventory=Inventory(capacity=5))  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
         # add blocking entity to the game map, add game map to engine and player
         gm.entities = {ent}
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
 
         attack_desc = f"{pl.name.capitalize()} attacks {ent.name} for 5 hit points."
         attack_color = color.player_atk
 
-        action = MeleeAction(entity=pl, dx=dx, dy=dy)
+        action = BumpAction(entity=pl, dx=dx, dy=dy)
         action.perform()
         # verify that print was called as it will only be called if there
         # is a blocking entity
@@ -376,13 +383,216 @@ class Test_Actions_BumpAction(unittest.TestCase):
         gm = GameMap(engine=eng, width=10, height=10)
         gm.tiles[1, 1] = tile_types.floor
         eng.game_map = gm
-        pl.gamemap = gm
+        pl.parent = gm
         dx, dy = 1, 1
-        action = MovementAction(entity=pl, dx=dx, dy=dy)
+        action = BumpAction(entity=pl, dx=dx, dy=dy)
         action.perform()
         # since the goal x, y is walkable, make sure the entity moved there
         self.assertEqual(pl.x, 1)
         self.assertEqual(pl.y, 1)
+
+
+class TestPickupAction(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that a pickup action can be initialized okay
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        action = PickupAction(entity=actor)
+        self.assertIsInstance(action, PickupAction)
+
+    def test_perform_with_item_and_capacity(self):
+        '''
+        test that a pickup action (with an item at the correct location)
+        (and capacity in inventory) will remove the item from the gamemap
+        and add it to the inventory
+        '''
+        actor = Actor(
+            x=5, y=6,
+            ai_cls=HostileEnemy,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5))
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        item = Item(
+            x=5, y=6,
+            consumable=Consumable()
+        )
+        gm.entities = {item}
+        item.parent = gm
+        eng.game_map = gm
+        actor.parent = gm
+
+        action = PickupAction(entity=actor)
+
+        self.assertIn(item, gm.entities)
+        self.assertNotIn(item, actor.inventory.items)
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            action.perform()
+
+        self.assertNotIn(item, gm.entities)
+        self.assertIn(item, actor.inventory.items)
+        patch_add_message.assert_called_once()
+
+    def test_perform_with_no_item_on_map(self):
+        '''
+        test that a pickup action with no items on the map
+        will raise an exception
+        '''
+        actor = Actor(
+            x=5, y=6,
+            ai_cls=HostileEnemy,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5))
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        # item = Item(
+        #     x=5, y=6,
+        #     consumable=Consumable()
+        # )
+        # gm.entities = {item}
+        # item.parent = gm
+        eng.game_map = gm
+        actor.parent = gm
+
+        action = PickupAction(entity=actor)
+
+        with self.assertRaises(Impossible):
+            action.perform()
+
+    def test_perform_with_item_in_wrong_spot(self):
+        '''
+        test that a pickup action with an item on the map,
+        but not at the entity's location will raise an exception
+        '''
+        actor = Actor(
+            x=5, y=6,
+            ai_cls=HostileEnemy,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5))
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        item = Item(
+            x=3, y=4,
+            consumable=Consumable()
+        )
+        gm.entities = {item}
+        item.parent = gm
+        eng.game_map = gm
+        actor.parent = gm
+
+        action = PickupAction(entity=actor)
+
+        with self.assertRaises(Impossible):
+            action.perform()
+
+    def test_perform_with_no_capacity(self):
+        '''
+        test that a pickup action with the actor having no capacity
+        will raise an exception
+        '''
+        actor = Actor(
+            x=5, y=6,
+            ai_cls=HostileEnemy,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=0))
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        item = Item(
+            x=5, y=6,
+            consumable=Consumable()
+        )
+        gm.entities = {item}
+        item.parent = gm
+        eng.game_map = gm
+        actor.parent = gm
+
+        action = PickupAction(entity=actor)
+
+        with self.assertRaises(Impossible):
+            action.perform()
+
+
+class TestItemAction(unittest.TestCase):
+    def test_init_no_targetxy(self):
+        '''
+        test that an item action can get initialized okay
+        and the target_xy gets set to the x, y of the entity
+        '''
+        actor = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        item = Item(consumable=Consumable())
+        item_action = ItemAction(entity=actor, item=item)
+        self.assertEqual(item_action.item, item)
+        self.assertEqual(item_action.target_xy, (5, 6))
+
+    def test_init_with_targetxy(self):
+        '''
+        test that an item action can get initialized okay
+        and the target_xy gets set
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        item = Item(consumable=Consumable())
+        item_action = ItemAction(entity=actor, item=item, target_xy=(5, 6))
+        self.assertEqual(item_action.item, item)
+        self.assertEqual(item_action.target_xy, (5, 6))
+
+    def test_property_target_actor(self):
+        '''
+        test that get_actor_at_location is called with the correct inputs
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        item = Item(consumable=Consumable())
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        actor.parent = gm
+        item_action = ItemAction(entity=actor, item=item, target_xy=(5, 6))
+
+        with patch('game_map.GameMap.get_actor_at_location') as patch_get_actor:
+            target = item_action.target_actor()
+
+        patch_get_actor.assert_called_once_with(5, 6)
+
+    def test_perform(self):
+        '''
+        test that the activeate command on the consumable is called
+        passing in the existing itemAction
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        item = Item(consumable=Consumable())
+        item_action = ItemAction(entity=actor, item=item)
+
+        with patch('components.consumable.Consumable.activate') as patch_activate:
+            item_action.perform()
+
+        patch_activate.assert_called_once_with(item_action)
+
+
+class TestDropItem(unittest.TestCase):
+    def test_perform(self):
+        '''
+        test that this will call the drop command of the inventory
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=1)
+        )
+        item = Item(consumable=Consumable())
+        ent.inventory.items.append(item)
+        action = DropItem(
+            entity=ent,
+            item=item,
+        )
+        with patch('components.inventory.Inventory.drop') as patch_drop:
+            action.perform()
+        patch_drop.assert_called_once_with(item)
 
 
 if __name__ == '__main__':

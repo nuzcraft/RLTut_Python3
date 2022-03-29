@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch
 from components.fighter import Fighter
 from components.ai import HostileEnemy
+from components.inventory import Inventory
 from entity import Actor
 from engine import Engine
 from game_map import GameMap
@@ -28,7 +29,7 @@ class Test_Fighter(unittest.TestCase):
         test that an entity can be set without issues
         '''
         ft = Fighter(hp=10, defense=10, power=10)
-        act = Actor(ai_cls=HostileEnemy, fighter=ft)
+        act = Actor(ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
         ft.entity = act
         self.assertEqual(act, ft.entity)
 
@@ -54,12 +55,12 @@ class Test_Fighter(unittest.TestCase):
         when setting below 0
         '''
         ft = Fighter(hp=10, defense=10, power=10)
-        act = Actor(ai_cls=HostileEnemy, fighter=ft)
+        act = Actor(ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
         ft.entity = act
 
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10)
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
 
         ft.hp = -5
@@ -80,17 +81,17 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
-        act = Actor(ai_cls=HostileEnemy, fighter=ft)
-        ft.entity = act
+        act = Actor(ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
+        ft.parent = act
 
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10)
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
 
         ft.hp = 0
         # triggering 'die' should remove the ai component
-        self.assertIsNone(ft.entity.ai)
+        self.assertIsNone(ft.parent.ai)
 
     @patch('message_log.MessageLog.add_message')
     def test_die_player(self, mock_add_message):
@@ -100,22 +101,22 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
-        act = Actor(name="player", ai_cls=HostileEnemy, fighter=ft)
-        ft.entity = act
+        act = Actor(name="player", ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
+        ft.parent = act
 
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10)
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
 
         ft.die()
 
-        self.assertEqual(ft.entity.char, "%")
-        self.assertEqual(ft.entity.color, (191, 0, 0))
-        self.assertFalse(ft.entity.blocks_movement)
-        self.assertIsNone(ft.entity.ai)
-        self.assertEqual(ft.entity.name, "remains of player")
-        self.assertEqual(ft.entity.render_order, RenderOrder.CORPSE)
+        self.assertEqual(ft.parent.char, "%")
+        self.assertEqual(ft.parent.color, (191, 0, 0))
+        self.assertFalse(ft.parent.blocks_movement)
+        self.assertIsNone(ft.parent.ai)
+        self.assertEqual(ft.parent.name, "remains of player")
+        self.assertEqual(ft.parent.render_order, RenderOrder.CORPSE)
         self.assertIsInstance(ft.engine.event_handler, GameOverEventHandler)
         mock_add_message.assert_called_with("You died!", color.player_die)
 
@@ -125,25 +126,61 @@ class Test_Fighter(unittest.TestCase):
         test that when an actor (not player) dies, they get set well
         '''
         ft = Fighter(hp=10, defense=10, power=10)
-        act = Actor(name="actor", ai_cls=HostileEnemy, fighter=ft)
-        ft.entity = act
+        act = Actor(name="actor", ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
+        ft.parent = act
 
         ft2 = Fighter(hp=10, defense=10, power=10)
-        act2 = Actor(name="player", ai_cls=HostileEnemy, fighter=ft2)
-        ft2.entity = act2
+        act2 = Actor(name="player", ai_cls=HostileEnemy, fighter=ft2, inventory=Inventory(capacity=5))
+        ft2.parent = act2
 
         eng = Engine(player=act2)
         gm = GameMap(engine=eng, width=10, height=10)
-        act.gamemap = gm
-        act2.gamemap = gm
+        act.parent = gm
+        act2.parent = gm
         eng.game_map = gm
 
         ft.die()
 
-        self.assertEqual(ft.entity.char, "%")
-        self.assertEqual(ft.entity.color, (191, 0, 0))
-        self.assertFalse(ft.entity.blocks_movement)
-        self.assertIsNone(ft.entity.ai)
-        self.assertEqual(ft.entity.name, "remains of actor")
-        self.assertEqual(ft.entity.render_order, RenderOrder.CORPSE)
+        self.assertEqual(ft.parent.char, "%")
+        self.assertEqual(ft.parent.color, (191, 0, 0))
+        self.assertFalse(ft.parent.blocks_movement)
+        self.assertIsNone(ft.parent.ai)
+        self.assertEqual(ft.parent.name, "remains of actor")
+        self.assertEqual(ft.parent.render_order, RenderOrder.CORPSE)
         mock_add_message.assert_called_with("actor is dead!", color.enemy_die)
+
+    def test_heal_max_hp(self):
+        '''
+        test that healing any amount while at max hp will heal 0
+        '''
+        ft = Fighter(hp=10, defense=10, power=10)
+        amount_recovered = ft.heal(10)
+        self.assertEqual(amount_recovered, 0)
+
+    def test_heal_up_to_max(self):
+        '''
+        test that healing more than necessary will cap at max hp
+        '''
+        ft = Fighter(hp=10, defense=10, power=10)
+        ft.hp = 5
+        amount_recovered = ft.heal(10)
+        self.assertEqual(amount_recovered, 5)
+        self.assertEqual(ft.hp, ft.max_hp)
+
+    def test_heal_some(self):
+        '''
+        test that healing some will increase the hp
+        '''
+        ft = Fighter(hp=10, defense=10, power=10)
+        ft.hp = 5
+        amount_recovered = ft.heal(3)
+        self.assertEqual(amount_recovered, 3)
+        self.assertEqual(ft.hp, 8)
+
+    def test_take_damage(self):
+        '''
+        test that taking damage will reduce the hp
+        '''
+        ft = Fighter(hp=10, defense=10, power=10)
+        ft.take_damage(2)
+        self.assertEqual(ft.hp, 8)

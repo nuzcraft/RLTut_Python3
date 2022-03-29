@@ -1,12 +1,32 @@
-from multiprocessing import Event
 import unittest
+from unittest.mock import patch
 import tcod.event
-from input_handlers import EventHandler, MainGameEventHandler, GameOverEventHandler, HistoryViewer
+from tcod.console import Console
+from input_handlers import (
+    EventHandler,
+    MainGameEventHandler,
+    GameOverEventHandler,
+    HistoryViewer,
+    AskUserEventHandler,
+    InventoryEventHandler,
+    InventoryActivateHandler,
+    InventoryDropHandler,
+)
 
-from actions import EscapeAction, BumpAction, WaitAction
+from actions import (
+    BumpAction,
+    WaitAction,
+    PickupAction,
+    DropItem,
+)
 from engine import Engine
-from entity import Entity
+from entity import Entity, Actor, Item
 from game_map import GameMap
+from exceptions import Impossible
+from components.ai import BaseAI
+from components.fighter import Fighter
+from components.inventory import Inventory
+from components.consumable import Consumable
 
 
 class Test_EventHandler(unittest.TestCase):
@@ -19,17 +39,73 @@ class Test_EventHandler(unittest.TestCase):
         event_handler = EventHandler(engine=eng)
         self.assertEqual(event_handler.engine, eng)
 
-    # def test_handle_events(self):
-    #     '''
-    #     test that the handle_events function returns a not implemented error
-    #     UPDATE: removed after updating this function, not sure how to test it
-    #     since I'm not sure how to add events to the tcod event list
-    #     '''
-    #     ent = Entity()
-    #     eng = Engine(player=ent)
-    #     event_handler = EventHandler(engine=eng)
-    #     with self.assertRaises(NotImplementedError):
-    #         event_handler.handle_events()
+    def test_handle_events(self):
+        '''
+        test that the handle_events function calls the handle_action
+        function
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = EventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+            event_handler.handle_events(event=event)
+
+        patch_handle_action.assert_called_once()
+
+    def test_handle_action_none(self):
+        '''
+        tests that the handle_action function will return false
+        if the action is none
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = EventHandler(engine=eng)
+        pass_turn_bool = event_handler.handle_action(None)
+        self.assertFalse(pass_turn_bool)
+
+    @patch('engine.Engine.handle_enemy_turns')
+    @patch('engine.Engine.update_fov')
+    def test_handle_action_any(self, patch_handle_enemy_turns, patch_update_fov):
+        '''
+        tests that the handle_action function will return true
+        when a real action is passed in
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        event_handler = EventHandler(engine=eng)
+        action = WaitAction(entity=ent)
+        pass_turn_bool = event_handler.handle_action(action)
+        self.assertTrue(pass_turn_bool)
+        patch_handle_enemy_turns.assert_called_once()
+        patch_update_fov.assert_called_once()
+
+    @patch('engine.Engine.handle_enemy_turns')
+    @patch('engine.Engine.update_fov')
+    def test_handle_action_impossible(self, patch_handle_enemy_turns, patch_update_fov):
+        '''
+        tests that the handle_action function will return false
+        when the perform action excepts with an impossible exception
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        event_handler = EventHandler(engine=eng)
+        action = WaitAction(entity=ent)
+
+        with patch('actions.WaitAction.perform') as patch_peform:
+            patch_peform.side_effect = Impossible('lol, error')
+            pass_turn_bool = event_handler.handle_action(action)
+        self.assertFalse(pass_turn_bool)
+        self.assertEqual(
+            'lol, error', event_handler.engine.message_log.messages[0].full_text)
+        patch_handle_enemy_turns.assert_not_called()
+        patch_update_fov.assert_not_called()
 
     def test_ev_mousemotion_in_bounds(self):
         '''
@@ -458,8 +534,8 @@ class Test_MainGameEventHandler(unittest.TestCase):
         event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.ESCAPE, sym=tcod.event.K_ESCAPE, mod=tcod.event.Modifier.NONE)
-        action = event_handler.dispatch(event)
-        self.assertIsInstance(action, EscapeAction)
+        with self.assertRaises(SystemExit):
+            action = event_handler.dispatch(event)
 
     def test_ev_keydown_v(self):
         '''
@@ -473,6 +549,44 @@ class Test_MainGameEventHandler(unittest.TestCase):
         event_handler.ev_keydown(event=event)
         self.assertIsInstance(
             event_handler.engine.event_handler, HistoryViewer)
+
+    def test_ev_keydown_g(self):
+        '''
+        tests that pressing g returns a pickup action
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.G, sym=tcod.event.K_g, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(action, PickupAction)
+
+    def test_ev_keydown_i(self):
+        '''
+        tests that pressing i will update the event_handler to InventoryActivateHandler
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.I, sym=tcod.event.K_i, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, InventoryActivateHandler)
+
+    def test_ev_keydown_d(self):
+        '''
+        tests that pressing d will update the event_handler to InventoryDropHandler
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.D, sym=tcod.event.K_d, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, InventoryDropHandler)
 
     # using the backslash button as an unassigned button
     def test_ev_keydown_other(self):
@@ -512,8 +626,9 @@ class Test_GameOverEventHandler(unittest.TestCase):
         event_handler = GameOverEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.ESCAPE, sym=tcod.event.K_ESCAPE, mod=tcod.event.Modifier.NONE)
-        action = event_handler.dispatch(event)
-        self.assertIsInstance(action, EscapeAction)
+
+        with self.assertRaises(SystemExit):
+            event_handler.dispatch(event)
 
     def test_ev_keydown_other(self):
         '''
@@ -693,6 +808,447 @@ class Test_HistoryViewer(unittest.TestCase):
         event_handler.ev_keydown(event=event)
         self.assertIsInstance(
             event_handler.engine.event_handler, MainGameEventHandler)
+
+
+class TestAskUserEventHandler(unittest.TestCase):
+    def test_handle_action_True(self):
+        '''
+        test that the handle action function resets the event handler of the engine
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        action = WaitAction(entity=ent)
+
+        with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+            patch_handle_action.return_value = True
+            ret = event_handler.handle_action(action=action)
+
+        self.assertTrue(ret)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, MainGameEventHandler)
+
+    def test_handle_action_False(self):
+        '''
+        test that the handle action function does not reset the event handler of the engine
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        action = WaitAction(entity=ent)
+
+        with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+            patch_handle_action.return_value = False
+            ret = event_handler.handle_action(action=action)
+
+        self.assertFalse(ret)
+        self.assertNotIsInstance(
+            event_handler.engine.event_handler, MainGameEventHandler)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, AskUserEventHandler)
+
+    def test_ev_keydown_LSHIFT(self):
+        '''
+        test that sending a keydown event for LSHIFT will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.LSHIFT, sym=tcod.event.K_LSHIFT, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_RSHIFT(self):
+        '''
+        test that sending a keydown event for RSHIFT will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.RSHIFT, sym=tcod.event.K_RSHIFT, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_LCTRL(self):
+        '''
+        test that sending a keydown event for LCTRL will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.LCTRL, sym=tcod.event.K_LCTRL, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_RCTRL(self):
+        '''
+        test that sending a keydown event for RCTRL will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.RCTRL, sym=tcod.event.K_RCTRL, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_LALT(self):
+        '''
+        test that sending a keydown event for LALT will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.LALT, sym=tcod.event.K_LALT, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_RALT(self):
+        '''
+        test that sending a keydown event for RALT will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.RALT, sym=tcod.event.K_RALT, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
+    def test_ev_keydown_other(self):
+        '''
+        test that sending a keydown event for g will call self.on_exit 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.G, sym=tcod.event.K_g, mod=tcod.event.Modifier.NONE)
+        with patch("input_handlers.AskUserEventHandler.on_exit") as patch_on_exit:
+            ret = event_handler.ev_keydown(event=event)
+        patch_on_exit.assert_called_once()
+
+    def test_ev_mousebuttondown(self):
+        '''
+        test that sending a mouse click will call self.on_exit 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.MouseButtonDown()
+        with patch("input_handlers.AskUserEventHandler.on_exit") as patch_on_exit:
+            ret = event_handler.ev_mousebuttondown(event=event)
+        patch_on_exit.assert_called_once()
+
+    def test_on_exit(self):
+        '''
+        test that on_exit will update the engine event handler and return none
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        ret = event_handler.on_exit()
+        self.assertIsInstance(
+            event_handler.engine.event_handler, MainGameEventHandler)
+        self.assertIsNone(ret)
+
+
+class TestIventoryEventHandler(unittest.TestCase):
+    def test_on_render_player_on_left(self):
+        '''
+        test that when the player is on the left, the window is offset
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=40,
+            y=0,
+            width=19,
+            height=3,
+            title="<missing title>",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_player_on_right(self):
+        '''
+        test that when the player is on the right, the window is not offset
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            x=40,
+            y=40,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=0,
+            y=0,
+            width=19,
+            height=3,
+            title="<missing title>",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_height_calulated(self):
+        '''
+        test that when the player has multiple items, the height of the 
+        window is calculated properly (num items + 2)
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        player.inventory.items = [
+            Item(consumable=Consumable),
+            Item(consumable=Consumable),
+            Item(consumable=Consumable),
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=40,
+            y=0,
+            width=19,
+            height=5,
+            title="<missing title>",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_items_printed(self):
+        '''
+        test that when the player has multiple items, they are printed
+        on screen with the correct name and index
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        player.inventory.items = [
+            Item(name="item1", consumable=Consumable),
+            Item(name="item2", consumable=Consumable),
+            Item(name="item3", consumable=Consumable),
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.print') as patch_print:
+            event_handler.on_render(console=console)
+        patch_print.assert_any_call(41, 1, '(a) item1')
+        patch_print.assert_any_call(41, 2, '(b) item2')
+        patch_print.assert_any_call(41, 3, '(c) item3')
+
+    def test_on_render_no_items(self):
+        '''
+        test that when the player has no items, one (Empty) row is printed
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.print') as patch_print:
+            event_handler.on_render(console=console)
+        patch_print.assert_any_call(41, 1, '(Empty)')
+
+    def test_ev_keydown_good_index(self):
+        '''
+        test that hitting a letter key will grab the selected item
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.A, sym=tcod.event.K_a, mod=tcod.event.Modifier.NONE)
+        with patch('input_handlers.InventoryEventHandler.on_item_selected') as patch_on_item_selected:
+            action = event_handler.ev_keydown(event=event)
+        patch_on_item_selected.assert_called_with(item1)
+
+    def test_ev_keydown_good_index_no_item(self):
+        '''
+        test that hitting a letter key will return None when 
+        there is no available item
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.B, sym=tcod.event.K_b, mod=tcod.event.Modifier.NONE)
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            action = event_handler.ev_keydown(event=event)
+        patch_add_message.assert_called()
+        self.assertIsNone(action)
+
+    def test_ev_keydown_bad_index(self):
+        '''
+        test that hitting a non-letter key will invoke the 
+        AskUserEventHandler's ev_keydown
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.N1, sym=tcod.event.K_1, mod=tcod.event.Modifier.NONE)
+        with patch('input_handlers.AskUserEventHandler.ev_keydown') as patch_ev_keydown:
+            action = event_handler.ev_keydown(event=event)
+        patch_ev_keydown.assert_called()
+
+    def test_on_item_selected(self):
+        '''
+        test that this function will raise an error
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with self.assertRaises(NotImplementedError):
+            event_handler.on_item_selected(item=item1)
+
+
+class TestInventoryActivateHandler(unittest.TestCase):
+    def test_on_item_selected(self):
+        '''
+        test that selecting an item will call the get_action of the consumable
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryActivateHandler(engine=eng)
+        with patch('components.consumable.Consumable.get_action') as patch_get_action:
+            action = event_handler.on_item_selected(item=item1)
+        patch_get_action.assert_called_once()
+
+
+class TestInventoryDropHandler(unittest.TestCase):
+    def test_on_item_selected(self):
+        '''
+        test that selecting an item will return a drop item action
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryDropHandler(engine=eng)
+        action = event_handler.on_item_selected(item=item1)
+        self.assertIsInstance(action, DropItem)
 
 
 if __name__ == '__main__':

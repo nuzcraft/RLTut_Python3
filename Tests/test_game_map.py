@@ -1,9 +1,11 @@
 import unittest
 from game_map import GameMap
-from entity import Entity, Actor
+from entity import Entity, Actor, Item
 from engine import Engine
 from components.ai import HostileEnemy
 from components.fighter import Fighter
+from components.inventory import Inventory
+from components.consumable import Consumable
 
 
 class Test_Game_Map(unittest.TestCase):
@@ -34,6 +36,15 @@ class Test_Game_Map(unittest.TestCase):
         self.assertIn(ent1, gm.entities)
         self.assertIn(ent2, gm.entities)
 
+    def test_property_gamemap(self):
+        '''
+        test that the gamemap property returns the self
+        '''
+        player = Entity()
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        self.assertEqual(gm, gm.gamemap)
+
     def test_property_actors(self):
         '''
         test that the actors property will return the correct entities
@@ -41,8 +52,8 @@ class Test_Game_Map(unittest.TestCase):
         player = Entity()
         eng = Engine(player=player)
         ent1 = Entity()
-        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter)
-        act3 = Actor(ai_cls=HostileEnemy, fighter=Fighter)
+        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter, inventory=Inventory(capacity=5))
+        act3 = Actor(ai_cls=HostileEnemy, fighter=Fighter, inventory=Inventory(capacity=5))
         act3.ai = None
         gm = GameMap(engine=eng, width=50, height=60)
         gm.entities = {ent1, act2, act3}
@@ -50,6 +61,23 @@ class Test_Game_Map(unittest.TestCase):
         # verify that only one of the entities made it into the actors list
         # act2 is the only 'actor' tha has an ai component
         self.assertEqual(len(list(actors)), 1)
+
+    def test_property_items(self):
+        '''
+        test that items will property return the correct entities
+        '''
+        player = Entity()
+        eng = Engine(player=player)
+        ent1 = Entity()
+        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter, inventory=Inventory(capacity=5))
+        itm3 = Item(consumable=Consumable())
+        gm = GameMap(engine=eng, width=50, height=60)
+        gm.entities = {ent1, act2, itm3}
+        items = gm.items
+        # verify that only one of the entities made it into the items list
+        # itm3 is the only item
+        self.assertEqual(len(list(items)), 1)
+
 
     def test_get_blocking_entity_at_location_true(self):
         '''
@@ -139,10 +167,11 @@ class Test_Game_Map(unittest.TestCase):
         tests that checking a location with an actor
         will return that actor
         '''
-        act = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        act = Actor(x=5, y=6, ai_cls=HostileEnemy,
+                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
 
         returned_act = gm.get_actor_at_location(x=5, y=6)
@@ -153,10 +182,11 @@ class Test_Game_Map(unittest.TestCase):
         tests that checking a location with an actor
         will return that actor
         '''
-        act = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10))
+        act = Actor(x=5, y=6, ai_cls=HostileEnemy,
+                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
-        act.gamemap = gm
+        act.parent = gm
         eng.game_map = gm
         # check an empty location
         returned_act = gm.get_actor_at_location(x=6, y=7)

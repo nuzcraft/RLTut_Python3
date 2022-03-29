@@ -11,7 +11,9 @@ import tcod
 from entity import Entity, Actor
 from components.ai import HostileEnemy
 from components.fighter import Fighter
+from components.inventory import Inventory
 from message_log import MessageLog
+from exceptions import Impossible
 
 
 class Test_Engine(unittest.TestCase):
@@ -41,15 +43,37 @@ class Test_Engine(unittest.TestCase):
         '''
         ent1 = Entity()
         ent2 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         eng = Engine(player=ent1)
         gm = GameMap(engine=eng, width=10,
                      height=10, entities={ent2})
         eng.game_map = gm
-        ent1.gamemap = gm
-        ent2.gamemap = gm
+        ent1.parent = gm
+        ent2.parent = gm
 
         with patch('components.ai.HostileEnemy.perform') as mock_ai_perform:
+            eng.handle_enemy_turns()
+
+        # verify the WaitAction.perform was called
+        mock_ai_perform.assert_called_once()
+
+    def test_handle_enemy_turns_exception(self):
+        '''
+        tests that an enemy taking its turn will pass
+        and not raise when an exception is return from the enemy
+        '''
+        ent1 = Entity()
+        ent2 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        eng = Engine(player=ent1)
+        gm = GameMap(engine=eng, width=10,
+                     height=10, entities={ent2})
+        eng.game_map = gm
+        ent1.parent = gm
+        ent2.parent = gm
+
+        with patch('components.ai.HostileEnemy.perform') as mock_ai_perform:
+            mock_ai_perform.side_effect = Impossible("oops, impossible")
             eng.handle_enemy_turns()
 
         # verify the WaitAction.perform was called
@@ -64,10 +88,10 @@ class Test_Engine(unittest.TestCase):
         the return value to match the expected output
         '''
         ent = Actor(x=5, y=5, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         eng = Engine(player=ent)
         gm = GameMap(engine=eng, width=10, height=10)
-        ent.gamemap = gm
+        ent.parent = gm
         eng.game_map = gm
 
         with patch('tcod.map.compute_fov') as patch_compute_fov:
@@ -89,7 +113,7 @@ class Test_Engine(unittest.TestCase):
         I can't get it to not pop up the window, which is probably what breaks those actions
         '''
         ent1 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         eng = Engine(player=ent1)
         eng.game_map = GameMap(engine=eng, width=10, height=10)
 

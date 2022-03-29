@@ -12,6 +12,20 @@ I want to use this as an opportunity to:
 4. make a roguelike
 5. practice with git
 
+## Part 8 Dev Notes
+
+### Items and Inventory
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-8/
+
+It looks like this is going to start off with a refactor(similar to part 6). Hopefully it doesn't result in quite as extensive of a unit test rewrite as the engine class rewrite.
+
+Refactor complete. It wasn't nearly as broad as the engine refactor, and I like a lot of the ideas here. Make it clearer that certain things have parents to define that relationship (specifically to maps) but still allow entities to easily get the gamemap they're associated with. From a unit test perpsective, this broke ~25% of the tests, but they were easily fixed by swapping out 'gamemap' with 'parent' in almost all cases
+
+This next section will begin soon! We'll be getting a working inventory set up as well as some items that can be picked up and used.
+
+Okay, wow, well, that was a lot. This part in particular felt difficult because there were SO MANY backend pieces to put together before we see anything on the screen. That plus all the moving pieces meant that maintaining the unit tests was somewhat painful. In the end, I think the solutions here are quite flexible.
+
 ## Part 7 Dev Notes
 
 ### Creating the Interface
@@ -23,6 +37,8 @@ Heyo, it looks like this part will be focused on the UI. I'm looking forward to 
 Interestingly (or not I guess) I found it difficult to focus on part 7, and I think some of it was analysis paralysis on unit testing. I'm finding there are more and more things I want to unit test, but don't quite have the skills/experience to make it work; I don't understand what all unittest can do so my unit tests are pretty basic.
 
 I think the above was compounded by UI work being a bit more cumbersome to unit test. This section did a lot of good work to make things look nice on the screen and in the end, I enjoyed making it happen.
+
+Finally, merging the part 7 pull request was really nice :) the python unit testing code ran on its own, alerted me to a minor issue that kept me from merging until I fixed it. Very cool!
 
 ## Part 6.5 Building, Testing, Releasing, etc
 

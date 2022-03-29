@@ -6,6 +6,7 @@ from numpy import power
 
 from components.ai import BaseAI, HostileEnemy
 from components.fighter import Fighter
+from components.inventory import Inventory
 from entity import Entity, Actor
 from game_map import GameMap
 from engine import Engine
@@ -19,7 +20,7 @@ class Test_BaseAI(unittest.TestCase):
         tests that the entity can be set correctly
         '''
         actor = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         self.assertEqual(actor, actor.ai.entity)
 
         ai = BaseAI(actor)
@@ -46,7 +47,7 @@ class Test_BaseAI(unittest.TestCase):
         gm = GameMap(engine=eng, width=10, height=10)
         # GameMaps are initialized as all wall, convert to floor
         gm.tiles[:, :] = tile_types.floor
-        ent.gamemap = gm
+        ent.parent = gm
         ai = BaseAI(entity=ent)
         #  ent starts at 0,0 - get the path straight down to 0,9 (bottom of map)
         path = ai.get_path_to(dest_x=0, dest_y=9)
@@ -69,7 +70,7 @@ class Test_BaseAI(unittest.TestCase):
         # change a couple of the path tiles to a wall (unwalkable)
         gm.tiles[0, 5] = tile_types.wall
         gm.tiles[1, 5] = tile_types.wall
-        ent.gamemap = gm
+        ent.parent = gm
         ai = BaseAI(entity=ent)
         #  ent starts at 0,0 - get the path straight down to 0,9 (bottom of map)
         path = ai.get_path_to(dest_x=0, dest_y=9)
@@ -95,7 +96,7 @@ class Test_BaseAI(unittest.TestCase):
         ent1 = Entity(x=0, y=5, blocks_movement=True)
         ent2 = Entity(x=1, y=5, blocks_movement=True)
         gm.entities = {ent1, ent2}
-        ent.gamemap = gm
+        ent.parent = gm
         ai = BaseAI(entity=ent)
         #  ent starts at 0,0 - get the path straight down to 0,9 (bottom of map)
         path = ai.get_path_to(dest_x=0, dest_y=9)
@@ -115,7 +116,7 @@ class TestHostileEnemy(unittest.TestCase):
         '''
         # instantiating an actor will automatically instantiate the ai class under actor.ai
         actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         self.assertEqual(actor, actor.ai.entity)
         self.assertEqual([], actor.ai.path)
 
@@ -131,11 +132,11 @@ class TestHostileEnemy(unittest.TestCase):
         gm.entities.add(player)
 
         hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         gm.entities.add(hostile_ent)
 
-        player.gamemap = gm
-        hostile_ent.gamemap = gm
+        player.parent = gm
+        hostile_ent.parent = gm
         eng.game_map = gm
 
         # since update_fov has not been run, there is no 'visible' tiles
@@ -162,11 +163,11 @@ class TestHostileEnemy(unittest.TestCase):
 
         # hostile entity is 2 spaces away
         hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         gm.entities.add(hostile_ent)
 
-        player.gamemap = gm
-        hostile_ent.gamemap = gm
+        player.parent = gm
+        hostile_ent.parent = gm
         eng.game_map = gm
 
         # run update_fov to update the visible tiles
@@ -193,11 +194,11 @@ class TestHostileEnemy(unittest.TestCase):
 
         # hostile entity is 1 spaces away
         hostile_ent = Actor(x=0, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         gm.entities.add(hostile_ent)
 
-        player.gamemap = gm
-        hostile_ent.gamemap = gm
+        player.parent = gm
+        hostile_ent.parent = gm
         eng.game_map = gm
 
         # run update_fov to update the visible tiles

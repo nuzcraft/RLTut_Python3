@@ -1,11 +1,12 @@
-from lib2to3.pytree import Base
-from entity import Entity, Actor
+from entity import Entity, Actor, Item
 from game_map import GameMap
 from engine import Engine
 from render_order import RenderOrder
 
 from components.ai import BaseAI
 from components.fighter import Fighter
+from components.consumable import Consumable
+from components.inventory import Inventory
 
 import unittest
 
@@ -37,18 +38,29 @@ class Test_Entity(unittest.TestCase):
         self.assertEqual(ent.blocks_movement, blocks_movement)
         self.assertEqual(ent.render_order, RenderOrder.CORPSE)
 
-    def test_init_with_gamemap(self):
+    def test_init_with_parent(self):
         '''
-        tests that creating an entity with a gamemap will
-        set the gamemap and add the entity to it
+        tests that creating an entity with a parent will
+        set the parent gamemap and add the entity to it
         '''
         player = Entity()
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
-        ent = Entity(gamemap=gm)
-        self.assertEqual(ent.gamemap, gm)
+        ent = Entity(parent=gm)
+        self.assertEqual(ent.parent, gm)
         # make sure the entity gets added to the gamemap
-        self.assertIn(ent, ent.gamemap.entities)
+        self.assertIn(ent, ent.parent.entities)
+
+    def test_property_gamemap(self):
+        '''
+        test that the gamemap property will return
+        the parent
+        '''
+        player = Entity()
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        player.parent = gm
+        self.assertEqual(player.gamemap, gm)
 
     def test_spawn(self):
         '''
@@ -78,7 +90,7 @@ class Test_Entity(unittest.TestCase):
         self.assertEqual(ent.x, 10)
         self.assertEqual(ent.y, 10)
 
-    def test_place_with_gamemap(self):
+    def test_place_with_parent(self):
         '''
         place the entity at a new location in a new
         game map
@@ -87,12 +99,12 @@ class Test_Entity(unittest.TestCase):
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
         gm2 = GameMap(engine=eng, width=10, height=10)
-        ent = Entity(gamemap=gm)
+        ent = Entity(parent=gm)
         # place the entity at a new gamemap with a new location
         ent.place(x=10, y=10, gamemap=gm2)
         self.assertEqual(ent.x, 10)
         self.assertEqual(ent.y, 10)
-        self.assertEqual(ent.gamemap, gm2)
+        self.assertEqual(ent.parent, gm2)
         # make sure the entity gets removed from the old entity list
         # and added to the new one
         self.assertNotIn(ent, gm.entities)
@@ -117,7 +129,7 @@ class TestActor(unittest.TestCase):
         '''
         test that initializing an actor sets the values as expected
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5))
         # some of these are defaults
         self.assertEqual(actor.x, 0)
         self.assertEqual(actor.y, 0)
@@ -130,19 +142,38 @@ class TestActor(unittest.TestCase):
         self.assertIsInstance(actor.ai, BaseAI)
         self.assertEqual(actor, actor.ai.entity)
         self.assertIsInstance(actor.fighter, Fighter)
-        self.assertEqual(actor, actor.fighter.entity)
+        self.assertEqual(actor, actor.fighter.parent)
+        self.assertIsInstance(actor.inventory, Inventory)
+        self.assertEqual(actor, actor.inventory.parent)
 
     def test_property_is_alive_true(self):
         '''
         test the is_alive property returns true if there is an ai component
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5))
         self.assertTrue(actor.is_alive)
 
     def test_property_is_alive_false(self):
         '''
         test the is_alive property returns false if there is no
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5))
         actor.ai = None  # remove the ai component
         self.assertFalse(actor.is_alive)
+
+class TestItem(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that items can get initialized without issues
+        '''
+        cm = Consumable()
+        itm = Item(consumable=cm)
+        self.assertEqual(itm.x, 0)
+        self.assertEqual(itm.y, 0)
+        self.assertEqual(itm.char, '?')
+        self.assertEqual(itm.color, (255, 255, 255))
+        self.assertEqual(itm.name, '<Unnamed>')
+        self.assertIsInstance(itm.consumable, Consumable)
+        self.assertEqual(itm.consumable.parent, itm)
+        self.assertFalse(itm.blocks_movement)
+        self.assertEqual(itm.render_order, RenderOrder.ITEM)
