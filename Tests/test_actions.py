@@ -5,7 +5,6 @@ from unittest.mock import patch
 from actions import (
     Action, ActionWithDirection,
     MovementAction,
-    EscapeAction,
     MeleeAction,
     BumpAction,
     PickupAction,
@@ -52,17 +51,6 @@ class Test_Actions_Action(unittest.TestCase):
         ent = Entity()
         action = Action(entity=ent)
         with self.assertRaises(NotImplementedError):
-            action.perform()
-
-
-class Test_Actions_EscapeAction(unittest.TestCase):
-    def test_perform(self):
-        '''
-        make sure an EscapeAction will return a SystemExit
-        '''
-        ent1 = Entity()
-        action = EscapeAction(ent1)
-        with self.assertRaises(SystemExit):
             action.perform()
 
 
