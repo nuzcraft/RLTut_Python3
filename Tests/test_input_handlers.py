@@ -1,21 +1,25 @@
-from argparse import Action
-from multiprocessing import Event
 import unittest
 from unittest.mock import patch
 import tcod.event
+from tcod.console import Console
 from input_handlers import (
     EventHandler,
     MainGameEventHandler,
     GameOverEventHandler,
     HistoryViewer,
     AskUserEventHandler,
+    InventoryEventHandler,
 )
 
 from actions import EscapeAction, BumpAction, WaitAction, PickupAction
 from engine import Engine
-from entity import Entity
+from entity import Entity, Actor, Item
 from game_map import GameMap
 from exceptions import Impossible
+from components.ai import BaseAI
+from components.fighter import Fighter
+from components.inventory import Inventory
+from components.consumable import Consumable
 
 
 class Test_EventHandler(unittest.TestCase):
@@ -929,6 +933,242 @@ class TestAskUserEventHandler(unittest.TestCase):
         self.assertIsInstance(
             event_handler.engine.event_handler, MainGameEventHandler)
         self.assertIsNone(ret)
+
+
+class TestIventoryEventHandler(unittest.TestCase):
+    def test_on_render_player_on_left(self):
+        '''
+        test that when the player is on the left, the window is offset
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=40,
+            y=0,
+            width=19,
+            height=3,
+            title="<missing title>",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_player_on_right(self):
+        '''
+        test that when the player is on the right, the window is not offset
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            x=40,
+            y=40,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=0,
+            y=0,
+            width=19,
+            height=3,
+            title="<missing title>",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_height_calulated(self):
+        '''
+        test that when the player has multiple items, the height of the 
+        window is calculated properly (num items + 2)
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        player.inventory.items = [
+            Item(consumable=Consumable),
+            Item(consumable=Consumable),
+            Item(consumable=Consumable),
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=40,
+            y=0,
+            width=19,
+            height=5,
+            title="<missing title>",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_items_printed(self):
+        '''
+        test that when the player has multiple items, they are printed
+        on screen with the correct name and index
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        player.inventory.items = [
+            Item(name="item1", consumable=Consumable),
+            Item(name="item2", consumable=Consumable),
+            Item(name="item3", consumable=Consumable),
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.print') as patch_print:
+            event_handler.on_render(console=console)
+        patch_print.assert_any_call(41, 1, '(a) item1')
+        patch_print.assert_any_call(41, 2, '(b) item2')
+        patch_print.assert_any_call(41, 3, '(c) item3')
+
+    def test_on_render_no_items(self):
+        '''
+        test that when the player has no items, one (Empty) row is printed
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with patch('tcod.console.Console.print') as patch_print:
+            event_handler.on_render(console=console)
+        patch_print.assert_any_call(41, 1, '(Empty)')
+
+    def test_ev_keydown_good_index(self):
+        '''
+        test that hitting a letter key will grab the selected item
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.A, sym=tcod.event.K_a, mod=tcod.event.Modifier.NONE)
+        with patch('input_handlers.InventoryEventHandler.on_item_selected') as patch_on_item_selected:
+            action = event_handler.ev_keydown(event=event)
+        patch_on_item_selected.assert_called_with(item1)
+
+    def test_ev_keydown_good_index_no_item(self):
+        '''
+        test that hitting a letter key will return None when 
+        there is no available item
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.B, sym=tcod.event.K_b, mod=tcod.event.Modifier.NONE)
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            action = event_handler.ev_keydown(event=event)
+        patch_add_message.assert_called()
+        self.assertIsNone(action)
+
+    def test_ev_keydown_bad_index(self):
+        '''
+        test that hitting a non-letter key will invoke the 
+        AskUserEventHandler's ev_keydown
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.N1, sym=tcod.event.K_1, mod=tcod.event.Modifier.NONE)
+        with patch('input_handlers.AskUserEventHandler.ev_keydown') as patch_ev_keydown:
+            action = event_handler.ev_keydown(event=event)
+        patch_ev_keydown.assert_called()
+
+    def test_on_item_selected(self):
+        '''
+        test that this function will raise an error
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryEventHandler(engine=eng)
+        with self.assertRaises(NotImplementedError):
+            event_handler.on_item_selected(item=item1)
 
 
 if __name__ == '__main__':
