@@ -24,6 +24,8 @@ Refactor complete. It wasn't nearly as broad as the engine refactor, and I like 
 
 This next section will begin soon! We'll be getting a working inventory set up as well as some items that can be picked up and used.
 
+Okay, wow, well, that was a lot. This part in particular felt difficult because there were SO MANY backend pieces to put together before we see anything on the screen. That plus all the moving pieces meant that maintaining the unit tests was somewhat painful. In the end, I think the solutions here are quite flexible.
+
 ## Part 7 Dev Notes
 
 ### Creating the Interface
