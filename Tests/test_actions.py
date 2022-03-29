@@ -3,13 +3,14 @@ import unittest
 from unittest.mock import patch
 
 from actions import (
-    Action, ActionWithDirection, 
-    MovementAction, 
-    EscapeAction, 
-    MeleeAction, 
-    BumpAction, 
+    Action, ActionWithDirection,
+    MovementAction,
+    EscapeAction,
+    MeleeAction,
+    BumpAction,
     PickupAction,
     ItemAction,
+    DropItem,
 )
 from entity import Entity, Actor, Item
 from game_map import GameMap
@@ -287,7 +288,7 @@ class Test_Actions_MovementAction(unittest.TestCase):
         pl.parent = gm
         dx, dy = -1, -1
         action = MovementAction(entity=pl, dx=dx, dy=dy)
-        
+
         with self.assertRaises(Impossible):
             action.perform()
         # moving out of bounds will do nothing, so x, y should still be 0, 0
@@ -402,12 +403,14 @@ class Test_Actions_BumpAction(unittest.TestCase):
         self.assertEqual(pl.x, 1)
         self.assertEqual(pl.y, 1)
 
+
 class TestPickupAction(unittest.TestCase):
     def test_init(self):
         '''
         test that a pickup action can be initialized okay
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         action = PickupAction(entity=actor)
         self.assertIsInstance(action, PickupAction)
 
@@ -419,8 +422,8 @@ class TestPickupAction(unittest.TestCase):
         '''
         actor = Actor(
             x=5, y=6,
-            ai_cls=HostileEnemy, 
-            fighter=Fighter(hp=10, defense=10, power=10), 
+            ai_cls=HostileEnemy,
+            fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5))
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -452,8 +455,8 @@ class TestPickupAction(unittest.TestCase):
         '''
         actor = Actor(
             x=5, y=6,
-            ai_cls=HostileEnemy, 
-            fighter=Fighter(hp=10, defense=10, power=10), 
+            ai_cls=HostileEnemy,
+            fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5))
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -478,8 +481,8 @@ class TestPickupAction(unittest.TestCase):
         '''
         actor = Actor(
             x=5, y=6,
-            ai_cls=HostileEnemy, 
-            fighter=Fighter(hp=10, defense=10, power=10), 
+            ai_cls=HostileEnemy,
+            fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5))
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -496,7 +499,7 @@ class TestPickupAction(unittest.TestCase):
 
         with self.assertRaises(Impossible):
             action.perform()
-        
+
     def test_perform_with_no_capacity(self):
         '''
         test that a pickup action with the actor having no capacity
@@ -504,8 +507,8 @@ class TestPickupAction(unittest.TestCase):
         '''
         actor = Actor(
             x=5, y=6,
-            ai_cls=HostileEnemy, 
-            fighter=Fighter(hp=10, defense=10, power=10), 
+            ai_cls=HostileEnemy,
+            fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=0))
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -523,13 +526,15 @@ class TestPickupAction(unittest.TestCase):
         with self.assertRaises(Impossible):
             action.perform()
 
+
 class TestItemAction(unittest.TestCase):
     def test_init_no_targetxy(self):
         '''
         test that an item action can get initialized okay
         and the target_xy gets set to the x, y of the entity
         '''
-        actor = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         item = Item(consumable=Consumable())
         item_action = ItemAction(entity=actor, item=item)
         self.assertEqual(item_action.item, item)
@@ -540,7 +545,8 @@ class TestItemAction(unittest.TestCase):
         test that an item action can get initialized okay
         and the target_xy gets set
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         item = Item(consumable=Consumable())
         item_action = ItemAction(entity=actor, item=item, target_xy=(5, 6))
         self.assertEqual(item_action.item, item)
@@ -550,7 +556,8 @@ class TestItemAction(unittest.TestCase):
         '''
         test that get_actor_at_location is called with the correct inputs
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         item = Item(consumable=Consumable())
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -561,14 +568,15 @@ class TestItemAction(unittest.TestCase):
         with patch('game_map.GameMap.get_actor_at_location') as patch_get_actor:
             target = item_action.target_actor()
 
-        patch_get_actor.assert_called_once_with(5,6)
+        patch_get_actor.assert_called_once_with(5, 6)
 
     def test_perform(self):
         '''
         test that the activeate command on the consumable is called
         passing in the existing itemAction
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
         item = Item(consumable=Consumable())
         item_action = ItemAction(entity=actor, item=item)
 
@@ -576,7 +584,28 @@ class TestItemAction(unittest.TestCase):
             item_action.perform()
 
         patch_activate.assert_called_once_with(item_action)
-        
+
+
+class TestDropItem(unittest.TestCase):
+    def test_perform(self):
+        '''
+        test that this will call the drop command of the inventory
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=1)
+        )
+        item = Item(consumable=Consumable())
+        ent.inventory.items.append(item)
+        action = DropItem(
+            entity=ent,
+            item=item,
+        )
+        with patch('components.inventory.Inventory.drop') as patch_drop:
+            action.perform()
+        patch_drop.assert_called_once_with(item)
+
 
 if __name__ == '__main__':
     unittest.main()
