@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from components.consumable import Consumable, HealingConsumable
+from components.consumable import Consumable, HealingConsumable, LightningDamageConsumable
 from components.ai import BaseAI
 from components.fighter import Fighter
 from components.inventory import Inventory
@@ -121,3 +121,34 @@ class TestHealingConsumable(unittest.TestCase):
 
         with self.assertRaises(Impossible):
             consumable.activate(action=action)
+
+class TestLightningDamageConsumable(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that initializing the consumable sets the values as expected
+        '''
+        consumable = LightningDamageConsumable(damage=5, maximum_range=6)
+        self.assertEqual(consumable.damage, 5)
+        self.assertEqual(consumable.maximum_range, 6)
+
+    def test_activate_with_actor(self):
+        '''
+        test that if there is an actor close enough, the consumable will 
+        damage it and be consumed
+        '''
+
+    def test_activate_2_actors(self):
+        '''
+        test that if there are 2 actors close enough, the consumable will
+        damage the closer one and not the one further away
+        '''
+
+    def test_activate_no_actors(self):
+        '''
+        test that if there are no actors, an Impossible exception is raised
+        '''
+
+    def test_activate_no_visible_actors(self):
+        '''
+        test that if there are no visible actors, an Impossible exception is raised
+        '''
