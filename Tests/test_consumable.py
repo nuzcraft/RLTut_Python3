@@ -136,19 +136,159 @@ class TestLightningDamageConsumable(unittest.TestCase):
         test that if there is an actor close enough, the consumable will 
         damage it and be consumed
         '''
+        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        actor1 = Actor(
+            x=2, y=2,
+            ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        gm.entities.add(actor1)
+        eng.game_map = gm
+        player.parent = gm
+        consumable = LightningDamageConsumable(damage=5, maximum_range=6)
+        item = Item(consumable=consumable)
+        player.inventory.items.append(item)
+        item.parent = player.inventory
+        consumable.parent = item
+        action = consumable.get_action(consumer=player)
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            consumable.activate(action=action)
+
+        patch_add_message.assert_called()
+        self.assertEqual(actor1.fighter.hp, 5)
+        self.assertNotIn(item, player.inventory.items)
 
     def test_activate_2_actors(self):
         '''
         test that if there are 2 actors close enough, the consumable will
         damage the closer one and not the one further away
         '''
+        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        actor1 = Actor(
+            x=2, y=2,
+            ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        actor2 = Actor(
+            x=7, y=7,
+            ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        gm.entities.add(actor1)
+        gm.entities.add(actor2)
+        eng.game_map = gm
+        player.parent = gm
+        consumable = LightningDamageConsumable(damage=5, maximum_range=6)
+        item = Item(consumable=consumable)
+        player.inventory.items.append(item)
+        item.parent = player.inventory
+        consumable.parent = item
+        action = consumable.get_action(consumer=player)
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            consumable.activate(action=action)
+
+        patch_add_message.assert_called()
+        self.assertEqual(actor1.fighter.hp, 5)
+        self.assertEqual(actor2.fighter.hp, 10)
+        self.assertNotIn(item, player.inventory.items)
 
     def test_activate_no_actors(self):
         '''
         test that if there are no actors, an Impossible exception is raised
         '''
+        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        eng.game_map = gm
+        player.parent = gm
+        consumable = LightningDamageConsumable(damage=5, maximum_range=6)
+        item = Item(consumable=consumable)
+        player.inventory.items.append(item)
+        item.parent = player.inventory
+        consumable.parent = item
+        action = consumable.get_action(consumer=player)
+
+        with self.assertRaises(Impossible):
+            consumable.activate(action=action)
+
 
     def test_activate_no_visible_actors(self):
         '''
         test that if there are no visible actors, an Impossible exception is raised
         '''
+        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        actor1 = Actor(
+            x=2, y=2,
+            ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = False
+        gm.entities.add(actor1)
+        eng.game_map = gm
+        player.parent = gm
+        consumable = LightningDamageConsumable(damage=5, maximum_range=6)
+        item = Item(consumable=consumable)
+        player.inventory.items.append(item)
+        item.parent = player.inventory
+        consumable.parent = item
+        action = consumable.get_action(consumer=player)
+
+        with self.assertRaises(Impossible):
+            consumable.activate(action=action)
+
+    def test_activate_no_actors_in_range(self):
+        '''
+        test that if there are no actors in range, an Impossible exception is raised
+        '''
+        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        actor1 = Actor(
+            x=5, y=5,
+            ai_cls=BaseAI, fighter=Fighter(
+            hp=10, defense=10, power=10), 
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        gm.entities.add(actor1)
+        eng.game_map = gm
+        player.parent = gm
+        consumable = LightningDamageConsumable(damage=5, maximum_range=2)
+        item = Item(consumable=consumable)
+        player.inventory.items.append(item)
+        item.parent = player.inventory
+        consumable.parent = item
+        action = consumable.get_action(consumer=player)
+
+        with self.assertRaises(Impossible):
+            consumable.activate(action=action)
