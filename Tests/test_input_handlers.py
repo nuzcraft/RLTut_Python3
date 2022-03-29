@@ -11,6 +11,7 @@ from input_handlers import (
     InventoryEventHandler,
     InventoryActivateHandler,
     InventoryDropHandler,
+    SelectIndexHandler,
 )
 
 from actions import (
@@ -27,6 +28,7 @@ from components.ai import BaseAI
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.consumable import Consumable
+import color
 
 
 class Test_EventHandler(unittest.TestCase):
@@ -1249,6 +1251,46 @@ class TestInventoryDropHandler(unittest.TestCase):
         event_handler = InventoryDropHandler(engine=eng)
         action = event_handler.on_item_selected(item=item1)
         self.assertIsInstance(action, DropItem)
+
+class TestSelectIndexHandler(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that the SelectIndexHandler is initialized correctly
+        '''
+        player = Actor(
+            x=5, y=6,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        e_handler = SelectIndexHandler(engine=eng)
+        expected_location = player.x, player.y
+        self.assertEqual(e_handler.engine.mouse_location, expected_location)
+
+    def test_on_render(self):
+        '''
+        test that the tile at the mouse location is rendered black on white
+        '''
+        player = Actor(
+            x=5, y=6,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        e_handler = SelectIndexHandler(engine=eng)
+
+        console = Console(width=10, height=10, order='F')
+
+        e_handler.on_render(console=console)
+
+        self.assertTrue(False) #need to figure out this test
+
+
 
 
 if __name__ == '__main__':
