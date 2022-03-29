@@ -12,6 +12,14 @@ I want to use this as an opportunity to:
 4. make a roguelike
 5. practice with git
 
+## Part 9 Dev Notes
+
+### Ranged Scrolls and Targeting
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-9/
+
+Woot! No additional refactoring yet! This section should be fun because it will give us the opportunity to use the code we just built to add more items that do unique things. Hopefully (outside of targeting) the additional things should be relatively minor and relatively atomic.
+
 ## Part 8 Dev Notes
 
 ### Items and Inventory
