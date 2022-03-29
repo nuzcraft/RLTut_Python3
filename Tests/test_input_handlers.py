@@ -9,9 +9,17 @@ from input_handlers import (
     HistoryViewer,
     AskUserEventHandler,
     InventoryEventHandler,
+    InventoryActivateHandler,
+    InventoryDropHandler,
 )
 
-from actions import EscapeAction, BumpAction, WaitAction, PickupAction
+from actions import (
+    EscapeAction,
+    BumpAction,
+    WaitAction,
+    PickupAction,
+    DropItem,
+)
 from engine import Engine
 from entity import Entity, Actor, Item
 from game_map import GameMap
@@ -1169,6 +1177,53 @@ class TestIventoryEventHandler(unittest.TestCase):
         event_handler = InventoryEventHandler(engine=eng)
         with self.assertRaises(NotImplementedError):
             event_handler.on_item_selected(item=item1)
+
+
+class TestInventoryActivateHandler(unittest.TestCase):
+    def test_on_item_selected(self):
+        '''
+        test that selecting an item will call the get_action of the consumable
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryActivateHandler(engine=eng)
+        with patch('components.consumable.Consumable.get_action') as patch_get_action:
+            action = event_handler.on_item_selected(item=item1)
+        patch_get_action.assert_called_once()
+
+
+class TestInventoryDropHandler(unittest.TestCase):
+    def test_on_item_selected(self):
+        '''
+        test that selecting an item will return a drop item action
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        item1 = Item(name="item1", consumable=Consumable)
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryDropHandler(engine=eng)
+        action = event_handler.on_item_selected(item=item1)
+        self.assertIsInstance(action, DropItem)
 
 
 if __name__ == '__main__':
