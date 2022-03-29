@@ -821,6 +821,19 @@ class TestAskUserEventHandler(unittest.TestCase):
         ret = event_handler.ev_keydown(event=event)
         self.assertIsNone(ret)
 
+    def test_ev_keydown_RSHIFT(self):
+        '''
+        test that sending a keydown event for LSHIFT will return none 
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = AskUserEventHandler(engine=eng)
+        eng.event_handler = event_handler
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.RSHIFT, sym=tcod.event.K_RSHIFT, mod=tcod.event.Modifier.NONE)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsNone(ret)
+
 
 if __name__ == '__main__':
     unittest.main()
