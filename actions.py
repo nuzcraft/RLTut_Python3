@@ -116,6 +116,7 @@ class BumpAction(ActionWithDirection):
         else:
             return MovementAction(self.entity, self.dx, self.dy).perform()
 
+
 class PickupAction(Action):
     """Pickup and item and add it to the inventory, if there is room for it"""
 
@@ -135,10 +136,12 @@ class PickupAction(Action):
                 item.parent = self.entity.inventory
                 inventory.items.append(item)
 
-                self.engine.message_log.add_message(f"You picked up the {item.name}!")
+                self.engine.message_log.add_message(
+                    f"You picked up the {item.name}!")
                 return
 
         raise exceptions.Impossible("There is nothing here to pick up.")
+
 
 class ItemAction(Action):
     def __init__(
@@ -158,3 +161,8 @@ class ItemAction(Action):
     def perform(self) -> None:
         """invoke the items ability, this action will be given to provide context"""
         self.item.consumable.activate(self)
+
+
+class DropItem(ItemAction):
+    def perform(self) -> None:
+        self.entity.inventory.drop(self.item)
