@@ -121,6 +121,37 @@ class TestConfusedEnemy(unittest.TestCase):
         self.assertEqual(ai.previous_ai, HostileEnemy)
         self.assertEqual(ai.turns_remaining, 5)
 
+    def test_perform_switch_ai(self):
+        '''
+        test that with 0 or less turns remaining the ai switches back 
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        ai = ConfusedEnemy(
+            entity=actor, previous_ai=HostileEnemy(entity=actor), turns_remaining=0)
+        actor.ai = ai
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        actor.parent = gm
+        self.assertIsInstance(actor.ai, ConfusedEnemy)
+        actor.ai.perform()
+        self.assertIsInstance(actor.ai, HostileEnemy)
+
+    def test_perform_bump_action(self):
+        '''
+        test that with turns remaining the ai will perform a bump action 
+        in a random direction and reduce the number of turns remaining
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        ai = ConfusedEnemy(
+            entity=actor, previous_ai=HostileEnemy(entity=actor), turns_remaining=5)
+        actor.ai = ai
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        actor.parent = gm
+        # with patch
+
 
 class TestHostileEnemy(unittest.TestCase):
     def test_init(self):
