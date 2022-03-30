@@ -326,6 +326,7 @@ class InventoryDropHandler(InventoryEventHandler):
         """
         return actions.DropItem(self.engine.player, item)
 
+
 class SelectIndexHandler(AskUserEventHandler):
     """Handles asking the user for an index on the map."""
 
@@ -346,9 +347,9 @@ class SelectIndexHandler(AskUserEventHandler):
         """Check for key movement or confirmation keys"""
         key = event.sym
         if key in MOVE_KEYS:
-            modifier = 1 # holding modifier keys will speed up key movement
+            modifier = 1  # holding modifier keys will speed up key movement
             if event.mod & (tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT):
-                modifier *=5
+                modifier *= 5
             if event.mod & (tcod.event.KMOD_LCTRL | tcod.event.KMOD_RCTRL):
                 modifier *= 10
             if event.mod & (tcod.event.KMOD_LALT | tcod.event.KMOD_RALT):
@@ -373,7 +374,15 @@ class SelectIndexHandler(AskUserEventHandler):
             if event.button == 1:
                 return self.on_index_selected(*event.tile)
         return super().ev_mousebuttondown(event)
-        
+
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         """called when an index is selected"""
         raise NotImplementedError()
+
+
+class LookHandler(SelectIndexHandler):
+    """Lets the player look around using the keyboard"""
+
+    def on_index_selected(self, x: int, y: int) -> None:
+        """return to main handler"""
+        self.engine.event_handler = MainGameEventHandler(self.engine)
