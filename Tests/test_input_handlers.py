@@ -14,6 +14,7 @@ from input_handlers import (
     InventoryDropHandler,
     SelectIndexHandler,
     LookHandler,
+    SingleRangedAttackHandler,
 )
 
 from actions import (
@@ -1644,6 +1645,24 @@ class TestLookHandler(unittest.TestCase):
         self.assertIsInstance(
             e_handler.engine.event_handler, MainGameEventHandler)
 
+class TestSingleRangedAttackHandler(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that the engine and callback are initialized without issues
+        '''
+        player = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        e_handler = SingleRangedAttackHandler(
+            engine=eng,
+            callback= )
 
 if __name__ == '__main__':
     unittest.main()
