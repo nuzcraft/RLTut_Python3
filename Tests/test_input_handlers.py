@@ -13,6 +13,7 @@ from input_handlers import (
     InventoryActivateHandler,
     InventoryDropHandler,
     SelectIndexHandler,
+    LookHandler,
 )
 
 from actions import (
@@ -1608,6 +1609,27 @@ class TestSelectIndexHandler(unittest.TestCase):
         e_handler = SelectIndexHandler(engine=eng)
         with self.assertRaises(NotImplementedError):
             e_handler.on_index_selected(x=1, y=1)
+
+
+class TestLookHandler(unittest.TestCase):
+    def test_on_index_selected(self):
+        '''
+        test that the event handler gets returned to the main game event handler
+        '''
+        player = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        e_handler = LookHandler(engine=eng)
+        e_handler.on_index_selected(x=1, y=1)
+        self.assertIsInstance(
+            e_handler.engine.event_handler, MainGameEventHandler)
 
 
 if __name__ == '__main__':
