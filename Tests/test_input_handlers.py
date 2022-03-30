@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch
+from tcod import console_get_char_background, console_get_char_foreground
 import tcod.event
 from tcod.console import Console
 from input_handlers import (
@@ -1288,10 +1289,55 @@ class TestSelectIndexHandler(unittest.TestCase):
 
         e_handler.on_render(console=console)
 
-        self.assertTrue(False) #need to figure out this test
+        self.assertEqual(
+            tcod.console_get_char_background(con=console, x=5, y=6),
+            color.white
+        )
+        self.assertEqual(
+            tcod.console_get_char_foreground(con=console, x=5, y=6),
+            color.black
+        )
 
+    
+    def test_ev_keydown_no_modifier(self):
+        '''
+        test that pressing no modifier keys will keep the modifier at 1
+        '''
 
+    def test_ev_keydown_SHIFT_modifier(self):
+        '''
+        test that the LSHIFT and RSHIFT keys will change the modifier to 5
+        '''
 
+    def test_ev_keydown_CTRL_modifier(self):
+        '''
+        test that the LCTRL and RCTRL keys will change the modifier to 10
+        '''
+
+    def test_ev_keydown_ALT_modifier(self):
+        '''
+        test that the LALT and RALT keys will change the modifier to 20
+        '''
+
+    def test_ev_keydown_clamp_low(self):
+        '''
+        test that moving off the map too low will clamp back to 0,0
+        '''
+
+    def test_ev_keydown_clamp_high(self):
+        '''
+        test that moving off the map too high will clamp back to the max game map corner
+        '''
+
+    def test_ev_keydown_CONFIRM_KEYS(self):
+        '''
+        test that hitting a confirm key will return on_index_selected at the location
+        '''
+
+    def test_ev_keydown_other_key(self):
+        '''
+        test that hitting a random key will call the ev_keydown function of the parent class
+        '''
 
 if __name__ == '__main__':
     unittest.main()
