@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple, TYPE_CHECKING
 import numpy as np  # type: ignore
 import tcod
 
-from actions import Action, MeleeAction, MovementAction, WaitAction
+from actions import Action, MeleeAction, MovementAction, WaitAction, BumpAction
 
 if TYPE_CHECKING:
     from entity import Actor
@@ -62,6 +62,34 @@ class ConfusedEnemy(BaseAI):
         super().__init__(entity)
         self.previous_ai = previous_ai
         self.turns_remaining = turns_remaining
+
+    def perform(self) -> None:
+        # revert the ai back to the original state if the effect has run its course
+        if self.turns_remaining <= 0:
+            self.engine.message_log.add_message(
+                f"The {self.entity.name} is n o longer confused."
+            )
+            self.entity.ai = self.previous_ai
+        else:
+            # pick a random direction
+            direction_x, direction_y = random.choice(
+                [
+                    (-1, -1),
+                    (0, -1),
+                    (1, -1),
+                    (-1, 0),
+                    (1, 0),
+                    (-1, 1),
+                    (0, 1),
+                    (1, 1)
+                ]
+            )
+
+            self.turns_remaining -= 1
+
+            # the actor will either try to move or run in the chosen random direction
+            # its possible the actor will just bump into the wall, wasting a turn
+            return BumpAction(self.entity, direction_x, direction_y,).perform()
 
 
 class HostileEnemy(BaseAI):

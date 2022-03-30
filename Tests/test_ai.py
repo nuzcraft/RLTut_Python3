@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 from numpy import power
 
-from components.ai import BaseAI, HostileEnemy
+from components.ai import BaseAI, HostileEnemy, ConfusedEnemy
 from components.fighter import Fighter
 from components.inventory import Inventory
 from entity import Entity, Actor
@@ -107,6 +107,19 @@ class Test_BaseAI(unittest.TestCase):
         path_should_be: List[Tuple[int, int]] = [
             (0, 1), (0, 2), (0, 3), (1, 4), (2, 5), (1, 6), (0, 7), (0, 8), (0, 9)]
         self.assertEqual(path, path_should_be)
+
+
+class TestConfusedEnemy(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that the confused enemy can be initized without issues
+        '''
+        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        ai = ConfusedEnemy(
+            entity=actor, previous_ai=HostileEnemy, turns_remaining=5)
+        self.assertEqual(ai.previous_ai, HostileEnemy)
+        self.assertEqual(ai.turns_remaining, 5)
 
 
 class TestHostileEnemy(unittest.TestCase):
