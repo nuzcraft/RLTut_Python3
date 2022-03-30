@@ -1523,6 +1523,20 @@ class TestSelectIndexHandler(unittest.TestCase):
 
         patch_ev_keydown.assert_called_once_with(event)
 
+    def test_ev_mousebuttondown_good_click(self):
+        '''
+        test that a left click on a tile in bounds will call on_index_selected
+        '''
+
+    def test_ev_mousebuttondown_out_of_bounds(self):
+        '''
+        test that clicking out of bounds will return the mousebuttonevent of the parent class
+        '''
+
+    def test_ev_mousebuttondown_right_click(self):
+        '''
+        test that a right click in bounds will return the mousebutton event of the parent
+        '''
 
 if __name__ == '__main__':
     unittest.main()
