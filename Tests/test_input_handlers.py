@@ -592,6 +592,19 @@ class Test_MainGameEventHandler(unittest.TestCase):
         self.assertIsInstance(
             event_handler.engine.event_handler, InventoryDropHandler)
 
+    def test_ev_keydown_SLASH(self):
+        '''
+        tests that pressing forward slash will update the event_handler to LookHandler
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.SLASH, sym=tcod.event.K_SLASH, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(
+            event_handler.engine.event_handler, LookHandler)
+
     # using the backslash button as an unassigned button
     def test_ev_keydown_other(self):
         '''
