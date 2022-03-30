@@ -1253,6 +1253,7 @@ class TestInventoryDropHandler(unittest.TestCase):
         action = event_handler.on_item_selected(item=item1)
         self.assertIsInstance(action, DropItem)
 
+
 class TestSelectIndexHandler(unittest.TestCase):
     def test_init(self):
         '''
@@ -1298,7 +1299,6 @@ class TestSelectIndexHandler(unittest.TestCase):
             color.black
         )
 
-    
     def test_ev_keydown_no_modifier(self):
         '''
         test that pressing no modifier keys will keep the modifier at 1
@@ -1338,8 +1338,8 @@ class TestSelectIndexHandler(unittest.TestCase):
         e_handler = SelectIndexHandler(engine=eng)
         # pressing down with LSHIFT should move us FIVE tiles in the +y direction
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.DOWN, 
-            sym=tcod.event.K_DOWN, 
+            scancode=tcod.event.Scancode.DOWN,
+            sym=tcod.event.K_DOWN,
             mod=tcod.event.Modifier.LSHIFT
         )
         action = e_handler.ev_keydown(event=event)
@@ -1347,8 +1347,8 @@ class TestSelectIndexHandler(unittest.TestCase):
         self.assertEqual(eng.mouse_location, (5, 10))
         # pressing right with RSHIFT should move us FIVE tiles in the +x direction
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.RIGHT, 
-            sym=tcod.event.K_RIGHT, 
+            scancode=tcod.event.Scancode.RIGHT,
+            sym=tcod.event.K_RIGHT,
             mod=tcod.event.Modifier.RSHIFT
         )
         action = e_handler.ev_keydown(event=event)
@@ -1372,8 +1372,8 @@ class TestSelectIndexHandler(unittest.TestCase):
         e_handler = SelectIndexHandler(engine=eng)
         # pressing down with LCTRL should move us TEN tiles in the +y direction
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.DOWN, 
-            sym=tcod.event.K_DOWN, 
+            scancode=tcod.event.Scancode.DOWN,
+            sym=tcod.event.K_DOWN,
             mod=tcod.event.Modifier.LCTRL
         )
         action = e_handler.ev_keydown(event=event)
@@ -1381,8 +1381,8 @@ class TestSelectIndexHandler(unittest.TestCase):
         self.assertEqual(eng.mouse_location, (5, 15))
         # pressing right with RCTRL should move us TEN tiles in the +x direction
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.RIGHT, 
-            sym=tcod.event.K_RIGHT, 
+            scancode=tcod.event.Scancode.RIGHT,
+            sym=tcod.event.K_RIGHT,
             mod=tcod.event.Modifier.RCTRL
         )
         action = e_handler.ev_keydown(event=event)
@@ -1406,8 +1406,8 @@ class TestSelectIndexHandler(unittest.TestCase):
         e_handler = SelectIndexHandler(engine=eng)
         # pressing down with LALT should move us TWENTY tiles in the +y direction
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.DOWN, 
-            sym=tcod.event.K_DOWN, 
+            scancode=tcod.event.Scancode.DOWN,
+            sym=tcod.event.K_DOWN,
             mod=tcod.event.Modifier.LALT
         )
         action = e_handler.ev_keydown(event=event)
@@ -1415,8 +1415,8 @@ class TestSelectIndexHandler(unittest.TestCase):
         self.assertEqual(eng.mouse_location, (5, 25))
         # pressing right with RALT should move us TWENTY tiles in the +x direction
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.RIGHT, 
-            sym=tcod.event.K_RIGHT, 
+            scancode=tcod.event.Scancode.RIGHT,
+            sym=tcod.event.K_RIGHT,
             mod=tcod.event.Modifier.RALT
         )
         action = e_handler.ev_keydown(event=event)
@@ -1439,10 +1439,10 @@ class TestSelectIndexHandler(unittest.TestCase):
         player.parent = gm
         e_handler = SelectIndexHandler(engine=eng)
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.KP_7, 
-            sym=tcod.event.K_KP_7, 
+            scancode=tcod.event.Scancode.KP_7,
+            sym=tcod.event.K_KP_7,
             mod=tcod.event.Modifier.RSHIFT
-            )
+        )
         action = e_handler.ev_keydown(event=event)
         self.assertIsNone(action)
         self.assertEqual(eng.mouse_location, (0, 0))
@@ -1463,10 +1463,10 @@ class TestSelectIndexHandler(unittest.TestCase):
         player.parent = gm
         e_handler = SelectIndexHandler(engine=eng)
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.KP_3, 
-            sym=tcod.event.K_KP_3, 
+            scancode=tcod.event.Scancode.KP_3,
+            sym=tcod.event.K_KP_3,
             mod=tcod.event.Modifier.LSHIFT
-            )
+        )
         action = e_handler.ev_keydown(event=event)
         self.assertIsNone(action)
         self.assertEqual(eng.mouse_location, (9, 9))
@@ -1487,16 +1487,15 @@ class TestSelectIndexHandler(unittest.TestCase):
         player.parent = gm
         e_handler = SelectIndexHandler(engine=eng)
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.RETURN, 
-            sym=tcod.event.K_RETURN, 
+            scancode=tcod.event.Scancode.RETURN,
+            sym=tcod.event.K_RETURN,
             mod=tcod.event.Modifier.NONE
-            )
+        )
         with patch('input_handlers.SelectIndexHandler.on_index_selected') as patch_on_index_selected:
             patch_on_index_selected.return_value = None
             action = e_handler.ev_keydown(event=event)
 
         patch_on_index_selected.assert_called_once_with(1, 1)
-
 
     def test_ev_keydown_other_key(self):
         '''
@@ -1514,10 +1513,10 @@ class TestSelectIndexHandler(unittest.TestCase):
         player.parent = gm
         e_handler = SelectIndexHandler(engine=eng)
         event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.G, 
-            sym=tcod.event.K_g, 
+            scancode=tcod.event.Scancode.G,
+            sym=tcod.event.K_g,
             mod=tcod.event.Modifier.NONE
-            )
+        )
         with patch('input_handlers.AskUserEventHandler.ev_keydown') as patch_ev_keydown:
             action = e_handler.ev_keydown(event=event)
 
@@ -1527,16 +1526,89 @@ class TestSelectIndexHandler(unittest.TestCase):
         '''
         test that a left click on a tile in bounds will call on_index_selected
         '''
+        player = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        e_handler = SelectIndexHandler(engine=eng)
+        event = tcod.event.MouseButtonDown(
+            tile=(1, 1), button=tcod.event.BUTTON_LEFT)
+
+        with patch('input_handlers.SelectIndexHandler.on_index_selected') as patch_on_index_selected:
+            e_handler.ev_mousebuttondown(event=event)
+
+        patch_on_index_selected.assert_called_once_with(*event.tile)
 
     def test_ev_mousebuttondown_out_of_bounds(self):
         '''
         test that clicking out of bounds will return the mousebuttonevent of the parent class
         '''
+        player = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        e_handler = SelectIndexHandler(engine=eng)
+        event = tcod.event.MouseButtonDown(
+            tile=(12, 12), button=tcod.event.BUTTON_LEFT)
+
+        with patch('input_handlers.AskUserEventHandler.ev_mousebuttondown') as patch_ev_mousebuttondown:
+            e_handler.ev_mousebuttondown(event=event)
+
+        patch_ev_mousebuttondown.assert_called_once_with(event)
 
     def test_ev_mousebuttondown_right_click(self):
         '''
         test that a right click in bounds will return the mousebutton event of the parent
         '''
+        player = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        e_handler = SelectIndexHandler(engine=eng)
+        event = tcod.event.MouseButtonDown(
+            tile=(1, 1), button=tcod.event.BUTTON_RIGHT)
+
+        with patch('input_handlers.AskUserEventHandler.ev_mousebuttondown') as patch_ev_mousebuttondown:
+            e_handler.ev_mousebuttondown(event=event)
+
+        patch_ev_mousebuttondown.assert_called_once_with(event)
+
+    def test_on_index_selected(self):
+        '''
+        test that on_index_selected will raise a NotImplementedError
+        '''
+        player = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        e_handler = SelectIndexHandler(engine=eng)
+        with self.assertRaises(NotImplementedError):
+            e_handler.on_index_selected(x=1, y=1)
+
 
 if __name__ == '__main__':
     unittest.main()
