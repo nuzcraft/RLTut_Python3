@@ -150,7 +150,10 @@ class TestConfusedEnemy(unittest.TestCase):
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
         actor.parent = gm
-        # with patch
+        with patch('actions.BumpAction.perform') as patch_perform:
+            ai.perform()
+        self.assertEqual(ai.turns_remaining, 4)
+        patch_perform.assert_called_once()
 
 
 class TestHostileEnemy(unittest.TestCase):
