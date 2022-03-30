@@ -1,6 +1,7 @@
 from __future__ import annotations
+from lib2to3.pytree import Base
 
-from typing import List, Tuple, TYPE_CHECKING
+from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np  # type: ignore
 import tcod
@@ -47,6 +48,20 @@ class BaseAI(Action):
 
         # convert from list[list[int]] to List[Tuple[int, int]]
         return [(index[0], index[1]) for index in path]
+
+
+class ConfusedEnemy(BaseAI):
+    """
+    A confused enemy will stumble around aimlessly for a given number of turns then revert.
+    If an actor occupies a tile it is randomly moving to, it will attack
+    """
+
+    def __init__(
+        self, entity: Actor, previous_ai: Optional[BaseAI], turns_remaining: int
+    ):
+        super().__init__(entity)
+        self.previous_ai = previous_ai
+        self.turns_remaining = turns_remaining
 
 
 class HostileEnemy(BaseAI):
