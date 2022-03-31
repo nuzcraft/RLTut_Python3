@@ -36,6 +36,11 @@ class Consumable(BaseComponent):
             inventory.items.remove(entity)
 
 
+class ConfusionConsumable(Consumable):
+    def __init__(self, number_of_turns: int):
+        self.number_of_turns = number_of_turns
+
+
 class HealingConsumable(Consumable):
     def __init__(self, amount: int):
         self.amount = amount
@@ -53,9 +58,10 @@ class HealingConsumable(Consumable):
         else:
             raise Impossible(f"Your health is already full.")
 
+
 class LightningDamageConsumable(Consumable):
     def __init__(self, damage: int, maximum_range: int):
-        self.damage =  damage
+        self.damage = damage
         self.maximum_range = maximum_range
 
     def activate(self, action: actions.ItemAction) -> None:
@@ -73,10 +79,9 @@ class LightningDamageConsumable(Consumable):
 
         if target:
             self.engine.message_log.add_message(
-                f"A lightning bolt strikes the {target.name} with a loud thunder for {self.damage} damage!"  
+                f"A lightning bolt strikes the {target.name} with a loud thunder for {self.damage} damage!"
             )
             target.fighter.take_damage(self.damage)
             self.consume()
         else:
             raise Impossible("No enemy is close enough to strike.")
-            
