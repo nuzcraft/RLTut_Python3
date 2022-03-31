@@ -15,6 +15,7 @@ from input_handlers import (
     SelectIndexHandler,
     LookHandler,
     SingleRangedAttackHandler,
+    AreaRangedAttackHandler,
 )
 
 from actions import (
@@ -1700,6 +1701,31 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
 
         patch_ItemAction.assert_called()
 
+class TestAreaRangedAttackHandler(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that the handler can be initialized correctly
+        '''
+        player = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        item = Item(consumable=Consumable())
+        item.parent = player
+        e_handler = AreaRangedAttackHandler(
+            engine=eng,
+            radius=5,
+            callback=lambda xy: ItemAction(
+                entity=player, item=item, target_xy=xy)
+        )
+        self.assertEqual(e_handler.engine, eng)
+        self.assertEqual(e_handler.radius, 5)
 
 if __name__ == '__main__':
     unittest.main()
