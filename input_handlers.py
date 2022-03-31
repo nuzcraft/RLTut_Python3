@@ -416,3 +416,20 @@ class AreaRangedAttackHandler(SelectIndexHandler):
         super().__init__(engine)
         self.radius = radius
         self.callback = callback
+
+    def on_render(self, console: tcod.Console) -> None:
+        """Highlgith the tiles under the cursor"""
+        super().on_render(console)
+
+        x, y = self.engine.mouse_location
+
+        # draw a rectangle around the targeted area,
+        # so the player can see the affected tiles
+        console.draw_frame(
+            x = x - self.radius - 1,
+            y = y - self.radius - 1,
+            width = self.radius ** 2,
+            height = self.radius ** 2,
+            fg = color.red,
+            clear = False,
+        )

@@ -1737,5 +1737,48 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
 
         patch_ItemAction.assert_called()
 
+    def test_on_render(self):
+        '''
+        test a frame matching the radius gets drawn to the console
+        '''
+        player = Actor(
+            x=5, y=6,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        item = Item(consumable=Consumable())
+        item.parent = player
+        radius = 3
+        e_handler = AreaRangedAttackHandler(
+            engine=eng,
+            radius=radius,
+            callback=lambda xy: ItemAction(
+                entity=player, item=item, target_xy=xy)
+        )
+
+        console = Console(width=10, height=10, order='F')
+        expected_x = 5 - radius - 1
+        expected_y = 6 - radius - 1
+        expected_width = radius ** 2
+        expected_height = radius ** 2
+
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            e_handler.on_render(console=console)
+
+        patch_draw_frame.assert_called_once_with(
+            x=expected_x,
+            y=expected_y,
+            width=expected_width,
+            height=expected_height,
+            fg=color.red,
+            clear=False,
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
