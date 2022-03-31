@@ -20,6 +20,10 @@ https://rogueliketutorials.com/tutorials/tcod/v2/part-9/
 
 Woot! No additional refactoring yet! This section should be fun because it will give us the opportunity to use the code we just built to add more items that do unique things. Hopefully (outside of targeting) the additional things should be relatively minor and relatively atomic.
 
+This part was really insightful to develop as I believe it will pave the way for a significant amount of future development. We developed some unique spells that function in very different ways; one that automatically targets the nearest actor and 2 the require additional user input mid-cast. This additional input is implemented in an interesting way and by watching it get out in place I think I understand the code flow. 
+
+From a unit testing standpoint, this part was intense. Adding new handlers for user input meant a significant amount of unit testing. I'm also noticing that there is a lot id dependencies around the player, engine, and game map objects that makes it cumbersome to set up tests on other objects. All in, unit testing is becoming more comfortable and I'm looking forward to a time when I feel like I can push what I know to make it more organized and more performant.
+
 ## Part 8 Dev Notes
 
 ### Items and Inventory
