@@ -1,3 +1,4 @@
+import math
 from entity import Entity, Actor, Item
 from game_map import GameMap
 from engine import Engine
@@ -109,6 +110,15 @@ class Test_Entity(unittest.TestCase):
         # and added to the new one
         self.assertNotIn(ent, gm.entities)
         self.assertIn(ent, gm2.entities)
+
+    def test_distance(self):
+        '''
+        test that the distance function returns as expected
+        '''
+        ent = Entity()
+        dist = ent.distance(x=5, y=7)
+        expected = math.sqrt((5-0)**2 + (7-0)**2)
+        self.assertEqual(dist, expected)
 
     def test_move(self):
         '''
