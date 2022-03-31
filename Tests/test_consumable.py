@@ -6,7 +6,7 @@ from components.consumable import (
     LightningDamageConsumable,
     ConfusionConsumable,
 )
-from components.ai import BaseAI
+from components.ai import BaseAI, ConfusedEnemy
 from components.fighter import Fighter
 from components.inventory import Inventory
 from entity import Item, Actor
@@ -107,6 +107,141 @@ class TestConfusionConsumable(unittest.TestCase):
         patch_add_message.assert_called_once()
         self.assertIsInstance(cm.engine.event_handler,
                               SingleRangedAttackHandler)
+
+    def test_activate_good_target(self):
+        '''
+        test that activating a confusion consumable on a good target will:
+        add a message to the log, update the ai of the target, consume the item
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        ent = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        actor.parent = gm
+        eng.game_map = gm
+        gm.entities.add(ent)
+        cm = ConfusionConsumable(number_of_turns=5)
+        item = Item(consumable=cm)
+        item.parent = actor.inventory
+        cm.parent = item
+        # get_action will initiate user input phase
+        cm.get_action(consumer=actor)
+        # calling the callback with the target tile will return
+        # the action we need
+        action = cm.engine.event_handler.callback((1, 1))
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            with patch('components.consumable.Consumable.consume') as patch_consume:
+                cm.activate(action=action)
+
+        patch_add_message.assert_called_once()
+        self.assertIsInstance(ent.ai, ConfusedEnemy)
+        patch_consume.assert_called_once()
+
+    def test_activate_not_visible(self):
+        '''
+        test that activating on a non-visible tile will raise an exception
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        ent = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = False
+        actor.parent = gm
+        eng.game_map = gm
+        gm.entities.add(ent)
+        cm = ConfusionConsumable(number_of_turns=5)
+        item = Item(consumable=cm)
+        item.parent = actor.inventory
+        cm.parent = item
+        # get_action will initiate user input phase
+        cm.get_action(consumer=actor)
+        # calling the callback with the target tile will return
+        # the action we need
+        action = cm.engine.event_handler.callback((1, 1))
+
+        with self.assertRaises(Impossible):
+            cm.activate(action=action)
+
+    def test_activate_no_target(self):
+        '''
+        test that activating without a target actor will raise an exception
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        ent = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        actor.parent = gm
+        eng.game_map = gm
+        gm.entities.add(ent)
+        cm = ConfusionConsumable(number_of_turns=5)
+        item = Item(consumable=cm)
+        item.parent = actor.inventory
+        cm.parent = item
+        # get_action will initiate user input phase
+        cm.get_action(consumer=actor)
+        # calling the callback with the target tile will return
+        # the action we need NOTE target does not match ent location
+        action = cm.engine.event_handler.callback((2, 2))
+
+        with self.assertRaises(Impossible):
+            cm.activate(action=action)
+
+    def test_activate_self(self):
+        '''
+        test that activating on self(player) will raise an exception
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        actor.parent = gm
+        eng.game_map = gm
+        cm = ConfusionConsumable(number_of_turns=5)
+        item = Item(consumable=cm)
+        item.parent = actor.inventory
+        cm.parent = item
+        # get_action will initiate user input phase
+        cm.get_action(consumer=actor)
+        # calling the callback with the target tile will return
+        # the action we need NOTE target does not match ent location
+        action = cm.engine.event_handler.callback((0, 0))
+
+        with self.assertRaises(Impossible):
+            cm.activate(action=action)
 
 
 class TestHealingConsumable(unittest.TestCase):
