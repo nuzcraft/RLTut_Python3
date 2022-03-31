@@ -1,4 +1,5 @@
 from __future__ import annotations
+from tkinter.tix import Select
 
 from typing import Optional, TYPE_CHECKING, Callable, Tuple
 
@@ -400,3 +401,18 @@ class SingleRangedAttackHandler(SelectIndexHandler):
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         return self.callback((x, y))
+
+class AreaRangedAttackHandler(SelectIndexHandler):
+    """
+    Handles targeting an area within a given radius. 
+    Any entity within the area will be affected
+    """
+    def __init__(
+        self,
+        engine: Engine,
+        radius: int,
+        callback: Callable[[Tuple[int, int]], Optional[Action]],
+    ):
+        super().__init__(engine)
+        self.radius = radius
+        self.callback = callback
