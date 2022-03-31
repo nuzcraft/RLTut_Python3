@@ -1,6 +1,11 @@
 import unittest
 from unittest.mock import patch
-from components.consumable import Consumable, HealingConsumable, LightningDamageConsumable
+from components.consumable import (
+    Consumable,
+    HealingConsumable,
+    LightningDamageConsumable,
+    ConfusionConsumable,
+)
 from components.ai import BaseAI
 from components.fighter import Fighter
 from components.inventory import Inventory
@@ -69,6 +74,16 @@ class TestConsumable(unittest.TestCase):
         self.assertNotIn(item, actor.inventory.items)
 
 
+class TestConfusionConsumable(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that initializing a confusion consumable works as expected
+        '''
+        number_of_turns = 5
+        cm = ConfusionConsumable(number_of_turns=number_of_turns)
+        self.assertEqual(cm.number_of_turns, number_of_turns)
+
+
 class TestHealingConsumable(unittest.TestCase):
     def test_init(self):
         '''
@@ -122,6 +137,7 @@ class TestHealingConsumable(unittest.TestCase):
         with self.assertRaises(Impossible):
             consumable.activate(action=action)
 
+
 class TestLightningDamageConsumable(unittest.TestCase):
     def test_init(self):
         '''
@@ -137,13 +153,13 @@ class TestLightningDamageConsumable(unittest.TestCase):
         damage it and be consumed
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+            hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         actor1 = Actor(
             x=2, y=2,
             ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+                hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         eng = Engine(player=player)
@@ -172,19 +188,19 @@ class TestLightningDamageConsumable(unittest.TestCase):
         damage the closer one and not the one further away
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+            hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         actor1 = Actor(
             x=2, y=2,
             ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+                hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         actor2 = Actor(
             x=7, y=7,
             ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+                hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         eng = Engine(player=player)
@@ -214,7 +230,7 @@ class TestLightningDamageConsumable(unittest.TestCase):
         test that if there are no actors, an Impossible exception is raised
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+            hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         eng = Engine(player=player)
@@ -232,19 +248,18 @@ class TestLightningDamageConsumable(unittest.TestCase):
         with self.assertRaises(Impossible):
             consumable.activate(action=action)
 
-
     def test_activate_no_visible_actors(self):
         '''
         test that if there are no visible actors, an Impossible exception is raised
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+            hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         actor1 = Actor(
             x=2, y=2,
             ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+                hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         eng = Engine(player=player)
@@ -268,13 +283,13 @@ class TestLightningDamageConsumable(unittest.TestCase):
         test that if there are no actors in range, an Impossible exception is raised
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+            hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         actor1 = Actor(
             x=5, y=5,
             ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), 
+                hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5)
         )
         eng = Engine(player=player)
