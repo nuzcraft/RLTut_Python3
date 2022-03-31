@@ -1779,6 +1779,34 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
             clear=False,
         )
 
+    def test_on_index_selected(self):
+        '''
+        test that the callback function will be called
+        '''
+        player = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        item = Item(consumable=Consumable())
+        item.parent = player
+        e_handler = AreaRangedAttackHandler(
+            engine=eng,
+            radius=3,
+            callback=lambda xy: ItemAction(
+                entity=player, item=item, target_xy=xy)
+        )
+        with patch('actions.ItemAction.__init__') as patch_ItemAction:
+            patch_ItemAction.return_value = None
+            e_handler.on_index_selected(x=1, y=1)
+
+        patch_ItemAction.assert_called()
+
 
 if __name__ == '__main__':
     unittest.main()

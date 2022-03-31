@@ -433,3 +433,6 @@ class AreaRangedAttackHandler(SelectIndexHandler):
             fg = color.red,
             clear = False,
         )
+
+    def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+        return self.callback((x, y))
