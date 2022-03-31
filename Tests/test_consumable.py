@@ -331,6 +331,164 @@ class TestFireballDamageConsumable(unittest.TestCase):
         self.assertIsInstance(cm.engine.event_handler,
                               AreaRangedAttackHandler)
 
+    def test_activate_hit_actor(self):
+        '''
+        test that activating a fireball consumable with a target in range will:
+        add a message to the log, damage the target, consume the item
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        ent = Actor(
+            x=5, y=5,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        actor.parent = gm
+        eng.game_map = gm
+        gm.entities.add(ent)
+        cm = FireballDamageConsumable(damage=5, radius=3)
+        item = Item(consumable=cm)
+        item.parent = actor.inventory
+        cm.parent = item
+        # get_action will initiate user input phase
+        cm.get_action(consumer=actor)
+        # calling the callback with the target tile will return
+        # the action we need
+        action = cm.engine.event_handler.callback((6, 6))
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            with patch('components.consumable.Consumable.consume') as patch_consume:
+                cm.activate(action=action)
+
+        patch_add_message.assert_called_once()
+        self.assertEqual(ent.fighter.hp, 5)
+        patch_consume.assert_called_once()
+
+    def test_activate_hit_actors(self):
+        '''
+        test that activating a fireball consumable with multiple targets in range will:
+        add a message to the log, damage the targets, consume the item
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        ent = Actor(
+            x=5, y=5,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        ent2 = Actor(
+            x=7, y=7,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = True
+        actor.parent = gm
+        eng.game_map = gm
+        gm.entities.add(ent)
+        gm.entities.add(ent2)
+        cm = FireballDamageConsumable(damage=5, radius=3)
+        item = Item(consumable=cm)
+        item.parent = actor.inventory
+        cm.parent = item
+        # get_action will initiate user input phase
+        cm.get_action(consumer=actor)
+        # calling the callback with the target tile will return
+        # the action we need
+        action = cm.engine.event_handler.callback((6, 6))
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            with patch('components.consumable.Consumable.consume') as patch_consume:
+                cm.activate(action=action)
+
+        patch_add_message.assert_called()
+        self.assertEqual(ent.fighter.hp, 5)
+        self.assertEqual(ent2.fighter.hp, 5)
+        patch_consume.assert_called_once()
+
+    def test_activate_not_visible(self):
+        '''
+        test that attempting to target a fireball on a tile that is not visible
+        will raise an exceptions
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        ent = Actor(
+            x=5, y=5,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        ent2 = Actor(
+            x=7, y=7,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = False
+        actor.parent = gm
+        eng.game_map = gm
+        gm.entities.add(ent)
+        gm.entities.add(ent2)
+        cm = FireballDamageConsumable(damage=5, radius=3)
+        item = Item(consumable=cm)
+        item.parent = actor.inventory
+        cm.parent = item
+        # get_action will initiate user input phase
+        cm.get_action(consumer=actor)
+        # calling the callback with the target tile will return
+        # the action we need
+        action = cm.engine.event_handler.callback((6, 6))
+
+        with self.assertRaises(Impossible):
+            cm.activate(action=action)
+
+    def test_activate_no_targets(self):
+        '''
+        test that attempting to target a fireball on a tile that is not visible
+        will raise an exceptions
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        gm.visible[:] = False
+        actor.parent = gm
+        eng.game_map = gm
+        cm = FireballDamageConsumable(damage=5, radius=3)
+        item = Item(consumable=cm)
+        item.parent = actor.inventory
+        cm.parent = item
+        # get_action will initiate user input phase
+        cm.get_action(consumer=actor)
+        # calling the callback with the target tile will return
+        # the action we need
+        action = cm.engine.event_handler.callback((6, 6))
+
+        with self.assertRaises(Impossible):
+            cm.activate(action=action)
+
 class TestLightningDamageConsumable(unittest.TestCase):
     def test_init(self):
         '''

@@ -103,7 +103,7 @@ class FireballDamageConsumable(Consumable):
         self.engine.event_handler = AreaRangedAttackHandler(
             self.engine,
             radius=self.radius,
-            callback=lambda xy: actions.ItemAction(consumer, self.paretn, xy)
+            callback=lambda xy: actions.ItemAction(consumer, self.parent, xy)
         )
         return None
 
