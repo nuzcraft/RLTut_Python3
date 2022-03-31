@@ -7,6 +7,7 @@ import color
 import components.inventory
 from components.base_component import BaseComponent
 from exceptions import Impossible
+from input_handlers import SingleRangedAttackHandler
 
 if TYPE_CHECKING:
     from entity import Actor, Item
@@ -39,6 +40,16 @@ class Consumable(BaseComponent):
 class ConfusionConsumable(Consumable):
     def __init__(self, number_of_turns: int):
         self.number_of_turns = number_of_turns
+
+    def get_action(self, consumer: Actor) -> Optional[actions.Action]:
+        self.engine.message_log.add_message(
+            "Select a target location.", color.needs_target
+        )
+        self.engine.event_handler = SingleRangedAttackHandler(
+            self.engine,
+            callback=lambda xy: actions.ItemAction(consumer, self.parent, xy)
+        )
+        return None
 
 
 class HealingConsumable(Consumable):
