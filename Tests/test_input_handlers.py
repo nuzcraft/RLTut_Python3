@@ -1652,7 +1652,6 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
     def test_init(self):
         '''
         test that the engine and callback are initialized without issues
-        TODO: is there a good way to assert the callback is set correctly?
         '''
         player = Actor(
             x=1, y=1,
@@ -1672,7 +1671,12 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
                 entity=player, item=item, target_xy=xy)
         )
         self.assertEqual(e_handler.engine, eng)
-        # self.assertIsInstance(e_handler.callback, ItemAction)
+        
+        with patch('actions.ItemAction.__init__') as patch_ItemAction:
+            patch_ItemAction.return_value = None
+            e_handler.callback((0, 0))
+
+        patch_ItemAction.assert_called()
 
     def test_on_index_selected(self):
         '''
@@ -1726,6 +1730,12 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
         )
         self.assertEqual(e_handler.engine, eng)
         self.assertEqual(e_handler.radius, 5)
+        
+        with patch('actions.ItemAction.__init__') as patch_ItemAction:
+            patch_ItemAction.return_value = None
+            e_handler.callback((0, 0))
+
+        patch_ItemAction.assert_called()
 
 if __name__ == '__main__':
     unittest.main()
