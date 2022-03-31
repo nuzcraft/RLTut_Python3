@@ -95,6 +95,18 @@ class FireballDamageConsumable(Consumable):
         self.damage = damage
         self.radius = radius
 
+    def get_action(self, consumer: Actor) -> Optional[actions.Action]:
+        self.engine.message_log.add_message(
+            "Select a target location.",
+            color.needs_target,
+        )
+        self.engine.event_handler = AreaRangedAttackHandler(
+            self.engine,
+            radius=self.radius,
+            callback=lambda xy: actions.ItemAction(consumer, self.paretn, xy)
+        )
+        return None
+
 
 class LightningDamageConsumable(Consumable):
     def __init__(self, damage: int, maximum_range: int):

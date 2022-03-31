@@ -15,7 +15,7 @@ from actions import ItemAction
 from engine import Engine
 from game_map import GameMap
 from exceptions import Impossible
-from input_handlers import SingleRangedAttackHandler
+from input_handlers import SingleRangedAttackHandler, AreaRangedAttackHandler
 
 
 class TestConsumable(unittest.TestCase):
@@ -306,6 +306,30 @@ class TestFireballDamageConsumable(unittest.TestCase):
         consumable = FireballDamageConsumable(damage=5, radius=3)
         self.assertEqual(consumable.damage, 5)
         self.assertEqual(consumable.radius, 3)
+
+    def test_get_action(self):
+        '''
+        test that get_action will add a message to the message log
+        and set the event handler to AreaRangedAttackHandler
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        actor.parent = gm
+        cm = FireballDamageConsumable(damage=5, radius=3)
+        item = Item(consumable=cm)
+        item.parent = actor.inventory
+        cm.parent = item
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            action = cm.get_action(consumer=actor)
+        self.assertIsNone(action)
+        patch_add_message.assert_called_once()
+        self.assertIsInstance(cm.engine.event_handler,
+                              AreaRangedAttackHandler)
 
 class TestLightningDamageConsumable(unittest.TestCase):
     def test_init(self):
