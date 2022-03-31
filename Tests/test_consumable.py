@@ -5,6 +5,7 @@ from components.consumable import (
     HealingConsumable,
     LightningDamageConsumable,
     ConfusionConsumable,
+    FireballDamageConsumable,
 )
 from components.ai import BaseAI, ConfusedEnemy
 from components.fighter import Fighter
@@ -297,6 +298,14 @@ class TestHealingConsumable(unittest.TestCase):
         with self.assertRaises(Impossible):
             consumable.activate(action=action)
 
+class TestFireballDamageConsumable(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that initial values are initialized as expected
+        '''
+        consumable = FireballDamageConsumable(damage=5, radius=3)
+        self.assertEqual(consumable.damage, 5)
+        self.assertEqual(consumable.radius, 3)
 
 class TestLightningDamageConsumable(unittest.TestCase):
     def test_init(self):

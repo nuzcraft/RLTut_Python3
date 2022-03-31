@@ -8,7 +8,7 @@ import components.inventory
 import components.ai
 from components.base_component import BaseComponent
 from exceptions import Impossible
-from input_handlers import SingleRangedAttackHandler
+from input_handlers import SingleRangedAttackHandler, AreaRangedAttackHandler
 
 if TYPE_CHECKING:
     from entity import Actor, Item
@@ -89,6 +89,11 @@ class HealingConsumable(Consumable):
             self.consume()
         else:
             raise Impossible(f"Your health is already full.")
+
+class FireballDamageConsumable(Consumable):
+    def __init__(self, damage: int, radius: int):
+        self.damage = damage
+        self.radius = radius
 
 
 class LightningDamageConsumable(Consumable):
