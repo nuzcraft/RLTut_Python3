@@ -22,6 +22,7 @@ from actions import (
     WaitAction,
     PickupAction,
     DropItem,
+    ItemAction,
 )
 from engine import Engine
 from entity import Entity, Actor, Item
@@ -1645,10 +1646,12 @@ class TestLookHandler(unittest.TestCase):
         self.assertIsInstance(
             e_handler.engine.event_handler, MainGameEventHandler)
 
+
 class TestSingleRangedAttackHandler(unittest.TestCase):
     def test_init(self):
         '''
         test that the engine and callback are initialized without issues
+        TODO: is there a good way to assert the callback is set correctly?
         '''
         player = Actor(
             x=1, y=1,
@@ -1660,9 +1663,43 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
         gm = GameMap(engine=eng, width=10, height=10)
         eng.game_map = gm
         player.parent = gm
+        item = Item(consumable=Consumable())
+        item.parent = player
         e_handler = SingleRangedAttackHandler(
             engine=eng,
-            callback= )
+            callback=lambda xy: ItemAction(
+                entity=player, item=item, target_xy=xy)
+        )
+        self.assertEqual(e_handler.engine, eng)
+        # self.assertIsInstance(e_handler.callback, ItemAction)
+
+    def test_on_index_selected(self):
+        '''
+        test that on_index_selected will call the callback
+        '''
+        player = Actor(
+            x=1, y=1,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        item = Item(consumable=Consumable())
+        item.parent = player
+        e_handler = SingleRangedAttackHandler(
+            engine=eng,
+            callback=lambda xy: ItemAction(
+                entity=player, item=item, target_xy=xy)
+        )
+        with patch('actions.ItemAction.__init__') as patch_ItemAction:
+            patch_ItemAction.return_value = None
+            e_handler.on_index_selected(x=1, y=1)
+
+        patch_ItemAction.assert_called()
+
 
 if __name__ == '__main__':
     unittest.main()
