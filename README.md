@@ -20,6 +20,8 @@ https://rogueliketutorials.com/tutorials/tcod/v2/part-10/
 
 Holy crap, this is quite the refactor. I can see this having SIGNIFICANT impacts on the unit tests I've written. Beyond that, I'm looking forward to putting some polishing touches in! Things like a menu + saving and loading will make it feel more like a proper gain and less like a tech demo.
 
+Okay...as of right now, I've finished the event_handler refactor and I'm actually kind of afraid to run my unit test suite. Fingers crossed it's not as bad as I expect...
+
 ## Part 9 Dev Notes
 
 ### Ranged Scrolls and Targeting
