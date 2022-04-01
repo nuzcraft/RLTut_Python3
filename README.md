@@ -22,6 +22,8 @@ Holy crap, this is quite the refactor. I can see this having SIGNIFICANT impacts
 
 Okay...as of right now, I've finished the event_handler refactor and I'm actually kind of afraid to run my unit test suite. Fingers crossed it's not as bad as I expect...
 
+Wow, way better than I expected! 228/248 unit tests passed! Only 20 failures means the changes didn't actually break too many things...though it's possible (and likely) that I'll need to update/add tests to cover the changed situations.
+
 ## Part 9 Dev Notes
 
 ### Ranged Scrolls and Targeting
