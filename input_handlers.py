@@ -1,7 +1,6 @@
 from __future__ import annotations
-from tkinter.tix import Select
 
-from typing import Optional, TYPE_CHECKING, Callable, Tuple
+from typing import Optional, TYPE_CHECKING, Callable, Tuple, Union
 
 import tcod
 
@@ -59,6 +58,34 @@ CONFIRM_KEYS = {
     tcod.event.K_RETURN,
     tcod.event.K_KP_ENTER,
 }
+
+ActionOrHandler = Union[Action, "BaseEventHandler"]
+"""
+An event handler return value which can trigger an action or switch active handlers.
+
+If a handler is returned then it will become the active handler for future events.
+If an action is returned it will be attempted and if it's valid then
+MainGameEventHandler will become the active handler.
+"""
+
+
+class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
+    def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
+        """
+        Handle an event and return the next active event handler.
+        """
+        state = self.dispatch(event)
+        if isinstance(state, BaseEventHandler):
+            return state
+        assert not isinstance(
+            state, Action), f"{self!r} can not handle actions."
+        return self
+
+    def on_render(self, console: tcod.Console) -> None:
+        raise NotImplementedError()
+
+    def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
+        raise SystemExit()
 
 
 class EventHandler(tcod.event.EventDispatch[Action]):
@@ -390,6 +417,7 @@ class LookHandler(SelectIndexHandler):
         """return to main handler"""
         self.engine.event_handler = MainGameEventHandler(self.engine)
 
+
 class SingleRangedAttackHandler(SelectIndexHandler):
     """Handles targeting a single enemy. Only the enemy selected will be affected"""
 
@@ -402,11 +430,13 @@ class SingleRangedAttackHandler(SelectIndexHandler):
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         return self.callback((x, y))
 
+
 class AreaRangedAttackHandler(SelectIndexHandler):
     """
     Handles targeting an area within a given radius. 
     Any entity within the area will be affected
     """
+
     def __init__(
         self,
         engine: Engine,
@@ -426,12 +456,12 @@ class AreaRangedAttackHandler(SelectIndexHandler):
         # draw a rectangle around the targeted area,
         # so the player can see the affected tiles
         console.draw_frame(
-            x = x - self.radius - 1,
-            y = y - self.radius - 1,
-            width = self.radius ** 2,
-            height = self.radius ** 2,
-            fg = color.red,
-            clear = False,
+            x=x - self.radius - 1,
+            y=y - self.radius - 1,
+            width=self.radius ** 2,
+            height=self.radius ** 2,
+            fg=color.red,
+            clear=False,
         )
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
