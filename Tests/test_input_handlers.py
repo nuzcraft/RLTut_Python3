@@ -25,6 +25,7 @@ from actions import (
     PickupAction,
     DropItem,
     ItemAction,
+    Action,
 )
 from engine import Engine
 from entity import Entity, Actor, Item
@@ -43,14 +44,44 @@ class TestBaseEventHandler(unittest.TestCase):
         test that if the event returns an event handler,
         the event handler is returned
         '''
-        self.assertTrue(False)
+        eh = BaseEventHandler()
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('tcod.event.EventDispatch.dispatch') as patch_dispatch:
+            patch_dispatch.return_value = BaseEventHandler()
+            eh2 = eh.handle_events(event=event)
 
-    def test_handler_events_action(self):
+        self.assertIsInstance(eh2, BaseEventHandler)
+
+    def test_handle_events_action(self):
         '''
         test that if the event returns an action,
-        the action is returned
+        the an exception is raised 
         '''
-        self.assertTrue(False)
+        eh = BaseEventHandler()
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('tcod.event.EventDispatch.dispatch') as patch_dispatch:
+            patch_dispatch.return_value = Action(entity=Entity())
+            with self.assertRaises(Exception):
+                action = eh.handle_events(event=event)
+
+    def test_handle_events_other(self):
+        '''
+        test that if the event returns something that is not an action
+        or an event handler, the base event handler is returned
+        '''
+        eh = BaseEventHandler()
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('tcod.event.EventDispatch.dispatch') as patch_dispatch:
+            patch_dispatch.return_value = None
+            eh2 = eh.handle_events(event=event)
+
+        self.assertIsInstance(eh2, BaseEventHandler)
 
     def test_on_render(self):
         '''
