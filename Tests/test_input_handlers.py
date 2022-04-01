@@ -4,6 +4,7 @@ from tcod import console_get_char_background, console_get_char_foreground
 import tcod.event
 from tcod.console import Console
 from input_handlers import (
+    BaseEventHandler,
     EventHandler,
     MainGameEventHandler,
     GameOverEventHandler,
@@ -42,22 +43,32 @@ class TestBaseEventHandler(unittest.TestCase):
         test that if the event returns an event handler,
         the event handler is returned
         '''
+        self.assertTrue(False)
 
     def test_handler_events_action(self):
         '''
         test that if the event returns an action,
         the action is returned
         '''
+        self.assertTrue(False)
 
     def test_on_render(self):
         '''
         test that on_render will raise a NotImplementedError
         '''
+        eh = BaseEventHandler()
+        console = Console(width=10, height=10, order='F')
+        with self.assertRaises(NotImplementedError):
+            eh.on_render(console=console)
 
     def test_ev_quit(self):
         '''
         test that ev_quit will raise a SystemExit
         '''
+        eh = BaseEventHandler()
+        event = tcod.event.Quit()
+        with self.assertRaises(SystemExit):
+            eh.ev_quit(event=event)
 
 
 class Test_EventHandler(unittest.TestCase):
