@@ -36,6 +36,30 @@ from components.consumable import Consumable
 import color
 
 
+class TestBaseEventHandler(unittest.TestCase):
+    def test_handle_events_event_handler(self):
+        '''
+        test that if the event returns an event handler,
+        the event handler is returned
+        '''
+
+    def test_handler_events_action(self):
+        '''
+        test that if the event returns an action,
+        the action is returned
+        '''
+
+    def test_on_render(self):
+        '''
+        test that on_render will raise a NotImplementedError
+        '''
+
+    def test_ev_quit(self):
+        '''
+        test that ev_quit will raise a SystemExit
+        '''
+
+
 class Test_EventHandler(unittest.TestCase):
     def test_init(self):
         '''
@@ -1671,7 +1695,7 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
                 entity=player, item=item, target_xy=xy)
         )
         self.assertEqual(e_handler.engine, eng)
-        
+
         with patch('actions.ItemAction.__init__') as patch_ItemAction:
             patch_ItemAction.return_value = None
             e_handler.callback((0, 0))
@@ -1705,6 +1729,7 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
 
         patch_ItemAction.assert_called()
 
+
 class TestAreaRangedAttackHandler(unittest.TestCase):
     def test_init(self):
         '''
@@ -1730,7 +1755,7 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
         )
         self.assertEqual(e_handler.engine, eng)
         self.assertEqual(e_handler.radius, 5)
-        
+
         with patch('actions.ItemAction.__init__') as patch_ItemAction:
             patch_ItemAction.return_value = None
             e_handler.callback((0, 0))
