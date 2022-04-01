@@ -12,6 +12,14 @@ I want to use this as an opportunity to:
 4. make a roguelike
 5. practice with git
 
+## Part 10 Dev Notes
+
+### Saving and Loading
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-10/
+
+Holy crap, this is quite the refactor. I can see this having SIGNIFICANT impacts on the unit tests I've written. Beyond that, I'm looking forward to putting some polishing touches in! Things like a menu + saving and loading will make it feel more like a proper gain and less like a tech demo.
+
 ## Part 9 Dev Notes
 
 ### Ranged Scrolls and Targeting
@@ -20,7 +28,7 @@ https://rogueliketutorials.com/tutorials/tcod/v2/part-9/
 
 Woot! No additional refactoring yet! This section should be fun because it will give us the opportunity to use the code we just built to add more items that do unique things. Hopefully (outside of targeting) the additional things should be relatively minor and relatively atomic.
 
-This part was really insightful to develop as I believe it will pave the way for a significant amount of future development. We developed some unique spells that function in very different ways; one that automatically targets the nearest actor and 2 the require additional user input mid-cast. This additional input is implemented in an interesting way and by watching it get out in place I think I understand the code flow. 
+This part was really insightful to develop as I believe it will pave the way for a significant amount of future development. We developed some unique spells that function in very different ways; one that automatically targets the nearest actor and 2 the require additional user input mid-cast. This additional input is implemented in an interesting way and by watching it get out in place I think I understand the code flow.
 
 From a unit testing standpoint, this part was intense. Adding new handlers for user input meant a significant amount of unit testing. I'm also noticing that there is a lot id dependencies around the player, engine, and game map objects that makes it cumbersome to set up tests on other objects. All in, unit testing is becoming more comfortable and I'm looking forward to a time when I feel like I can push what I know to make it more organized and more performant.
 
