@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch
+from numpy import power
 from tcod import console_get_char_background, console_get_char_foreground
 import tcod.event
 from tcod.console import Console
@@ -112,21 +113,97 @@ class Test_EventHandler(unittest.TestCase):
         event_handler = EventHandler(engine=eng)
         self.assertEqual(event_handler.engine, eng)
 
-    def test_handle_events(self):
+    def test_handle_events_event_handler(self):
         '''
-        test that the handle_events function calls the handle_action
-        function
+        test that the handle_events will return an event handler
+        if the action would return an event_handler
         '''
-        ent = Entity()
+        ent = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+        )
         eng = Engine(player=ent)
         event_handler = EventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
         )
-        with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
-            event_handler.handle_events(event=event)
+        with patch('tcod.event.EventDispatch.dispatch') as patch_dispatch:
+            patch_dispatch.return_value = BaseEventHandler()
+            eh = event_handler.handle_events(event=event)
 
-        patch_handle_action.assert_called_once()
+        self.assertIsInstance(eh, BaseEventHandler)
+
+    def test_handle_events_other(self):
+        '''
+        test that the handle_events will return the calling event handler
+        when the input event doesn't return an event handler or action
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+        )
+        eng = Engine(player=ent)
+        event_handler = EventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('tcod.event.EventDispatch.dispatch') as patch_dispatch:
+            patch_dispatch.return_value = None
+            eh = event_handler.handle_events(event=event)
+
+        self.assertIsInstance(eh, EventHandler)
+
+    def test_handle_events_action_alive(self):
+        '''
+        test that the handle_events will return a MainGameEventHandler
+        when the action is successful and the player is alive
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+        )
+        eng = Engine(player=ent)
+        event_handler = EventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('tcod.event.EventDispatch.dispatch') as patch_dispatch:
+            patch_dispatch.return_value = Action(entity=ent)
+            with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+                patch_handle_action.return_value = True
+                eh = event_handler.handle_events(event=event)
+
+        self.assertIsInstance(eh, MainGameEventHandler)
+
+    def test_handle_events_action_dead(self):
+        '''
+        test that the handle_events will return a GameOverEventHandler
+        when the action is successful and the player is dead
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+        )
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        ent.parent = gm
+        eng.game_map = gm
+        ent.fighter.hp = 0
+        event_handler = EventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('tcod.event.EventDispatch.dispatch') as patch_dispatch:
+            patch_dispatch.return_value = Action(entity=ent)
+            with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+                patch_handle_action.return_value = True
+                eh = event_handler.handle_events(event=event)
+
+        self.assertIsInstance(eh, GameOverEventHandler)
 
     def test_handle_action_none(self):
         '''
@@ -207,21 +284,6 @@ class Test_EventHandler(unittest.TestCase):
         event_handler.ev_mousemotion(event=event)
         # check for 0,0 to assert that the mouse_location did not move
         self.assertEqual(event_handler.engine.mouse_location, (0, 0))
-
-    # ev_quit will only trigger on tcod.event.Quit() events, no need to negative test
-    def test_ev_quit(self):
-        # TODO: the assertEquals seems like it might be wrong (but its working)
-        # seems like the exception code should be 1, not none
-        '''
-        tests that the a quit action will raise an exception
-        '''
-        ent = Entity()
-        eng = Engine(player=ent)
-        event_handler = EventHandler(engine=eng)
-        event = tcod.event.Quit()
-        with self.assertRaises(SystemExit) as action:
-            event_handler.dispatch(event)
-        self.assertEqual(action.exception.code, None)
 
 
 class Test_MainGameEventHandler(unittest.TestCase):
@@ -619,9 +681,8 @@ class Test_MainGameEventHandler(unittest.TestCase):
         event_handler = MainGameEventHandler(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.V, sym=tcod.event.K_v, mod=tcod.event.Modifier.NONE)
-        event_handler.ev_keydown(event=event)
-        self.assertIsInstance(
-            event_handler.engine.event_handler, HistoryViewer)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsInstance(ret, HistoryViewer)
 
     def test_ev_keydown_g(self):
         '''
@@ -645,8 +706,7 @@ class Test_MainGameEventHandler(unittest.TestCase):
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.I, sym=tcod.event.K_i, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
-        self.assertIsInstance(
-            event_handler.engine.event_handler, InventoryActivateHandler)
+        self.assertIsInstance(action, InventoryActivateHandler)
 
     def test_ev_keydown_d(self):
         '''
@@ -658,8 +718,7 @@ class Test_MainGameEventHandler(unittest.TestCase):
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.D, sym=tcod.event.K_d, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
-        self.assertIsInstance(
-            event_handler.engine.event_handler, InventoryDropHandler)
+        self.assertIsInstance(action, InventoryDropHandler)
 
     def test_ev_keydown_SLASH(self):
         '''
@@ -671,8 +730,7 @@ class Test_MainGameEventHandler(unittest.TestCase):
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.SLASH, sym=tcod.event.K_SLASH, mod=tcod.event.Modifier.NONE)
         action = event_handler.dispatch(event)
-        self.assertIsInstance(
-            event_handler.engine.event_handler, LookHandler)
+        self.assertIsInstance(action, LookHandler)
 
     # using the backslash button as an unassigned button
     def test_ev_keydown_other(self):
@@ -891,50 +949,11 @@ class Test_HistoryViewer(unittest.TestCase):
         event_handler = HistoryViewer(engine=eng)
         event = tcod.event.KeyDown(
             scancode=tcod.event.Scancode.K, sym=tcod.event.K_k, mod=tcod.event.Modifier.NONE)
-        event_handler.ev_keydown(event=event)
-        self.assertIsInstance(
-            event_handler.engine.event_handler, MainGameEventHandler)
+        ret = event_handler.ev_keydown(event=event)
+        self.assertIsInstance(ret, MainGameEventHandler)
 
 
 class TestAskUserEventHandler(unittest.TestCase):
-    def test_handle_action_True(self):
-        '''
-        test that the handle action function resets the event handler of the engine
-        '''
-        ent = Entity()
-        eng = Engine(player=ent)
-        event_handler = AskUserEventHandler(engine=eng)
-        eng.event_handler = event_handler
-        action = WaitAction(entity=ent)
-
-        with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
-            patch_handle_action.return_value = True
-            ret = event_handler.handle_action(action=action)
-
-        self.assertTrue(ret)
-        self.assertIsInstance(
-            event_handler.engine.event_handler, MainGameEventHandler)
-
-    def test_handle_action_False(self):
-        '''
-        test that the handle action function does not reset the event handler of the engine
-        '''
-        ent = Entity()
-        eng = Engine(player=ent)
-        event_handler = AskUserEventHandler(engine=eng)
-        eng.event_handler = event_handler
-        action = WaitAction(entity=ent)
-
-        with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
-            patch_handle_action.return_value = False
-            ret = event_handler.handle_action(action=action)
-
-        self.assertFalse(ret)
-        self.assertNotIsInstance(
-            event_handler.engine.event_handler, MainGameEventHandler)
-        self.assertIsInstance(
-            event_handler.engine.event_handler, AskUserEventHandler)
-
     def test_ev_keydown_LSHIFT(self):
         '''
         test that sending a keydown event for LSHIFT will return none 
@@ -1049,9 +1068,7 @@ class TestAskUserEventHandler(unittest.TestCase):
         event_handler = AskUserEventHandler(engine=eng)
         eng.event_handler = event_handler
         ret = event_handler.on_exit()
-        self.assertIsInstance(
-            event_handler.engine.event_handler, MainGameEventHandler)
-        self.assertIsNone(ret)
+        self.assertIsInstance(ret, MainGameEventHandler)
 
 
 class TestIventoryEventHandler(unittest.TestCase):
@@ -1709,9 +1726,8 @@ class TestLookHandler(unittest.TestCase):
         eng.game_map = gm
         player.parent = gm
         e_handler = LookHandler(engine=eng)
-        e_handler.on_index_selected(x=1, y=1)
-        self.assertIsInstance(
-            e_handler.engine.event_handler, MainGameEventHandler)
+        ret = e_handler.on_index_selected(x=1, y=1)
+        self.assertIsInstance(ret, MainGameEventHandler)
 
 
 class TestSingleRangedAttackHandler(unittest.TestCase):

@@ -104,10 +104,8 @@ class TestConfusionConsumable(unittest.TestCase):
         cm.parent = item
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             action = cm.get_action(consumer=actor)
-        self.assertIsNone(action)
         patch_add_message.assert_called_once()
-        self.assertIsInstance(cm.engine.event_handler,
-                              SingleRangedAttackHandler)
+        self.assertIsInstance(action, SingleRangedAttackHandler)
 
     def test_activate_good_target(self):
         '''
@@ -136,10 +134,10 @@ class TestConfusionConsumable(unittest.TestCase):
         item.parent = actor.inventory
         cm.parent = item
         # get_action will initiate user input phase
-        cm.get_action(consumer=actor)
+        handler = cm.get_action(consumer=actor)
         # calling the callback with the target tile will return
         # the action we need
-        action = cm.engine.event_handler.callback((1, 1))
+        action = handler.callback((1, 1))
 
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             with patch('components.consumable.Consumable.consume') as patch_consume:
@@ -175,10 +173,10 @@ class TestConfusionConsumable(unittest.TestCase):
         item.parent = actor.inventory
         cm.parent = item
         # get_action will initiate user input phase
-        cm.get_action(consumer=actor)
+        handler = cm.get_action(consumer=actor)
         # calling the callback with the target tile will return
         # the action we need
-        action = cm.engine.event_handler.callback((1, 1))
+        action = handler.callback((1, 1))
 
         with self.assertRaises(Impossible):
             cm.activate(action=action)
@@ -209,10 +207,10 @@ class TestConfusionConsumable(unittest.TestCase):
         item.parent = actor.inventory
         cm.parent = item
         # get_action will initiate user input phase
-        cm.get_action(consumer=actor)
+        handler = cm.get_action(consumer=actor)
         # calling the callback with the target tile will return
         # the action we need NOTE target does not match ent location
-        action = cm.engine.event_handler.callback((2, 2))
+        action = handler.callback((2, 2))
 
         with self.assertRaises(Impossible):
             cm.activate(action=action)
@@ -236,10 +234,10 @@ class TestConfusionConsumable(unittest.TestCase):
         item.parent = actor.inventory
         cm.parent = item
         # get_action will initiate user input phase
-        cm.get_action(consumer=actor)
+        handler = cm.get_action(consumer=actor)
         # calling the callback with the target tile will return
         # the action we need NOTE target does not match ent location
-        action = cm.engine.event_handler.callback((0, 0))
+        action = handler.callback((0, 0))
 
         with self.assertRaises(Impossible):
             cm.activate(action=action)
@@ -298,6 +296,7 @@ class TestHealingConsumable(unittest.TestCase):
         with self.assertRaises(Impossible):
             consumable.activate(action=action)
 
+
 class TestFireballDamageConsumable(unittest.TestCase):
     def test_init(self):
         '''
@@ -326,10 +325,8 @@ class TestFireballDamageConsumable(unittest.TestCase):
         cm.parent = item
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             action = cm.get_action(consumer=actor)
-        self.assertIsNone(action)
         patch_add_message.assert_called_once()
-        self.assertIsInstance(cm.engine.event_handler,
-                              AreaRangedAttackHandler)
+        self.assertIsInstance(action, AreaRangedAttackHandler)
 
     def test_activate_hit_actor(self):
         '''
@@ -358,10 +355,10 @@ class TestFireballDamageConsumable(unittest.TestCase):
         item.parent = actor.inventory
         cm.parent = item
         # get_action will initiate user input phase
-        cm.get_action(consumer=actor)
+        handler = cm.get_action(consumer=actor)
         # calling the callback with the target tile will return
         # the action we need
-        action = cm.engine.event_handler.callback((6, 6))
+        action = handler.callback((6, 6))
 
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             with patch('components.consumable.Consumable.consume') as patch_consume:
@@ -405,10 +402,10 @@ class TestFireballDamageConsumable(unittest.TestCase):
         item.parent = actor.inventory
         cm.parent = item
         # get_action will initiate user input phase
-        cm.get_action(consumer=actor)
+        handler = cm.get_action(consumer=actor)
         # calling the callback with the target tile will return
         # the action we need
-        action = cm.engine.event_handler.callback((6, 6))
+        action = handler.callback((6, 6))
 
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             with patch('components.consumable.Consumable.consume') as patch_consume:
@@ -453,10 +450,10 @@ class TestFireballDamageConsumable(unittest.TestCase):
         item.parent = actor.inventory
         cm.parent = item
         # get_action will initiate user input phase
-        cm.get_action(consumer=actor)
+        handler = cm.get_action(consumer=actor)
         # calling the callback with the target tile will return
         # the action we need
-        action = cm.engine.event_handler.callback((6, 6))
+        action = handler.callback((6, 6))
 
         with self.assertRaises(Impossible):
             cm.activate(action=action)
@@ -481,13 +478,14 @@ class TestFireballDamageConsumable(unittest.TestCase):
         item.parent = actor.inventory
         cm.parent = item
         # get_action will initiate user input phase
-        cm.get_action(consumer=actor)
+        handler = cm.get_action(consumer=actor)
         # calling the callback with the target tile will return
         # the action we need
-        action = cm.engine.event_handler.callback((6, 6))
+        action = handler.callback((6, 6))
 
         with self.assertRaises(Impossible):
             cm.activate(action=action)
+
 
 class TestLightningDamageConsumable(unittest.TestCase):
     def test_init(self):
