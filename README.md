@@ -26,6 +26,8 @@ Wow, way better than I expected! 228/248 unit tests passed! Only 20 failures mea
 
 And unit test updates are complete! It wasn't nearly as bad as I expected, though I'm a bit concerned there's a bit of built up technical debt for unit tests that continue to reference the event_handler of the engine.
 
+OH SHIT, the next part has us remove that reference...we'll see what the damage is...no damage! Whew! Onwards to some actual good and new development.
+
 ## Part 9 Dev Notes
 
 ### Ranged Scrolls and Targeting

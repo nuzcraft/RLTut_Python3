@@ -6,21 +6,18 @@ from tcod.console import Console
 import tcod
 
 import exceptions
-from input_handlers import MainGameEventHandler
 from message_log import MessageLog
 import render_functions
 
 if TYPE_CHECKING:
     from entity import Actor
     from game_map import GameMap
-    from input_handlers import EventHandler
 
 
 class Engine:
     game_map: GameMap
 
     def __init__(self, player: Actor):
-        self.event_handler: EventHandler = MainGameEventHandler(self)
         self.message_log = MessageLog()
         self.mouse_location = (0, 0)
         self.player = player
@@ -31,7 +28,7 @@ class Engine:
                 try:
                     entity.ai.perform()
                 except exceptions.Impossible:
-                    pass # ignore impossible action exceptions from ai
+                    pass  # ignore impossible action exceptions from ai
 
     def update_fov(self) -> None:
         """Recompute the visible area based on the players point of view."""
