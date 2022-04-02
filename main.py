@@ -52,10 +52,10 @@ def main() -> None:
         except exceptions.QuitWithoutSaving:
             raise
         except SystemExit:  # Save and quit
-            # TODO: Add the save function here
+            save_game(handler, "savegame.sav")
             raise
         except BaseException:  # Save on any other unexpected exceptions
-            # TODO: add the save function here
+            save_game(handler, "savegame.sav")
             raise
 
 
