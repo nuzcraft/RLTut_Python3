@@ -87,6 +87,30 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
 
+class PopupMessage(BaseEventHandler):
+    """Display a popup text window"""
+    def __init__(self, parent_handler: BaseEventHandler, text: str):
+        self.parent = parent_handler
+        self.text = text
+
+    def on_render(self, console: tcod.Console) -> None:
+        """Render the parent and dim the result then print the message on top"""
+        self.parent.on_render(console)
+        console.rgb["fg"] //=8
+        console.rgb["bg"] //=8
+
+        console.print(
+            console.width // 2,
+            console.height // 2,
+            self.text,
+            fg=color.white,
+            bg=color.black,
+            alignment=tcod.CENTER,
+        )
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
+        """any key returns to the parent handler"""
+        return self.parent
 
 class EventHandler(BaseEventHandler):
     def __init__(self, engine: Engine):
