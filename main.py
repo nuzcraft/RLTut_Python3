@@ -8,6 +8,11 @@ import exceptions
 import input_handlers
 import setup_game
 
+def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
+    """if the current event handler has an active Engine then save it"""
+    if isinstance(handler, input_handlers.EventHandler):
+        handler.engine.save_as(filename=filename)
+        print("Game saved.")
 
 def main() -> None:
     screen_width = 80
