@@ -28,6 +28,8 @@ And unit test updates are complete! It wasn't nearly as bad as I expected, thoug
 
 OH SHIT, the next part has us remove that reference...we'll see what the damage is...no damage! Whew! Onwards to some actual good and new development.
 
+Heyo, adding in the saving and loading was a bit fun! We also refactored and added a title screen which makes things look and feel way better. Towards the end of the chapter I skimped a bit on some unit tests around loading saves...hopefully that doesn't come back to bite me! It feels really good to have this section finished and I'm looking forward to the end of the tutorial! I already have some ideas for taking the finished product and giving it a new theme and features.
+
 ## Part 9 Dev Notes
 
 ### Ranged Scrolls and Targeting
