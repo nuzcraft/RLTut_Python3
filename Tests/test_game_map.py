@@ -1,5 +1,6 @@
 import unittest
-from game_map import GameMap
+from unittest.mock import patch
+from game_map import GameMap, GameWorld
 from entity import Entity, Actor, Item
 from engine import Engine
 from components.ai import HostileEnemy
@@ -195,3 +196,57 @@ class Test_Game_Map(unittest.TestCase):
         # check an empty location
         returned_act = gm.get_actor_at_location(x=6, y=7)
         self.assertIsNone(returned_act)
+
+
+class TestGameWorld(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that a gameworld can be initialized correctly
+        '''
+        eng = Engine(player=Entity())
+        mw, mh = 10, 11
+        mr = 6
+        rmin, rmax = 3, 4
+        mm, mi = 1, 2
+        cf = 5
+        gw = GameWorld(
+            engine=eng,
+            map_width=mw,
+            map_height=mh,
+            max_rooms=mr,
+            room_min_size=rmin,
+            room_max_size=rmax,
+            max_monsters_per_room=mm,
+            max_items_per_room=mi,
+            current_floor=cf
+        )
+        self.assertEqual(gw.engine, eng)
+        self.assertEqual(gw.map_width, mw)
+        self.assertEqual(gw.map_height, mh)
+        self.assertEqual(gw.max_rooms, mr)
+        self.assertEqual(gw.room_min_size, rmin)
+        self.assertEqual(gw.room_max_size, rmax)
+        self.assertEqual(gw.max_monsters_per_room, mm)
+        self.assertEqual(gw.max_items_per_room, mi)
+        self.assertEqual(gw.current_floor, cf)
+
+    def test_generate_floor(self):
+        '''
+        test that generating a floor will increment the current floor
+        and call generate_dungeon
+        '''
+        gw = GameWorld(
+            engine=Engine(player=Entity()),
+            map_width=10,
+            map_height=10,
+            max_rooms=10,
+            room_min_size=3,
+            room_max_size=6,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
+        with patch('procgen.generate_dungeon') as patch_gen_dun:
+            gw.generate_floor()
+
+        self.assertEqual(gw.current_floor, 1)
+        patch_gen_dun.assert_called()
