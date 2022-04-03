@@ -112,6 +112,8 @@ def generate_dungeon(
 
     rooms: List[RectangularRoom] = []
 
+    center_of_last_room = (0, 0)
+
     for r in range(max_rooms):
         room_width = random.randint(room_min_size, room_max_size)
         room_height = random.randint(room_min_size, room_max_size)
@@ -143,6 +145,8 @@ def generate_dungeon(
         place_entities(new_room, dungeon, max_monsters_per_room,
                        max_items_per_room)
 
+        # note: this gets set for every room, but if another room comes along
+        # the tunnel between will override the tile type
         dungeon.tiles[center_of_last_room] = tile_types.down_stairs
         dungeon.downstairs_location = center_of_last_room
 
