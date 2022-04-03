@@ -12,6 +12,14 @@ I want to use this as an opportunity to:
 4. make a roguelike
 5. practice with git
 
+## Part 11 Dev Notes
+
+### Delving into the Dungeon
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-11/
+
+This part looks like a part where we start putting in some bells and whistles to really flush out what the game can be. We'll add additional floors as well as exp and a level up system.
+
 ## Part 10 Dev Notes
 
 ### Saving and Loading
