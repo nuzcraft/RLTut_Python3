@@ -30,6 +30,10 @@ OH SHIT, the next part has us remove that reference...we'll see what the damage 
 
 Heyo, adding in the saving and loading was a bit fun! We also refactored and added a title screen which makes things look and feel way better. Towards the end of the chapter I skimped a bit on some unit tests around loading saves...hopefully that doesn't come back to bite me! It feels really good to have this section finished and I'm looking forward to the end of the tutorial! I already have some ideas for taking the finished product and giving it a new theme and features.
 
+Oh Snap, building this requires a new pyinstaller command:
+
+- pyinstaller --add-data "dejavu10x10_gs_tc.png;." --add-data "menu_background.png;." main.py
+
 ## Part 9 Dev Notes
 
 ### Ranged Scrolls and Targeting
