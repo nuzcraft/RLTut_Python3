@@ -9,6 +9,7 @@ from engine import Engine
 from game_map import GameMap
 from entity import Actor
 
+
 class TestSetupGame(unittest.TestCase):
     def test_new_game(self):
         '''
@@ -20,12 +21,13 @@ class TestSetupGame(unittest.TestCase):
         self.assertIsInstance(eng.game_map, GameMap)
         self.assertIsInstance(eng.player, Actor)
 
+
 class TestMainMenu(unittest.TestCase):
     def test_on_render(self):
         '''
         test that the main menu:
         draws the background, prints some text
-        '''  
+        '''
         mm = setup_game.MainMenu()
         console = tcod.console.Console(width=10, height=10, order='F')
 
@@ -75,19 +77,19 @@ class TestMainMenu(unittest.TestCase):
         ret = mm.ev_keydown(event=event)
         self.assertIsInstance(ret, MainGameEventHandler)
 
-    def test_ev_keydown_c(self):
-        '''
-        test that pressing c will return None since we've not 
-        implemented saving and continuing yet
-        '''
-        mm = setup_game.MainMenu()
-        event = tcod.event.KeyDown(
-            scancode=tcod.event.Scancode.C,
-            sym=tcod.event.K_c,
-            mod=tcod.event.Modifier.NONE
-        )
-        ret = mm.ev_keydown(event=event)
-        self.assertIsNone(ret)
+    # def test_ev_keydown_c(self):
+    #     '''
+    #     test that pressing c will return None since we've not
+    #     implemented saving and continuing yet
+    #     '''
+    #     mm = setup_game.MainMenu()
+    #     event = tcod.event.KeyDown(
+    #         scancode=tcod.event.Scancode.C,
+    #         sym=tcod.event.K_c,
+    #         mod=tcod.event.Modifier.NONE
+    #     )
+    #     ret = mm.ev_keydown(event=event)
+    #     self.assertIsNone(ret)
 
     def test_ev_keydown_other(self):
         '''
