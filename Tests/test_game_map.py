@@ -35,6 +35,8 @@ class Test_Game_Map(unittest.TestCase):
         # check that the entities set was created
         self.assertIn(ent1, gm.entities)
         self.assertIn(ent2, gm.entities)
+        # check that the downstairs location was set
+        self.assertEqual(gm.downstairs_location, (0, 0))
 
     def test_property_gamemap(self):
         '''
@@ -52,8 +54,10 @@ class Test_Game_Map(unittest.TestCase):
         player = Entity()
         eng = Engine(player=player)
         ent1 = Entity()
-        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter, inventory=Inventory(capacity=5))
-        act3 = Actor(ai_cls=HostileEnemy, fighter=Fighter, inventory=Inventory(capacity=5))
+        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter,
+                     inventory=Inventory(capacity=5))
+        act3 = Actor(ai_cls=HostileEnemy, fighter=Fighter,
+                     inventory=Inventory(capacity=5))
         act3.ai = None
         gm = GameMap(engine=eng, width=50, height=60)
         gm.entities = {ent1, act2, act3}
@@ -69,7 +73,8 @@ class Test_Game_Map(unittest.TestCase):
         player = Entity()
         eng = Engine(player=player)
         ent1 = Entity()
-        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter, inventory=Inventory(capacity=5))
+        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter,
+                     inventory=Inventory(capacity=5))
         itm3 = Item(consumable=Consumable())
         gm = GameMap(engine=eng, width=50, height=60)
         gm.entities = {ent1, act2, itm3}
@@ -77,7 +82,6 @@ class Test_Game_Map(unittest.TestCase):
         # verify that only one of the entities made it into the items list
         # itm3 is the only item
         self.assertEqual(len(list(items)), 1)
-
 
     def test_get_blocking_entity_at_location_true(self):
         '''
