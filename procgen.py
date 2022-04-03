@@ -138,8 +138,13 @@ def generate_dungeon(
             for x, y, in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = tile_types.floor
 
+            center_of_last_room = new_room.center
+
         place_entities(new_room, dungeon, max_monsters_per_room,
                        max_items_per_room)
+
+        dungeon.tiles[center_of_last_room] = tile_types.down_stairs
+        dungeon.downstairs_location = center_of_last_room
 
         # finally, append the new room to the list
         rooms.append(new_room)
