@@ -134,3 +134,6 @@ dmypy.json
 .vscode/
 
 RLTut_Python3.code-workspace
+
+# saved games
+*.sav

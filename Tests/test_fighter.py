@@ -29,7 +29,8 @@ class Test_Fighter(unittest.TestCase):
         test that an entity can be set without issues
         '''
         ft = Fighter(hp=10, defense=10, power=10)
-        act = Actor(ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
+        act = Actor(ai_cls=HostileEnemy, fighter=ft,
+                    inventory=Inventory(capacity=5))
         ft.entity = act
         self.assertEqual(act, ft.entity)
 
@@ -55,7 +56,8 @@ class Test_Fighter(unittest.TestCase):
         when setting below 0
         '''
         ft = Fighter(hp=10, defense=10, power=10)
-        act = Actor(ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
+        act = Actor(ai_cls=HostileEnemy, fighter=ft,
+                    inventory=Inventory(capacity=5))
         ft.entity = act
 
         eng = Engine(player=act)
@@ -81,7 +83,8 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
-        act = Actor(ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
+        act = Actor(ai_cls=HostileEnemy, fighter=ft,
+                    inventory=Inventory(capacity=5))
         ft.parent = act
 
         eng = Engine(player=act)
@@ -101,7 +104,8 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
-        act = Actor(name="player", ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
+        act = Actor(name="player", ai_cls=HostileEnemy,
+                    fighter=ft, inventory=Inventory(capacity=5))
         ft.parent = act
 
         eng = Engine(player=act)
@@ -117,7 +121,6 @@ class Test_Fighter(unittest.TestCase):
         self.assertIsNone(ft.parent.ai)
         self.assertEqual(ft.parent.name, "remains of player")
         self.assertEqual(ft.parent.render_order, RenderOrder.CORPSE)
-        self.assertIsInstance(ft.engine.event_handler, GameOverEventHandler)
         mock_add_message.assert_called_with("You died!", color.player_die)
 
     @patch('message_log.MessageLog.add_message')
@@ -126,11 +129,13 @@ class Test_Fighter(unittest.TestCase):
         test that when an actor (not player) dies, they get set well
         '''
         ft = Fighter(hp=10, defense=10, power=10)
-        act = Actor(name="actor", ai_cls=HostileEnemy, fighter=ft, inventory=Inventory(capacity=5))
+        act = Actor(name="actor", ai_cls=HostileEnemy,
+                    fighter=ft, inventory=Inventory(capacity=5))
         ft.parent = act
 
         ft2 = Fighter(hp=10, defense=10, power=10)
-        act2 = Actor(name="player", ai_cls=HostileEnemy, fighter=ft2, inventory=Inventory(capacity=5))
+        act2 = Actor(name="player", ai_cls=HostileEnemy,
+                     fighter=ft2, inventory=Inventory(capacity=5))
         ft2.parent = act2
 
         eng = Engine(player=act2)

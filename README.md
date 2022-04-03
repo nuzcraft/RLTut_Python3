@@ -12,6 +12,24 @@ I want to use this as an opportunity to:
 4. make a roguelike
 5. practice with git
 
+## Part 10 Dev Notes
+
+### Saving and Loading
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-10/
+
+Holy crap, this is quite the refactor. I can see this having SIGNIFICANT impacts on the unit tests I've written. Beyond that, I'm looking forward to putting some polishing touches in! Things like a menu + saving and loading will make it feel more like a proper gain and less like a tech demo.
+
+Okay...as of right now, I've finished the event_handler refactor and I'm actually kind of afraid to run my unit test suite. Fingers crossed it's not as bad as I expect...
+
+Wow, way better than I expected! 228/248 unit tests passed! Only 20 failures means the changes didn't actually break too many things...though it's possible (and likely) that I'll need to update/add tests to cover the changed situations.
+
+And unit test updates are complete! It wasn't nearly as bad as I expected, though I'm a bit concerned there's a bit of built up technical debt for unit tests that continue to reference the event_handler of the engine.
+
+OH SHIT, the next part has us remove that reference...we'll see what the damage is...no damage! Whew! Onwards to some actual good and new development.
+
+Heyo, adding in the saving and loading was a bit fun! We also refactored and added a title screen which makes things look and feel way better. Towards the end of the chapter I skimped a bit on some unit tests around loading saves...hopefully that doesn't come back to bite me! It feels really good to have this section finished and I'm looking forward to the end of the tutorial! I already have some ideas for taking the finished product and giving it a new theme and features.
+
 ## Part 9 Dev Notes
 
 ### Ranged Scrolls and Targeting
@@ -20,7 +38,7 @@ https://rogueliketutorials.com/tutorials/tcod/v2/part-9/
 
 Woot! No additional refactoring yet! This section should be fun because it will give us the opportunity to use the code we just built to add more items that do unique things. Hopefully (outside of targeting) the additional things should be relatively minor and relatively atomic.
 
-This part was really insightful to develop as I believe it will pave the way for a significant amount of future development. We developed some unique spells that function in very different ways; one that automatically targets the nearest actor and 2 the require additional user input mid-cast. This additional input is implemented in an interesting way and by watching it get out in place I think I understand the code flow. 
+This part was really insightful to develop as I believe it will pave the way for a significant amount of future development. We developed some unique spells that function in very different ways; one that automatically targets the nearest actor and 2 the require additional user input mid-cast. This additional input is implemented in an interesting way and by watching it get out in place I think I understand the code flow.
 
 From a unit testing standpoint, this part was intense. Adding new handlers for user input meant a significant amount of unit testing. I'm also noticing that there is a lot id dependencies around the player, engine, and game map objects that makes it cumbersome to set up tests on other objects. All in, unit testing is becoming more comfortable and I'm looking forward to a time when I feel like I can push what I know to make it more organized and more performant.
 
