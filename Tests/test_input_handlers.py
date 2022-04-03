@@ -28,6 +28,7 @@ from actions import (
     DropItem,
     ItemAction,
     Action,
+    TakeStairAction,
 )
 from engine import Engine
 from entity import Entity, Actor, Item
@@ -103,6 +104,7 @@ class TestBaseEventHandler(unittest.TestCase):
         with self.assertRaises(SystemExit):
             eh.ev_quit(event=event)
 
+
 class Test_PopupMessage(unittest.TestCase):
     def test_init(self):
         '''
@@ -125,7 +127,8 @@ class Test_PopupMessage(unittest.TestCase):
                 pop.on_render(console=console)
 
         patch_on_render.assert_called_once()
-        patch_print.assert_called_with(5, 5, "string", fg=color.white, bg=color.black, alignment=tcod.CENTER)
+        patch_print.assert_called_with(
+            5, 5, "string", fg=color.white, bg=color.black, alignment=tcod.CENTER)
 
     def test_ev_keydown(self):
         '''
@@ -137,6 +140,7 @@ class Test_PopupMessage(unittest.TestCase):
         )
         ret = pop.ev_keydown(event=event)
         self.assertIsInstance(ret, BaseEventHandler)
+
 
 class Test_EventHandler(unittest.TestCase):
     def test_init(self):
@@ -323,6 +327,30 @@ class Test_EventHandler(unittest.TestCase):
 
 class Test_MainGameEventHandler(unittest.TestCase):
     # tcod.event.KeyDown() events will trigger ev_keydown
+    def test_ev_keydown_period_rshift(self):
+        '''
+        tests that pressing rshift and period will return a stairs action
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.PERIOD, sym=tcod.event.K_PERIOD, mod=tcod.event.Modifier.RSHIFT)
+        action = event_handler.ev_keydown(event)
+        self.assertIsInstance(action, TakeStairAction)
+
+    def test_ev_keydown_period_lshift(self):
+        '''
+        tests that pressing lshift and period will return a stairs action
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.PERIOD, sym=tcod.event.K_PERIOD, mod=tcod.event.Modifier.LSHIFT)
+        action = event_handler.ev_keydown(event)
+        self.assertIsInstance(action, TakeStairAction)
+
     def test_ev_keydown_up(self):
         '''
         tests that pressing up will move the player up
