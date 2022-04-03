@@ -18,6 +18,7 @@ from input_handlers import (
     LookHandler,
     SingleRangedAttackHandler,
     AreaRangedAttackHandler,
+    PopupMessage,
 )
 
 from actions import (
@@ -102,6 +103,40 @@ class TestBaseEventHandler(unittest.TestCase):
         with self.assertRaises(SystemExit):
             eh.ev_quit(event=event)
 
+class Test_PopupMessage(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that the popup message can be initialized correctly
+        '''
+        pop = PopupMessage(parent_handler=BaseEventHandler(), text="string")
+        self.assertIsInstance(pop.parent, BaseEventHandler)
+        self.assertEqual(pop.text, "string")
+
+    def test_on_render(self):
+        '''
+        verify that the parent is rendered as expected then an additional print is
+        called with the correct parameters
+        '''
+        pop = PopupMessage(parent_handler=BaseEventHandler(), text="string")
+        console = Console(width=10, height=10, order='F')
+
+        with patch('input_handlers.BaseEventHandler.on_render') as patch_on_render:
+            with patch('tcod.console.Console.print') as patch_print:
+                pop.on_render(console=console)
+
+        patch_on_render.assert_called_once()
+        patch_print.assert_called_with(5, 5, "string", fg=color.white, bg=color.black, alignment=tcod.CENTER)
+
+    def test_ev_keydown(self):
+        '''
+        verify that sending a keydown will return the parent
+        '''
+        pop = PopupMessage(parent_handler=BaseEventHandler(), text="string")
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        ret = pop.ev_keydown(event=event)
+        self.assertIsInstance(ret, BaseEventHandler)
 
 class Test_EventHandler(unittest.TestCase):
     def test_init(self):
