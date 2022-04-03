@@ -2,6 +2,8 @@ from turtle import width
 import unittest
 from unittest.mock import patch
 
+from numpy import power
+
 from actions import (
     Action, ActionWithDirection,
     MovementAction,
@@ -10,9 +12,10 @@ from actions import (
     PickupAction,
     ItemAction,
     DropItem,
+    TakeStairAction,
 )
 from entity import Entity, Actor, Item
-from game_map import GameMap
+from game_map import GameMap, GameWorld
 from engine import Engine
 from components.ai import BaseAI, HostileEnemy
 from components.fighter import Fighter
@@ -60,6 +63,59 @@ class Test_Actions_WaitAction(unittest.TestCase):
         nothing to test here since the wait action just 
         passes for now
         '''
+
+
+class Test_Actions_TakeStairsAction(unittest.TestCase):
+    def test_perform_with_stairs(self):
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+        )
+        eng = Engine(player=actor)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=5,
+            room_min_size=3,
+            room_max_size=4,
+            max_monsters_per_room=2,
+            max_items_per_room=1,
+        )
+        eng.game_world.generate_floor()
+        actor.x, actor.y = eng.game_map.downstairs_location
+        action = TakeStairAction(entity=actor)
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            action.perform()
+
+        self.assertEqual(action.engine.game_world.current_floor, 2)
+        patch_add_message.assert_called_once()
+
+    def test_perform_no_stairs(self):
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+        )
+        eng = Engine(player=actor)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=5,
+            room_min_size=3,
+            room_max_size=4,
+            max_monsters_per_room=2,
+            max_items_per_room=1,
+        )
+        eng.game_world.generate_floor()
+        # actor.x, actor.y = eng.game_map.downstairs_location
+        action = TakeStairAction(entity=actor)
+
+        with self.assertRaises(Impossible):
+            action.perform()
 
 
 class Test_Actions_ActionWithDirection(unittest.TestCase):
