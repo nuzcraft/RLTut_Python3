@@ -7,6 +7,7 @@ from numpy import power
 from components.ai import BaseAI, HostileEnemy, ConfusedEnemy
 from components.fighter import Fighter
 from components.inventory import Inventory
+from components.level import Level
 from entity import Entity, Actor
 from game_map import GameMap
 from engine import Engine
@@ -20,7 +21,8 @@ class Test_BaseAI(unittest.TestCase):
         tests that the entity can be set correctly
         '''
         actor = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         self.assertEqual(actor, actor.ai.entity)
 
         ai = BaseAI(actor)
@@ -115,7 +117,8 @@ class TestConfusedEnemy(unittest.TestCase):
         test that the confused enemy can be initized without issues
         '''
         actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         ai = ConfusedEnemy(
             entity=actor, previous_ai=HostileEnemy, turns_remaining=5)
         self.assertEqual(ai.previous_ai, HostileEnemy)
@@ -126,7 +129,8 @@ class TestConfusedEnemy(unittest.TestCase):
         test that with 0 or less turns remaining the ai switches back 
         '''
         actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         ai = ConfusedEnemy(
             entity=actor, previous_ai=HostileEnemy(entity=actor), turns_remaining=0)
         actor.ai = ai
@@ -143,7 +147,8 @@ class TestConfusedEnemy(unittest.TestCase):
         in a random direction and reduce the number of turns remaining
         '''
         actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         ai = ConfusedEnemy(
             entity=actor, previous_ai=HostileEnemy(entity=actor), turns_remaining=5)
         actor.ai = ai
@@ -163,7 +168,8 @@ class TestHostileEnemy(unittest.TestCase):
         '''
         # instantiating an actor will automatically instantiate the ai class under actor.ai
         actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         self.assertEqual(actor, actor.ai.entity)
         self.assertEqual([], actor.ai.path)
 
@@ -179,7 +185,8 @@ class TestHostileEnemy(unittest.TestCase):
         gm.entities.add(player)
 
         hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         gm.entities.add(hostile_ent)
 
         player.parent = gm
@@ -210,7 +217,8 @@ class TestHostileEnemy(unittest.TestCase):
 
         # hostile entity is 2 spaces away
         hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         gm.entities.add(hostile_ent)
 
         player.parent = gm
@@ -241,7 +249,8 @@ class TestHostileEnemy(unittest.TestCase):
 
         # hostile entity is 1 spaces away
         hostile_ent = Actor(x=0, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         gm.entities.add(hostile_ent)
 
         player.parent = gm
