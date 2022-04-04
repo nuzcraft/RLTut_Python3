@@ -133,3 +133,98 @@ class TestLevel(unittest.TestCase):
             f"You advance to level 2!"
         )
 
+    def test_increase_level(self):
+        '''
+        test that calling increase_level will increase the level 
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        actor.parent = gm
+        lvl = Level(
+            current_level=1,
+            level_up_base=200,
+            level_up_factor=150,
+        )
+        lvl.parent=actor
+        lvl.increase_level()
+        self.assertEqual(lvl.current_level, 2)
+
+    def test_increase_max_hp(self):
+        '''
+        test that calling increase_max_hp will increase the max_hp and hp
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        actor.fighter.hp = 3
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        actor.parent = gm
+        lvl = Level(
+            current_level=1,
+            level_up_base=200,
+            level_up_factor=150,
+        )
+        lvl.parent=actor
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            lvl.increase_max_hp(amount=5)
+        self.assertEqual(actor.fighter.hp, 8)
+        self.assertEqual(actor.fighter.max_hp, 15)
+        patch_add_message.assert_called_once()
+
+    def test_increase_power(self):
+        '''
+        test that calling increase_power will increase the power
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        actor.parent = gm
+        lvl = Level(
+            current_level=1,
+            level_up_base=200,
+            level_up_factor=150,
+        )
+        lvl.parent=actor
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            lvl.increase_power(amount=5)
+        self.assertEqual(actor.fighter.power, 15)
+        patch_add_message.assert_called_once()
+
+    def test_increase_defense(self):
+        '''
+        test that calling increase_defense will increase the defense
+        '''
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5)
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        actor.parent = gm
+        lvl = Level(
+            current_level=1,
+            level_up_base=200,
+            level_up_factor=150,
+        )
+        lvl.parent=actor
+
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            lvl.increase_defense(amount=5)
+        self.assertEqual(actor.fighter.defense, 15)
+        patch_add_message.assert_called_once()
+
