@@ -7,6 +7,7 @@ from components.ai import HostileEnemy
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.consumable import Consumable
+from components.level import Level
 
 
 class Test_Game_Map(unittest.TestCase):
@@ -56,9 +57,11 @@ class Test_Game_Map(unittest.TestCase):
         eng = Engine(player=player)
         ent1 = Entity()
         act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter,
-                     inventory=Inventory(capacity=5))
+                     inventory=Inventory(capacity=5),
+                     level=Level())
         act3 = Actor(ai_cls=HostileEnemy, fighter=Fighter,
-                     inventory=Inventory(capacity=5))
+                     inventory=Inventory(capacity=5),
+                     level=Level())
         act3.ai = None
         gm = GameMap(engine=eng, width=50, height=60)
         gm.entities = {ent1, act2, act3}
@@ -75,7 +78,8 @@ class Test_Game_Map(unittest.TestCase):
         eng = Engine(player=player)
         ent1 = Entity()
         act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter,
-                     inventory=Inventory(capacity=5))
+                     inventory=Inventory(capacity=5),
+                     level=Level())
         itm3 = Item(consumable=Consumable())
         gm = GameMap(engine=eng, width=50, height=60)
         gm.entities = {ent1, act2, itm3}
@@ -173,7 +177,8 @@ class Test_Game_Map(unittest.TestCase):
         will return that actor
         '''
         act = Actor(x=5, y=6, ai_cls=HostileEnemy,
-                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+                    level=Level())
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
         act.parent = gm
@@ -188,7 +193,8 @@ class Test_Game_Map(unittest.TestCase):
         will return that actor
         '''
         act = Actor(x=5, y=6, ai_cls=HostileEnemy,
-                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+                    level=Level())
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
         act.parent = gm

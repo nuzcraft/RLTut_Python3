@@ -4,6 +4,7 @@ from unittest.mock import patch
 from components.fighter import Fighter
 from components.ai import HostileEnemy
 from components.inventory import Inventory
+from components.level import Level
 from entity import Actor
 from engine import Engine
 from game_map import GameMap
@@ -30,7 +31,8 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         act = Actor(ai_cls=HostileEnemy, fighter=ft,
-                    inventory=Inventory(capacity=5))
+                    inventory=Inventory(capacity=5),
+                    level=Level())
         ft.entity = act
         self.assertEqual(act, ft.entity)
 
@@ -57,7 +59,8 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         act = Actor(ai_cls=HostileEnemy, fighter=ft,
-                    inventory=Inventory(capacity=5))
+                    inventory=Inventory(capacity=5),
+                    level=Level())
         ft.entity = act
 
         eng = Engine(player=act)
@@ -84,7 +87,8 @@ class Test_Fighter(unittest.TestCase):
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
         act = Actor(ai_cls=HostileEnemy, fighter=ft,
-                    inventory=Inventory(capacity=5))
+                    inventory=Inventory(capacity=5),
+                    level=Level())
         ft.parent = act
 
         eng = Engine(player=act)
@@ -105,7 +109,8 @@ class Test_Fighter(unittest.TestCase):
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
         act = Actor(name="player", ai_cls=HostileEnemy,
-                    fighter=ft, inventory=Inventory(capacity=5))
+                    fighter=ft, inventory=Inventory(capacity=5),
+                    level=Level())
         ft.parent = act
 
         eng = Engine(player=act)
@@ -130,12 +135,14 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         act = Actor(name="actor", ai_cls=HostileEnemy,
-                    fighter=ft, inventory=Inventory(capacity=5))
+                    fighter=ft, inventory=Inventory(capacity=5),
+                    level=Level())
         ft.parent = act
 
         ft2 = Fighter(hp=10, defense=10, power=10)
         act2 = Actor(name="player", ai_cls=HostileEnemy,
-                     fighter=ft2, inventory=Inventory(capacity=5))
+                     fighter=ft2, inventory=Inventory(capacity=5),
+                     level=Level())
         ft2.parent = act2
 
         eng = Engine(player=act2)

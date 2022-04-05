@@ -8,6 +8,7 @@ from components.ai import BaseAI
 from components.fighter import Fighter
 from components.consumable import Consumable
 from components.inventory import Inventory
+from components.level import Level
 
 import unittest
 
@@ -139,7 +140,8 @@ class TestActor(unittest.TestCase):
         '''
         test that initializing an actor sets the values as expected
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5),
+                      level=Level())
         # some of these are defaults
         self.assertEqual(actor.x, 0)
         self.assertEqual(actor.y, 0)
@@ -155,21 +157,28 @@ class TestActor(unittest.TestCase):
         self.assertEqual(actor, actor.fighter.parent)
         self.assertIsInstance(actor.inventory, Inventory)
         self.assertEqual(actor, actor.inventory.parent)
+        self.assertIsInstance(actor.level, Level)
+        self.assertEqual(actor, actor.level.parent)
 
     def test_property_is_alive_true(self):
         '''
         test the is_alive property returns true if there is an ai component
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+            10, 10, 10), inventory=Inventory(capacity=5),
+            level=Level())
         self.assertTrue(actor.is_alive)
 
     def test_property_is_alive_false(self):
         '''
         test the is_alive property returns false if there is no
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+            10, 10, 10), inventory=Inventory(capacity=5),
+            level=Level())
         actor.ai = None  # remove the ai component
         self.assertFalse(actor.is_alive)
+
 
 class TestItem(unittest.TestCase):
     def test_init(self):

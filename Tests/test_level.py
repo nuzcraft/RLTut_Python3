@@ -9,6 +9,7 @@ from engine import Engine
 from entity import Actor
 from game_map import GameMap
 
+
 class TestLevel(unittest.TestCase):
     def test_init(self):
         '''
@@ -82,7 +83,8 @@ class TestLevel(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -92,7 +94,7 @@ class TestLevel(unittest.TestCase):
             level_up_base=200,
             level_up_factor=150,
         )
-        lvl.parent=actor
+        lvl.parent = actor
 
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             lvl.add_xp(xp=100)
@@ -110,7 +112,8 @@ class TestLevel(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -120,7 +123,7 @@ class TestLevel(unittest.TestCase):
             level_up_base=200,
             level_up_factor=150,
         )
-        lvl.parent=actor
+        lvl.parent = actor
 
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             lvl.add_xp(xp=1000)
@@ -140,7 +143,8 @@ class TestLevel(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -150,7 +154,7 @@ class TestLevel(unittest.TestCase):
             level_up_base=200,
             level_up_factor=150,
         )
-        lvl.parent=actor
+        lvl.parent = actor
         lvl.increase_level()
         self.assertEqual(lvl.current_level, 2)
 
@@ -161,7 +165,8 @@ class TestLevel(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         actor.fighter.hp = 3
         eng = Engine(player=actor)
@@ -172,7 +177,7 @@ class TestLevel(unittest.TestCase):
             level_up_base=200,
             level_up_factor=150,
         )
-        lvl.parent=actor
+        lvl.parent = actor
 
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             lvl.increase_max_hp(amount=5)
@@ -187,7 +192,8 @@ class TestLevel(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -197,7 +203,7 @@ class TestLevel(unittest.TestCase):
             level_up_base=200,
             level_up_factor=150,
         )
-        lvl.parent=actor
+        lvl.parent = actor
 
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             lvl.increase_power(amount=5)
@@ -211,7 +217,8 @@ class TestLevel(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -221,10 +228,9 @@ class TestLevel(unittest.TestCase):
             level_up_base=200,
             level_up_factor=150,
         )
-        lvl.parent=actor
+        lvl.parent = actor
 
         with patch('message_log.MessageLog.add_message') as patch_add_message:
             lvl.increase_defense(amount=5)
         self.assertEqual(actor.fighter.defense, 15)
         patch_add_message.assert_called_once()
-

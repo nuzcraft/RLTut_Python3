@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 import numpy as np
 from components.ai import HostileEnemy
 from engine import Engine
-from game_map import GameMap
+from game_map import GameMap, GameWorld
 import unittest
 
 import tcod
@@ -12,6 +12,7 @@ from entity import Entity, Actor
 from components.ai import HostileEnemy
 from components.fighter import Fighter
 from components.inventory import Inventory
+from components.level import Level
 from message_log import MessageLog
 from exceptions import Impossible
 
@@ -43,7 +44,8 @@ class Test_Engine(unittest.TestCase):
         '''
         ent1 = Entity()
         ent2 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         eng = Engine(player=ent1)
         gm = GameMap(engine=eng, width=10,
                      height=10, entities={ent2})
@@ -64,7 +66,8 @@ class Test_Engine(unittest.TestCase):
         '''
         ent1 = Entity()
         ent2 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         eng = Engine(player=ent1)
         gm = GameMap(engine=eng, width=10,
                      height=10, entities={ent2})
@@ -88,7 +91,8 @@ class Test_Engine(unittest.TestCase):
         the return value to match the expected output
         '''
         ent = Actor(x=5, y=5, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         eng = Engine(player=ent)
         gm = GameMap(engine=eng, width=10, height=10)
         ent.parent = gm
@@ -113,8 +117,19 @@ class Test_Engine(unittest.TestCase):
         I can't get it to not pop up the window, which is probably what breaks those actions
         '''
         ent1 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         eng = Engine(player=ent1)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=5,
+            room_min_size=3,
+            room_max_size=4,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
         eng.game_map = GameMap(engine=eng, width=10, height=10)
 
         console = tcod.Console(10, 10)
