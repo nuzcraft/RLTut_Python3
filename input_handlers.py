@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import string
 from typing import Optional, TYPE_CHECKING, Callable, Tuple, Union
 
 import tcod
@@ -306,6 +307,48 @@ class AskUserEventHandler(EventHandler):
         by default this returns the main event handler
         """
         return MainGameEventHandler(self.engine)
+
+
+class LevelUpEventHandler(AskUserEventHandler):
+    TITLE = "Level Up"
+
+    def on_render(self, console: tcod.Console) -> None:
+        super().on_render(console)
+
+        if self.engine.player.x <= 30:
+            x = 40
+        else:
+            x = 0
+
+        console.draw_frame(
+            x=x,
+            y=0,
+            width=35,
+            height=8,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+        console.print(x=x+1, y=1, string="Congratulations! You level up!")
+        console.print(x=x+1, y=2, string="Select an attribute to increase.")
+
+        console.print(
+            x=x+1,
+            y=4,
+            string=f"a) Constitution (+20 HP, from {self.engine.player.fighter.max_hp})",
+        )
+        console.print(
+            x=x+1,
+            y=5,
+            string=f"b) Strength (+1 attack, from {self.engine.player.fighter.power})",
+        )
+        console.print(
+            x=x+1,
+            y=6,
+            string=f"c) Toughness (+1 defense, from {self.engine.player.fighter.defense})"
+        )
 
 
 class InventoryEventHandler(AskUserEventHandler):
