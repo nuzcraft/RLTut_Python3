@@ -132,17 +132,18 @@ class Test_Fighter(unittest.TestCase):
     def test_die_other_actor(self, mock_add_message):
         '''
         test that when an actor (not player) dies, they get set well
+        also verify that xp is given to the player
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         act = Actor(name="actor", ai_cls=HostileEnemy,
                     fighter=ft, inventory=Inventory(capacity=5),
-                    level=Level())
+                    level=Level(xp_given=150))
         ft.parent = act
 
         ft2 = Fighter(hp=10, defense=10, power=10)
         act2 = Actor(name="player", ai_cls=HostileEnemy,
                      fighter=ft2, inventory=Inventory(capacity=5),
-                     level=Level())
+                     level=Level(level_up_base=200))
         ft2.parent = act2
 
         eng = Engine(player=act2)
@@ -159,7 +160,9 @@ class Test_Fighter(unittest.TestCase):
         self.assertIsNone(ft.parent.ai)
         self.assertEqual(ft.parent.name, "remains of actor")
         self.assertEqual(ft.parent.render_order, RenderOrder.CORPSE)
-        mock_add_message.assert_called_with("actor is dead!", color.enemy_die)
+        mock_add_message.assert_any_call("actor is dead!", color.enemy_die)
+        # verify xp is given to the player
+        self.assertEqual(act2.level.current_xp, 150)
 
     def test_heal_max_hp(self):
         '''
