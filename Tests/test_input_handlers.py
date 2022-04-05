@@ -19,6 +19,7 @@ from input_handlers import (
     SingleRangedAttackHandler,
     AreaRangedAttackHandler,
     PopupMessage,
+    LevelUpEventHandler,
 )
 
 from actions import (
@@ -1137,6 +1138,109 @@ class TestAskUserEventHandler(unittest.TestCase):
         eng.event_handler = event_handler
         ret = event_handler.on_exit()
         self.assertIsInstance(ret, MainGameEventHandler)
+
+
+class TestLevelUpEventHandler(unittest.TestCase):
+    def test_on_render_player_on_left(self):
+        '''
+        test that the level up window will render on the right when the player is on the left
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = LevelUpEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=40,
+            y=0,
+            width=35,
+            height=8,
+            title="Level Up",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_player_on_right(self):
+        '''
+        test that the level up window will render on the left when the player is on the right
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            x=40,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = LevelUpEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=0,
+            y=0,
+            width=35,
+            height=8,
+            title="Level Up",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_ev_keydown_a(self):
+        '''
+        test that when a is pressed, the increase_max_hp function is called
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.A, sym=tcod.event.K_a, mod=tcod.event.Modifier.NONE)
+        with patch('components.level.Level.increase_max_hp') as patch_increase_max_hp:
+            eh.ev_keydown(event=event)
+
+        patch_increase_max_hp.assert_called_once()
 
 
 class TestIventoryEventHandler(unittest.TestCase):

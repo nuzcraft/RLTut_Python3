@@ -350,6 +350,25 @@ class LevelUpEventHandler(AskUserEventHandler):
             string=f"c) Toughness (+1 defense, from {self.engine.player.fighter.defense})"
         )
 
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        player = self.engine.player
+        key = event.sym
+        index = key - tcod.event.K_a
+
+        if 0 <= index <= 2:
+            if index == 0:
+                player.level.increase_max_hp()
+            elif index == 1:
+                player.level.increase_power()
+            else:
+                player.level.increase_defense()
+        else:
+            self.engine.message_log.add_message(
+                "Invalid entry.", color.invalid)
+            return None
+
+        return super().ev_keydown(event)
+
 
 class InventoryEventHandler(AskUserEventHandler):
     """
