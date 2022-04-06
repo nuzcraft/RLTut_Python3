@@ -1309,6 +1309,25 @@ class TestLevelUpEventHandler(unittest.TestCase):
         patch_add_message.assert_called_once()
         self.assertIsNone(ret)
 
+    def test_ev_mousebuttondown(self):
+        '''
+        test that if the mousebutton is clicked, None is returned
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.MouseButtonDown()
+        ret = eh.ev_mousebuttondown(event=event)
+        self.assertIsNone(ret)
+
 
 class TestIventoryEventHandler(unittest.TestCase):
     def test_on_render_player_on_left(self):
