@@ -13,11 +13,12 @@ import lzma
 import pickle
 if TYPE_CHECKING:
     from entity import Actor
-    from game_map import GameMap
+    from game_map import GameMap, GameWorld
 
 
 class Engine:
     game_map: GameMap
+    game_world: GameWorld
 
     def __init__(self, player: Actor):
         self.message_log = MessageLog()
@@ -54,6 +55,12 @@ class Engine:
             current_value=self.player.fighter.hp,
             maximum_value=self.player.fighter.max_hp,
             total_width=20,
+        )
+
+        render_functions.render_dungeon_level(
+            console=console,
+            dungeon_level=self.game_world.current_floor,
+            location=(0, 47),
         )
 
         render_functions.render_names_at_mouse_location(

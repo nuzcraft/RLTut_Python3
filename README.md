@@ -12,6 +12,20 @@ I want to use this as an opportunity to:
 4. make a roguelike
 5. practice with git
 
+## Part 11 Dev Notes
+
+### Delving into the Dungeon
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-11/
+
+This part looks like a part where we start putting in some bells and whistles to really flush out what the game can be. We'll add additional floors as well as exp and a level up system.
+
+Adding additional floors was a bit of a treat! It allows us to play for a pseudo-goal (get as low in the dungeon as possible) and adds an 'infinite quality' aka we can play forever and keep winning if we wish. This is better (maybe?) than the previous version where we had one easy level to clear and be forced to quit the game with nothing new to do. I'm not really sure how much I like the GameWorld system whereby define the current_level then generate a new game_map when we need one. In a future version of my own game (based on this framework), I will likely add some options for keeping track of previous floors and such. I think it's interesting that this tutorial uses a new tile for the stairs as opposed to using an entity.
+
+Adding the level up system was a significant amount of event handler work. We needed to add a new component to keep track of xp and the level as well as a new screen to level up certain attributes and a character screen. Implementing the screens and the inputs used in them is always interesting and the unit tests behind them are critical to making sure the screens act as expected.
+
+Overall, I enjoyed working this part. It really feels like the game is coming together and I'm looking forward to the last (final?) part, which I would guess is level progression to make the lower levels of the game harder.
+
 ## Part 10 Dev Notes
 
 ### Saving and Loading

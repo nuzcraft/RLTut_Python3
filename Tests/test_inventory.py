@@ -5,9 +5,11 @@ from components.inventory import Inventory
 from components.ai import BaseAI
 from components.fighter import Fighter
 from components.consumable import Consumable
+from components.level import Level
 from entity import Actor, Item
 from engine import Engine
 from game_map import GameMap
+
 
 class TestInventory(unittest.TestCase):
     def test_init(self):
@@ -22,7 +24,8 @@ class TestInventory(unittest.TestCase):
         '''
         test that the parent (actor) of an inventory can be set without issues
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+                      level=Level())
         inv = Inventory(capacity=5)
         inv.parent = actor
         self.assertEqual(inv.parent, actor)
@@ -32,7 +35,8 @@ class TestInventory(unittest.TestCase):
         test that an item can be dropped
         from the inventory and onto the map
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+                      level=Level())
         inv = Inventory(capacity=5)
         inv.parent = actor
         item = Item(consumable=Consumable())

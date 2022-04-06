@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from numpy import power
+from numpy import maximum, power
 from tcod import console_get_char_background, console_get_char_foreground
 import tcod.event
 from tcod.console import Console
@@ -19,6 +19,8 @@ from input_handlers import (
     SingleRangedAttackHandler,
     AreaRangedAttackHandler,
     PopupMessage,
+    LevelUpEventHandler,
+    CharacterScreenEventHandler,
 )
 
 from actions import (
@@ -28,15 +30,17 @@ from actions import (
     DropItem,
     ItemAction,
     Action,
+    TakeStairAction,
 )
 from engine import Engine
 from entity import Entity, Actor, Item
-from game_map import GameMap
+from game_map import GameMap, GameWorld
 from exceptions import Impossible
 from components.ai import BaseAI
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.consumable import Consumable
+from components.level import Level
 import color
 
 
@@ -103,6 +107,7 @@ class TestBaseEventHandler(unittest.TestCase):
         with self.assertRaises(SystemExit):
             eh.ev_quit(event=event)
 
+
 class Test_PopupMessage(unittest.TestCase):
     def test_init(self):
         '''
@@ -125,7 +130,8 @@ class Test_PopupMessage(unittest.TestCase):
                 pop.on_render(console=console)
 
         patch_on_render.assert_called_once()
-        patch_print.assert_called_with(5, 5, "string", fg=color.white, bg=color.black, alignment=tcod.CENTER)
+        patch_print.assert_called_with(
+            5, 5, "string", fg=color.white, bg=color.black, alignment=tcod.CENTER)
 
     def test_ev_keydown(self):
         '''
@@ -137,6 +143,7 @@ class Test_PopupMessage(unittest.TestCase):
         )
         ret = pop.ev_keydown(event=event)
         self.assertIsInstance(ret, BaseEventHandler)
+
 
 class Test_EventHandler(unittest.TestCase):
     def test_init(self):
@@ -157,6 +164,7 @@ class Test_EventHandler(unittest.TestCase):
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=ent)
         event_handler = EventHandler(engine=eng)
@@ -178,6 +186,7 @@ class Test_EventHandler(unittest.TestCase):
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=ent)
         event_handler = EventHandler(engine=eng)
@@ -199,6 +208,7 @@ class Test_EventHandler(unittest.TestCase):
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=ent)
         event_handler = EventHandler(engine=eng)
@@ -222,6 +232,7 @@ class Test_EventHandler(unittest.TestCase):
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=ent)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -239,6 +250,33 @@ class Test_EventHandler(unittest.TestCase):
                 eh = event_handler.handle_events(event=event)
 
         self.assertIsInstance(eh, GameOverEventHandler)
+
+    def test_handle_events_action_level_up(self):
+        '''
+        test that the handle_events will return a LevelUpEventHandler
+        when the action is successful and the player is a alive and needs to level up
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level(current_xp=1000, level_up_base=200)
+        )
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        ent.parent = gm
+        eng.game_map = gm
+        event_handler = EventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('tcod.event.EventDispatch.dispatch') as patch_dispatch:
+            patch_dispatch.return_value = Action(entity=ent)
+            with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+                patch_handle_action.return_value = True
+                eh = event_handler.handle_events(event=event)
+
+        self.assertIsInstance(eh, LevelUpEventHandler)
 
     def test_handle_action_none(self):
         '''
@@ -323,6 +361,30 @@ class Test_EventHandler(unittest.TestCase):
 
 class Test_MainGameEventHandler(unittest.TestCase):
     # tcod.event.KeyDown() events will trigger ev_keydown
+    def test_ev_keydown_period_rshift(self):
+        '''
+        tests that pressing rshift and period will return a stairs action
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.PERIOD, sym=tcod.event.K_PERIOD, mod=tcod.event.Modifier.RSHIFT)
+        action = event_handler.ev_keydown(event)
+        self.assertIsInstance(action, TakeStairAction)
+
+    def test_ev_keydown_period_lshift(self):
+        '''
+        tests that pressing lshift and period will return a stairs action
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.PERIOD, sym=tcod.event.K_PERIOD, mod=tcod.event.Modifier.LSHIFT)
+        action = event_handler.ev_keydown(event)
+        self.assertIsInstance(action, TakeStairAction)
+
     def test_ev_keydown_up(self):
         '''
         tests that pressing up will move the player up
@@ -755,6 +817,18 @@ class Test_MainGameEventHandler(unittest.TestCase):
         action = event_handler.dispatch(event)
         self.assertIsInstance(action, InventoryDropHandler)
 
+    def test_ev_keydown_c(self):
+        '''
+        tests that pressing c will return CharacterScreenEventHandler
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.C, sym=tcod.event.K_c, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(action, CharacterScreenEventHandler)
+
     def test_ev_keydown_SLASH(self):
         '''
         tests that pressing forward slash will update the event_handler to LookHandler
@@ -1106,6 +1180,276 @@ class TestAskUserEventHandler(unittest.TestCase):
         self.assertIsInstance(ret, MainGameEventHandler)
 
 
+class TestCharacterScreenEventHandler(unittest.TestCase):
+    def test_on_render_player_on_left(self):
+        '''
+        test that the character screen will render on the right when the player is on the left
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = CharacterScreenEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=40,
+            y=0,
+            width=25,
+            height=7,
+            title="Character Information",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_player_on_right(self):
+        '''
+        test that the character screen will render on the left when the player is on the right
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            x=40,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = CharacterScreenEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=0,
+            y=0,
+            width=25,
+            height=7,
+            title="Character Information",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+
+class TestLevelUpEventHandler(unittest.TestCase):
+    def test_on_render_player_on_left(self):
+        '''
+        test that the level up window will render on the right when the player is on the left
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = LevelUpEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=40,
+            y=0,
+            width=35,
+            height=8,
+            title="Level Up",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_player_on_right(self):
+        '''
+        test that the level up window will render on the left when the player is on the right
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            x=40,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = LevelUpEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=0,
+            y=0,
+            width=35,
+            height=8,
+            title="Level Up",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_ev_keydown_a(self):
+        '''
+        test that when a is pressed, the increase_max_hp function is called
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.A, sym=tcod.event.K_a, mod=tcod.event.Modifier.NONE)
+        with patch('components.level.Level.increase_max_hp') as patch_increase_max_hp:
+            eh.ev_keydown(event=event)
+
+        patch_increase_max_hp.assert_called_once()
+
+    def test_ev_keydown_b(self):
+        '''
+        test that when b is pressed, the increase_power function is called
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.B, sym=tcod.event.K_b, mod=tcod.event.Modifier.NONE)
+        with patch('components.level.Level.increase_power') as patch_increase_power:
+            eh.ev_keydown(event=event)
+
+        patch_increase_power.assert_called_once()
+
+    def test_ev_keydown_c(self):
+        '''
+        test that when c is pressed, the increase_defense function is called
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.C, sym=tcod.event.K_c, mod=tcod.event.Modifier.NONE)
+        with patch('components.level.Level.increase_defense') as patch_increase_defense:
+            eh.ev_keydown(event=event)
+
+        patch_increase_defense.assert_called_once()
+
+    def test_ev_keydown_other(self):
+        '''
+        test that when g is pressed, the a message is added to the log and None is returned
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.G, sym=tcod.event.K_g, mod=tcod.event.Modifier.NONE)
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            ret = eh.ev_keydown(event=event)
+
+        patch_add_message.assert_called_once()
+        self.assertIsNone(ret)
+
+    def test_ev_mousebuttondown(self):
+        '''
+        test that if the mousebutton is clicked, None is returned
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.MouseButtonDown()
+        ret = eh.ev_mousebuttondown(event=event)
+        self.assertIsNone(ret)
+
+
 class TestIventoryEventHandler(unittest.TestCase):
     def test_on_render_player_on_left(self):
         '''
@@ -1115,9 +1459,20 @@ class TestIventoryEventHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
         player.parent = gm
@@ -1145,9 +1500,20 @@ class TestIventoryEventHandler(unittest.TestCase):
             y=40,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
         player.parent = gm
@@ -1174,7 +1540,8 @@ class TestIventoryEventHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         player.inventory.items = [
             Item(consumable=Consumable),
@@ -1182,6 +1549,16 @@ class TestIventoryEventHandler(unittest.TestCase):
             Item(consumable=Consumable),
         ]
         eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
         player.parent = gm
@@ -1208,7 +1585,8 @@ class TestIventoryEventHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         player.inventory.items = [
             Item(name="item1", consumable=Consumable),
@@ -1216,6 +1594,16 @@ class TestIventoryEventHandler(unittest.TestCase):
             Item(name="item3", consumable=Consumable),
         ]
         eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
         player.parent = gm
@@ -1234,9 +1622,20 @@ class TestIventoryEventHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
         player.parent = gm
@@ -1252,7 +1651,8 @@ class TestIventoryEventHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         item1 = Item(name="item1", consumable=Consumable)
         player.inventory.items = [
@@ -1277,7 +1677,8 @@ class TestIventoryEventHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         item1 = Item(name="item1", consumable=Consumable)
         player.inventory.items = [
@@ -1303,7 +1704,8 @@ class TestIventoryEventHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         item1 = Item(name="item1", consumable=Consumable)
         player.inventory.items = [
@@ -1327,7 +1729,8 @@ class TestIventoryEventHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         item1 = Item(name="item1", consumable=Consumable)
         player.inventory.items = [
@@ -1350,7 +1753,8 @@ class TestInventoryActivateHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         item1 = Item(name="item1", consumable=Consumable)
         player.inventory.items = [
@@ -1374,7 +1778,8 @@ class TestInventoryDropHandler(unittest.TestCase):
         player = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         item1 = Item(name="item1", consumable=Consumable)
         player.inventory.items = [
@@ -1398,7 +1803,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=5, y=6,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         e_handler = SelectIndexHandler(engine=eng)
@@ -1413,9 +1819,20 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=5, y=6,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
         gm = GameMap(engine=eng, width=10, height=10)
         eng.game_map = gm
         player.parent = gm
@@ -1442,7 +1859,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=5, y=5,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1464,7 +1882,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=5, y=5,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=20, height=20)
@@ -1498,7 +1917,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=5, y=5,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=20, height=20)
@@ -1532,7 +1952,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=5, y=5,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=30, height=30)
@@ -1566,7 +1987,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1590,7 +2012,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=8, y=8,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1614,7 +2037,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1640,7 +2064,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1665,7 +2090,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1688,7 +2114,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1711,7 +2138,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1734,7 +2162,8 @@ class TestSelectIndexHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1754,7 +2183,8 @@ class TestLookHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1774,7 +2204,8 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1803,7 +2234,8 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1832,7 +2264,8 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -1863,9 +2296,20 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
             x=5, y=6,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
         gm = GameMap(engine=eng, width=10, height=10)
         eng.game_map = gm
         player.parent = gm
@@ -1905,7 +2349,8 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)

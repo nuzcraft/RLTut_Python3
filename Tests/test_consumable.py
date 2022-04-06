@@ -10,6 +10,7 @@ from components.consumable import (
 from components.ai import BaseAI, ConfusedEnemy
 from components.fighter import Fighter
 from components.inventory import Inventory
+from components.level import Level
 from entity import Item, Actor
 from actions import ItemAction
 from engine import Engine
@@ -34,7 +35,8 @@ class TestConsumable(unittest.TestCase):
         test that get action returns the correct item action
         '''
         actor = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         consumable = Consumable()
         item = Item(consumable=consumable)
         consumable.parent = item
@@ -48,7 +50,8 @@ class TestConsumable(unittest.TestCase):
         test that for a base consumable this returns an not implemented error
         '''
         actor = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         consumable = Consumable()
         item = Item(consumable=consumable)
         consumable.parent = item
@@ -64,7 +67,8 @@ class TestConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         consumable = Consumable()
         item = Item(consumable=consumable)
@@ -93,7 +97,8 @@ class TestConfusionConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -115,13 +120,15 @@ class TestConfusionConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         ent = Actor(
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -154,13 +161,15 @@ class TestConfusionConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         ent = Actor(
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -188,13 +197,15 @@ class TestConfusionConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         ent = Actor(
             x=1, y=1,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -222,7 +233,8 @@ class TestConfusionConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -259,7 +271,8 @@ class TestHealingConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         actor.fighter.hp = 3
         eng = Engine(player=actor)
@@ -284,7 +297,8 @@ class TestHealingConsumable(unittest.TestCase):
         test that activate raise Impossible when it cannot heal
         '''
         actor = Actor(ai_cls=BaseAI, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5))
+            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            level=Level())
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
         consumable = HealingConsumable(amount=5)
@@ -314,7 +328,8 @@ class TestFireballDamageConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -336,13 +351,15 @@ class TestFireballDamageConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         ent = Actor(
             x=5, y=5,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -376,19 +393,22 @@ class TestFireballDamageConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         ent = Actor(
             x=5, y=5,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         ent2 = Actor(
             x=7, y=7,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -424,19 +444,22 @@ class TestFireballDamageConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         ent = Actor(
             x=5, y=5,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         ent2 = Actor(
             x=7, y=7,
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -466,7 +489,8 @@ class TestFireballDamageConsumable(unittest.TestCase):
         actor = Actor(
             ai_cls=BaseAI,
             fighter=Fighter(hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=actor)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -503,13 +527,15 @@ class TestLightningDamageConsumable(unittest.TestCase):
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
             hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         actor1 = Actor(
             x=2, y=2,
             ai_cls=BaseAI, fighter=Fighter(
                 hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -538,19 +564,22 @@ class TestLightningDamageConsumable(unittest.TestCase):
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
             hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         actor1 = Actor(
             x=2, y=2,
             ai_cls=BaseAI, fighter=Fighter(
                 hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         actor2 = Actor(
             x=7, y=7,
             ai_cls=BaseAI, fighter=Fighter(
                 hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -580,7 +609,8 @@ class TestLightningDamageConsumable(unittest.TestCase):
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
             hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -603,13 +633,15 @@ class TestLightningDamageConsumable(unittest.TestCase):
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
             hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         actor1 = Actor(
             x=2, y=2,
             ai_cls=BaseAI, fighter=Fighter(
                 hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -633,13 +665,15 @@ class TestLightningDamageConsumable(unittest.TestCase):
         '''
         player = Actor(ai_cls=BaseAI, fighter=Fighter(
             hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         actor1 = Actor(
             x=5, y=5,
             ai_cls=BaseAI, fighter=Fighter(
                 hp=10, defense=10, power=10),
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
+            level=Level()
         )
         eng = Engine(player=player)
         gm = GameMap(engine=eng, width=10, height=10)
