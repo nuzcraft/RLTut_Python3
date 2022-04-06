@@ -20,6 +20,7 @@ from input_handlers import (
     AreaRangedAttackHandler,
     PopupMessage,
     LevelUpEventHandler,
+    CharacterScreenEventHandler,
 )
 
 from actions import (
@@ -249,6 +250,33 @@ class Test_EventHandler(unittest.TestCase):
                 eh = event_handler.handle_events(event=event)
 
         self.assertIsInstance(eh, GameOverEventHandler)
+
+    def test_handle_events_action_level_up(self):
+        '''
+        test that the handle_events will return a LevelUpEventHandler
+        when the action is successful and the player is a alive and needs to level up
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level(current_xp=1000, level_up_base=200)
+        )
+        eng = Engine(player=ent)
+        gm = GameMap(engine=eng, width=10, height=10)
+        ent.parent = gm
+        eng.game_map = gm
+        event_handler = EventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.UP, sym=tcod.event.K_UP, mod=tcod.event.Modifier.NONE
+        )
+        with patch('tcod.event.EventDispatch.dispatch') as patch_dispatch:
+            patch_dispatch.return_value = Action(entity=ent)
+            with patch('input_handlers.EventHandler.handle_action') as patch_handle_action:
+                patch_handle_action.return_value = True
+                eh = event_handler.handle_events(event=event)
+
+        self.assertIsInstance(eh, LevelUpEventHandler)
 
     def test_handle_action_none(self):
         '''
@@ -789,6 +817,18 @@ class Test_MainGameEventHandler(unittest.TestCase):
         action = event_handler.dispatch(event)
         self.assertIsInstance(action, InventoryDropHandler)
 
+    def test_ev_keydown_c(self):
+        '''
+        tests that pressing c will return CharacterScreenEventHandler
+        '''
+        ent = Entity()
+        eng = Engine(player=ent)
+        event_handler = MainGameEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.C, sym=tcod.event.K_c, mod=tcod.event.Modifier.NONE)
+        action = event_handler.dispatch(event)
+        self.assertIsInstance(action, CharacterScreenEventHandler)
+
     def test_ev_keydown_SLASH(self):
         '''
         tests that pressing forward slash will update the event_handler to LookHandler
@@ -1138,6 +1178,87 @@ class TestAskUserEventHandler(unittest.TestCase):
         eng.event_handler = event_handler
         ret = event_handler.on_exit()
         self.assertIsInstance(ret, MainGameEventHandler)
+
+
+class TestCharacterScreenEventHandler(unittest.TestCase):
+    def test_on_render_player_on_left(self):
+        '''
+        test that the character screen will render on the right when the player is on the left
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = CharacterScreenEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=40,
+            y=0,
+            width=25,
+            height=7,
+            title="Character Information",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+    def test_on_render_player_on_right(self):
+        '''
+        test that the character screen will render on the left when the player is on the right
+        '''
+        console = Console(width=50, height=50, order='F')
+        player = Actor(
+            x=40,
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=10,
+            map_height=10,
+            max_rooms=20,
+            room_min_size=2,
+            room_max_size=14,
+            max_monsters_per_room=2,
+            max_items_per_room=2
+        )
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = CharacterScreenEventHandler(engine=eng)
+        with patch('tcod.console.Console.draw_frame') as patch_draw_frame:
+            event_handler.on_render(console=console)
+        patch_draw_frame.assert_called_once_with(
+            x=0,
+            y=0,
+            width=25,
+            height=7,
+            title="Character Information",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
 
 
 class TestLevelUpEventHandler(unittest.TestCase):
