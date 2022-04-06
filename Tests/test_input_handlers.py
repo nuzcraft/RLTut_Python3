@@ -1242,6 +1242,73 @@ class TestLevelUpEventHandler(unittest.TestCase):
 
         patch_increase_max_hp.assert_called_once()
 
+    def test_ev_keydown_b(self):
+        '''
+        test that when b is pressed, the increase_power function is called
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.B, sym=tcod.event.K_b, mod=tcod.event.Modifier.NONE)
+        with patch('components.level.Level.increase_power') as patch_increase_power:
+            eh.ev_keydown(event=event)
+
+        patch_increase_power.assert_called_once()
+
+    def test_ev_keydown_c(self):
+        '''
+        test that when c is pressed, the increase_defense function is called
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.C, sym=tcod.event.K_c, mod=tcod.event.Modifier.NONE)
+        with patch('components.level.Level.increase_defense') as patch_increase_defense:
+            eh.ev_keydown(event=event)
+
+        patch_increase_defense.assert_called_once()
+
+    def test_ev_keydown_other(self):
+        '''
+        test that when g is pressed, the a message is added to the log and None is returned
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        player.parent = gm
+        eh = LevelUpEventHandler(engine=eng)
+        event = tcod.event.KeyDown(
+            scancode=tcod.event.Scancode.G, sym=tcod.event.K_g, mod=tcod.event.Modifier.NONE)
+        with patch('message_log.MessageLog.add_message') as patch_add_message:
+            ret = eh.ev_keydown(event=event)
+
+        patch_add_message.assert_called_once()
+        self.assertIsNone(ret)
+
 
 class TestIventoryEventHandler(unittest.TestCase):
     def test_on_render_player_on_left(self):
