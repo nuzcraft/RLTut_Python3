@@ -1,7 +1,47 @@
 import unittest
-from procgen import RectangularRoom, generate_dungeon, tunnel_between, place_entities
+from procgen import (
+    RectangularRoom,
+    generate_dungeon,
+    tunnel_between,
+    place_entities,
+    get_max_value_for_floor,
+)
 from entity import Entity
 from engine import Engine
+
+
+class TestMaxValue(unittest.TestCase):
+    def test_get_max_value_for_floor_on_floor(self):
+        '''
+        test that passing in a matching floor will return 
+        the exact match for the value associated with that floor
+        '''
+        weighted_chances = [
+            (1, 2),
+            (4, 3),
+            (6, 5),
+        ]
+        ret = get_max_value_for_floor(
+            weighted_chances_by_floor=weighted_chances,
+            floor=4
+        )
+        self.assertEqual(ret, 3)
+
+    def test_get_max_value_for_floor_between_floors(self):
+        '''
+        test that passing in a not matching floor will return 
+        the match for the value associated with the lower floor
+        '''
+        weighted_chances = [
+            (1, 2),
+            (4, 3),
+            (6, 5),
+        ]
+        ret = get_max_value_for_floor(
+            weighted_chances_by_floor=weighted_chances,
+            floor=3
+        )
+        self.assertEqual(ret, 2)
 
 
 class Test_RectangularRoom(unittest.TestCase):
