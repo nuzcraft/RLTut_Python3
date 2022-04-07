@@ -12,6 +12,14 @@ I want to use this as an opportunity to:
 4. make a roguelike
 5. practice with git
 
+## Part 12 Dev Notes
+
+### Increasing Difficulty
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-12/
+
+This section looks pretty short. As it stands, the game is pretty easy. We breeze past the each level due to the high number of items relative to monsters. I think this will be an interesting way to modulate the difficulty.
+
 ## Part 11 Dev Notes
 
 ### Delving into the Dungeon
