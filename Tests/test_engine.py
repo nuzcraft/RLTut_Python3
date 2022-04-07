@@ -127,8 +127,6 @@ class Test_Engine(unittest.TestCase):
             max_rooms=5,
             room_min_size=3,
             room_max_size=4,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         eng.game_map = GameMap(engine=eng, width=10, height=10)
 

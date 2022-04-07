@@ -8,6 +8,7 @@ from procgen import (
 )
 from entity import Entity
 from engine import Engine
+from game_map import GameWorld
 
 
 class TestMaxValue(unittest.TestCase):
@@ -121,14 +122,21 @@ class Test_Generate_Dungeon(unittest.TestCase):
         '''
         ent = Entity()
         eng = Engine(player=ent)
+        eng.game_world = GameWorld(
+            engine=eng,
+            map_width=50,
+            map_height=50,
+            max_rooms=10,
+            room_min_size=3,
+            room_max_size=5,
+            current_floor=1
+        )
         d = generate_dungeon(
             max_rooms=10,
             room_min_size=3,
             room_max_size=5,
             map_width=50,
             map_height=50,
-            max_monsters_per_room=3,
-            max_items_per_room=2,
             engine=eng
         )
         self.assertEqual(d.height, 50)
