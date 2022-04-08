@@ -12,6 +12,14 @@ I want to use this as an opportunity to:
 4. make a roguelike
 5. practice with git
 
+## Part 13 Dev Notes
+
+### Gearing Up
+
+https://rogueliketutorials.com/tutorials/tcod/v2/part-13/
+
+I've been interested in tis part for a while; I think I remember how the implementation works from a previous time I did this tutorial (in python 2). I'm partial to using equipment as a form of 'leveling up' as opposed to the actual level up mechanics, so I'm very interested in implementing some sort of equipment system.
+
 ## Part 12 Dev Notes
 
 ### Increasing Difficulty
