@@ -20,6 +20,8 @@ https://rogueliketutorials.com/tutorials/tcod/v2/part-12/
 
 This section looks pretty short. As it stands, the game is pretty easy. We breeze past the each level due to the high number of items relative to monsters. I think this will be an interesting way to modulate the difficulty.
 
+This was the shortest part so far (I think) and it was a bit refreshing. Overall, I think this method of progressing the difficulty is interesting. My personal gripe with it is just that its somewhat hard to test out the balance; I think when I end up looking at tuning the balance, I'll want to set up some sort of method to set the map at a certain state as well as figure out how to unit test the functions that rely on random generation.
+
 ## Part 11 Dev Notes
 
 ### Delving into the Dungeon
