@@ -1200,8 +1200,6 @@ class TestCharacterScreenEventHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
@@ -1240,8 +1238,6 @@ class TestCharacterScreenEventHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
@@ -1281,8 +1277,6 @@ class TestLevelUpEventHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
@@ -1321,8 +1315,6 @@ class TestLevelUpEventHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
@@ -1470,8 +1462,6 @@ class TestIventoryEventHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
@@ -1511,8 +1501,6 @@ class TestIventoryEventHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
@@ -1556,8 +1544,6 @@ class TestIventoryEventHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
@@ -1601,8 +1587,6 @@ class TestIventoryEventHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
@@ -1633,8 +1617,6 @@ class TestIventoryEventHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=50, height=50)
         eng.game_map = gm
@@ -1830,8 +1812,6 @@ class TestSelectIndexHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=10, height=10)
         eng.game_map = gm
@@ -2307,8 +2287,6 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
             max_rooms=20,
             room_min_size=2,
             room_max_size=14,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         gm = GameMap(engine=eng, width=10, height=10)
         eng.game_map = gm

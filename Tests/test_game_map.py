@@ -213,7 +213,6 @@ class TestGameWorld(unittest.TestCase):
         mw, mh = 10, 11
         mr = 6
         rmin, rmax = 3, 4
-        mm, mi = 1, 2
         cf = 5
         gw = GameWorld(
             engine=eng,
@@ -222,8 +221,6 @@ class TestGameWorld(unittest.TestCase):
             max_rooms=mr,
             room_min_size=rmin,
             room_max_size=rmax,
-            max_monsters_per_room=mm,
-            max_items_per_room=mi,
             current_floor=cf
         )
         self.assertEqual(gw.engine, eng)
@@ -232,8 +229,6 @@ class TestGameWorld(unittest.TestCase):
         self.assertEqual(gw.max_rooms, mr)
         self.assertEqual(gw.room_min_size, rmin)
         self.assertEqual(gw.room_max_size, rmax)
-        self.assertEqual(gw.max_monsters_per_room, mm)
-        self.assertEqual(gw.max_items_per_room, mi)
         self.assertEqual(gw.current_floor, cf)
 
     def test_generate_floor(self):
@@ -248,8 +243,6 @@ class TestGameWorld(unittest.TestCase):
             max_rooms=10,
             room_min_size=3,
             room_max_size=6,
-            max_monsters_per_room=2,
-            max_items_per_room=2
         )
         with patch('procgen.generate_dungeon') as patch_gen_dun:
             gw.generate_floor()
