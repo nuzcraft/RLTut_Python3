@@ -49,7 +49,7 @@ class Equipment(BaseComponent):
 
     def unequip_message(self, item_name: str) -> None:
         self.parent.gamemap.engine.message_log.add_message(
-            f"You remove the {item_name}"
+            f"You remove the {item_name}."
         )
 
     def equip_message(self, item_name: str) -> None:
