@@ -3,10 +3,12 @@ from entity import Entity, Actor, Item
 from game_map import GameMap
 from engine import Engine
 from render_order import RenderOrder
+from equipment_types import EquipmentType
 
 from components.ai import BaseAI
 from components.fighter import Fighter
 from components.consumable import Consumable
+from components.equippable import Equippable
 from components.inventory import Inventory
 from components.level import Level
 
@@ -186,7 +188,8 @@ class TestItem(unittest.TestCase):
         test that items can get initialized without issues
         '''
         cm = Consumable()
-        itm = Item(consumable=cm)
+        eq = Equippable(equipment_type=EquipmentType.ARMOR)
+        itm = Item(consumable=cm, equippable=eq)
         self.assertEqual(itm.x, 0)
         self.assertEqual(itm.y, 0)
         self.assertEqual(itm.char, '?')
@@ -196,3 +199,5 @@ class TestItem(unittest.TestCase):
         self.assertEqual(itm.consumable.parent, itm)
         self.assertFalse(itm.blocks_movement)
         self.assertEqual(itm.render_order, RenderOrder.ITEM)
+        self.assertIsInstance(itm.equippable, Equippable)
+        self.assertEqual(itm.equippable.parent, itm)
