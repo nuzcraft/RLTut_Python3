@@ -83,7 +83,7 @@ class TestLevel(unittest.TestCase):
         '''
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -112,7 +112,7 @@ class TestLevel(unittest.TestCase):
         '''
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -143,7 +143,7 @@ class TestLevel(unittest.TestCase):
         '''
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -165,7 +165,7 @@ class TestLevel(unittest.TestCase):
         '''
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -192,7 +192,7 @@ class TestLevel(unittest.TestCase):
         '''
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -217,7 +217,7 @@ class TestLevel(unittest.TestCase):
         '''
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )

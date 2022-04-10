@@ -20,17 +20,17 @@ class Test_Fighter(unittest.TestCase):
         test that initializing a fighter component sets
         values correctly
         '''
-        ft = Fighter(hp=10, defense=20, power=30)
+        ft = Fighter(hp=10, base_defense=20, base_power=30)
         self.assertEqual(ft.max_hp, 10)
         self.assertEqual(ft._hp, 10)
-        self.assertEqual(ft.defense, 20)
-        self.assertEqual(ft.power, 30)
+        self.assertEqual(ft.base_defense, 20)
+        self.assertEqual(ft.base_power, 30)
 
     def test_entity_set(self):
         '''
         test that an entity can be set without issues
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         act = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=ft,
                     inventory=Inventory(capacity=5),
                     level=Level())
@@ -41,7 +41,7 @@ class Test_Fighter(unittest.TestCase):
         '''
         test that calling hp will return the hp value
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         self.assertEqual(ft.hp, 10)
 
     def test_setter_hp_in_bounds(self):
@@ -49,7 +49,7 @@ class Test_Fighter(unittest.TestCase):
         test that setting the hp works as expected
         when setting within expected range
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         ft.hp = 5
         self.assertEqual(ft.hp, 5)
 
@@ -58,7 +58,7 @@ class Test_Fighter(unittest.TestCase):
         test that setting the hp works as expected
         when setting below 0
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         act = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=ft,
                     inventory=Inventory(capacity=5),
                     level=Level())
@@ -77,7 +77,7 @@ class Test_Fighter(unittest.TestCase):
         test that setting the hp works as expected
         when setting above the max
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         ft.hp = 15
         self.assertEqual(ft.hp, ft.max_hp)
 
@@ -85,7 +85,7 @@ class Test_Fighter(unittest.TestCase):
         '''
         test that setting hp to 0 will cause the entity to die
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         # this will set the ai to HostileEnemy
         act = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=ft,
                     inventory=Inventory(capacity=5),
@@ -107,7 +107,7 @@ class Test_Fighter(unittest.TestCase):
         test that when a player dies, they get set well
         and a message of the correct color is added to the message log
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         # this will set the ai to HostileEnemy
         act = Actor(name="player", ai_cls=HostileEnemy, equipment=Equipment(),
                     fighter=ft, inventory=Inventory(capacity=5),
@@ -135,13 +135,13 @@ class Test_Fighter(unittest.TestCase):
         test that when an actor (not player) dies, they get set well
         also verify that xp is given to the player
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         act = Actor(name="actor", ai_cls=HostileEnemy, equipment=Equipment(),
                     fighter=ft, inventory=Inventory(capacity=5),
                     level=Level(xp_given=150))
         ft.parent = act
 
-        ft2 = Fighter(hp=10, defense=10, power=10)
+        ft2 = Fighter(hp=10, base_defense=10, base_power=10)
         act2 = Actor(name="player", ai_cls=HostileEnemy, equipment=Equipment(),
                      fighter=ft2, inventory=Inventory(capacity=5),
                      level=Level(level_up_base=200))
@@ -169,7 +169,7 @@ class Test_Fighter(unittest.TestCase):
         '''
         test that healing any amount while at max hp will heal 0
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         amount_recovered = ft.heal(10)
         self.assertEqual(amount_recovered, 0)
 
@@ -177,7 +177,7 @@ class Test_Fighter(unittest.TestCase):
         '''
         test that healing more than necessary will cap at max hp
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         ft.hp = 5
         amount_recovered = ft.heal(10)
         self.assertEqual(amount_recovered, 5)
@@ -187,7 +187,7 @@ class Test_Fighter(unittest.TestCase):
         '''
         test that healing some will increase the hp
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         ft.hp = 5
         amount_recovered = ft.heal(3)
         self.assertEqual(amount_recovered, 3)
@@ -197,6 +197,6 @@ class Test_Fighter(unittest.TestCase):
         '''
         test that taking damage will reduce the hp
         '''
-        ft = Fighter(hp=10, defense=10, power=10)
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
         ft.take_damage(2)
         self.assertEqual(ft.hp, 8)

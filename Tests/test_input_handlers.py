@@ -163,7 +163,7 @@ class Test_EventHandler(unittest.TestCase):
         '''
         ent = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -185,7 +185,7 @@ class Test_EventHandler(unittest.TestCase):
         '''
         ent = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -207,7 +207,7 @@ class Test_EventHandler(unittest.TestCase):
         '''
         ent = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -231,7 +231,7 @@ class Test_EventHandler(unittest.TestCase):
         '''
         ent = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -259,7 +259,7 @@ class Test_EventHandler(unittest.TestCase):
         '''
         ent = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level(current_xp=1000, level_up_base=200)
         )
@@ -1189,7 +1189,7 @@ class TestCharacterScreenEventHandler(unittest.TestCase):
         console = Console(width=50, height=50, order='F')
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1227,7 +1227,7 @@ class TestCharacterScreenEventHandler(unittest.TestCase):
         player = Actor(
             x=40,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1266,7 +1266,7 @@ class TestLevelUpEventHandler(unittest.TestCase):
         console = Console(width=50, height=50, order='F')
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1304,7 +1304,7 @@ class TestLevelUpEventHandler(unittest.TestCase):
         player = Actor(
             x=40,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1340,7 +1340,7 @@ class TestLevelUpEventHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1362,7 +1362,7 @@ class TestLevelUpEventHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1384,7 +1384,7 @@ class TestLevelUpEventHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1406,7 +1406,7 @@ class TestLevelUpEventHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1429,7 +1429,7 @@ class TestLevelUpEventHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1451,7 +1451,7 @@ class TestIventoryEventHandler(unittest.TestCase):
         console = Console(width=50, height=50, order='F')
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1490,7 +1490,7 @@ class TestIventoryEventHandler(unittest.TestCase):
             x=40,
             y=40,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1528,7 +1528,7 @@ class TestIventoryEventHandler(unittest.TestCase):
         console = Console(width=50, height=50, order='F')
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1571,7 +1571,7 @@ class TestIventoryEventHandler(unittest.TestCase):
         console = Console(width=50, height=50, order='F')
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1606,7 +1606,7 @@ class TestIventoryEventHandler(unittest.TestCase):
         console = Console(width=50, height=50, order='F')
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1633,7 +1633,7 @@ class TestIventoryEventHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1659,7 +1659,7 @@ class TestIventoryEventHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1686,7 +1686,7 @@ class TestIventoryEventHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1711,7 +1711,7 @@ class TestIventoryEventHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1735,7 +1735,7 @@ class TestInventoryActivateHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1760,7 +1760,7 @@ class TestInventoryDropHandler(unittest.TestCase):
         '''
         player = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1785,7 +1785,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=5, y=6,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1801,7 +1801,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=5, y=6,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1839,7 +1839,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=5, y=5,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1862,7 +1862,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=5, y=5,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1897,7 +1897,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=5, y=5,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1932,7 +1932,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=5, y=5,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1967,7 +1967,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -1992,7 +1992,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=8, y=8,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2017,7 +2017,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2044,7 +2044,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2070,7 +2070,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2094,7 +2094,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2118,7 +2118,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2142,7 +2142,7 @@ class TestSelectIndexHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2163,7 +2163,7 @@ class TestLookHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2184,7 +2184,7 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2214,7 +2214,7 @@ class TestSingleRangedAttackHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2244,7 +2244,7 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2276,7 +2276,7 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
         player = Actor(
             x=5, y=6,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -2327,7 +2327,7 @@ class TestAreaRangedAttackHandler(unittest.TestCase):
         player = Actor(
             x=1, y=1,
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )

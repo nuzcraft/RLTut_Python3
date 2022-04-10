@@ -25,7 +25,7 @@ class TestEquipment(unittest.TestCase):
         eq = Equipment(weapon=wp, armor=ar)
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -158,7 +158,7 @@ class TestEquipment(unittest.TestCase):
         eq = Equipment()
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -178,7 +178,7 @@ class TestEquipment(unittest.TestCase):
         eq = Equipment()
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -220,7 +220,7 @@ class TestEquipment(unittest.TestCase):
         eq = Equipment()
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -253,7 +253,7 @@ class TestEquipment(unittest.TestCase):
         eq = Equipment(weapon=item)
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -276,7 +276,7 @@ class TestEquipment(unittest.TestCase):
         eq = Equipment()
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -296,7 +296,7 @@ class TestEquipment(unittest.TestCase):
         eq = Equipment()
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -316,7 +316,7 @@ class TestEquipment(unittest.TestCase):
         eq = Equipment(weapon=item)
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -336,7 +336,7 @@ class TestEquipment(unittest.TestCase):
         eq = Equipment(armor=item)
         actor = Actor(
             ai_cls=BaseAI, equipment=Equipment(),
-            fighter=Fighter(hp=10, defense=10, power=10),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )

@@ -178,7 +178,7 @@ class Test_Game_Map(unittest.TestCase):
         will return that actor
         '''
         act = Actor(x=5, y=6, ai_cls=HostileEnemy, equipment=Equipment(),
-                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+                    fighter=Fighter(hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
                     level=Level())
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
@@ -194,7 +194,7 @@ class Test_Game_Map(unittest.TestCase):
         will return that actor
         '''
         act = Actor(x=5, y=6, ai_cls=HostileEnemy, equipment=Equipment(),
-                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+                    fighter=Fighter(hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
                     level=Level())
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})

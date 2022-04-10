@@ -45,7 +45,7 @@ class Test_Engine(unittest.TestCase):
         '''
         ent1 = Entity()
         ent2 = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         eng = Engine(player=ent1)
         gm = GameMap(engine=eng, width=10,
@@ -67,7 +67,7 @@ class Test_Engine(unittest.TestCase):
         '''
         ent1 = Entity()
         ent2 = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         eng = Engine(player=ent1)
         gm = GameMap(engine=eng, width=10,
@@ -92,7 +92,7 @@ class Test_Engine(unittest.TestCase):
         the return value to match the expected output
         '''
         ent = Actor(x=5, y=5, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         eng = Engine(player=ent)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -118,7 +118,7 @@ class Test_Engine(unittest.TestCase):
         I can't get it to not pop up the window, which is probably what breaks those actions
         '''
         ent1 = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         eng = Engine(player=ent1)
         eng.game_world = GameWorld(
