@@ -6,6 +6,7 @@ from render_order import RenderOrder
 from equipment_types import EquipmentType
 
 from components.ai import BaseAI
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.consumable import Consumable
 from components.equippable import Equippable
@@ -142,7 +143,7 @@ class TestActor(unittest.TestCase):
         '''
         test that initializing an actor sets the values as expected
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5),
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5),
                       level=Level())
         # some of these are defaults
         self.assertEqual(actor.x, 0)
@@ -166,7 +167,7 @@ class TestActor(unittest.TestCase):
         '''
         test the is_alive property returns true if there is an ai component
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             10, 10, 10), inventory=Inventory(capacity=5),
             level=Level())
         self.assertTrue(actor.is_alive)
@@ -175,7 +176,7 @@ class TestActor(unittest.TestCase):
         '''
         test the is_alive property returns false if there is no
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             10, 10, 10), inventory=Inventory(capacity=5),
             level=Level())
         actor.ai = None  # remove the ai component

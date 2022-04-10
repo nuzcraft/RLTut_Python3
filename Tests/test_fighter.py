@@ -2,6 +2,7 @@ from turtle import width
 import unittest
 from unittest.mock import patch
 from components.fighter import Fighter
+from components.equipment import Equipment
 from components.ai import HostileEnemy
 from components.inventory import Inventory
 from components.level import Level
@@ -30,7 +31,7 @@ class Test_Fighter(unittest.TestCase):
         test that an entity can be set without issues
         '''
         ft = Fighter(hp=10, defense=10, power=10)
-        act = Actor(ai_cls=HostileEnemy, fighter=ft,
+        act = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=ft,
                     inventory=Inventory(capacity=5),
                     level=Level())
         ft.entity = act
@@ -58,7 +59,7 @@ class Test_Fighter(unittest.TestCase):
         when setting below 0
         '''
         ft = Fighter(hp=10, defense=10, power=10)
-        act = Actor(ai_cls=HostileEnemy, fighter=ft,
+        act = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=ft,
                     inventory=Inventory(capacity=5),
                     level=Level())
         ft.entity = act
@@ -86,7 +87,7 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
-        act = Actor(ai_cls=HostileEnemy, fighter=ft,
+        act = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=ft,
                     inventory=Inventory(capacity=5),
                     level=Level())
         ft.parent = act
@@ -108,7 +109,7 @@ class Test_Fighter(unittest.TestCase):
         '''
         ft = Fighter(hp=10, defense=10, power=10)
         # this will set the ai to HostileEnemy
-        act = Actor(name="player", ai_cls=HostileEnemy,
+        act = Actor(name="player", ai_cls=HostileEnemy, equipment=Equipment(),
                     fighter=ft, inventory=Inventory(capacity=5),
                     level=Level())
         ft.parent = act
@@ -135,13 +136,13 @@ class Test_Fighter(unittest.TestCase):
         also verify that xp is given to the player
         '''
         ft = Fighter(hp=10, defense=10, power=10)
-        act = Actor(name="actor", ai_cls=HostileEnemy,
+        act = Actor(name="actor", ai_cls=HostileEnemy, equipment=Equipment(),
                     fighter=ft, inventory=Inventory(capacity=5),
                     level=Level(xp_given=150))
         ft.parent = act
 
         ft2 = Fighter(hp=10, defense=10, power=10)
-        act2 = Actor(name="player", ai_cls=HostileEnemy,
+        act2 = Actor(name="player", ai_cls=HostileEnemy, equipment=Equipment(),
                      fighter=ft2, inventory=Inventory(capacity=5),
                      level=Level(level_up_base=200))
         ft2.parent = act2

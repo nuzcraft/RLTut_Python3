@@ -8,6 +8,7 @@ from components.consumable import (
     FireballDamageConsumable,
 )
 from components.ai import BaseAI, ConfusedEnemy
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
@@ -34,7 +35,7 @@ class TestConsumable(unittest.TestCase):
         '''
         test that get action returns the correct item action
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         consumable = Consumable()
@@ -49,7 +50,7 @@ class TestConsumable(unittest.TestCase):
         '''
         test that for a base consumable this returns an not implemented error
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         consumable = Consumable()
@@ -65,7 +66,7 @@ class TestConsumable(unittest.TestCase):
         test that consume will remove item from inventory
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -95,7 +96,7 @@ class TestConfusionConsumable(unittest.TestCase):
         event handler
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -118,14 +119,14 @@ class TestConfusionConsumable(unittest.TestCase):
         add a message to the log, update the ai of the target, consume the item
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         ent = Actor(
             x=1, y=1,
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -159,14 +160,14 @@ class TestConfusionConsumable(unittest.TestCase):
         test that activating on a non-visible tile will raise an exception
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         ent = Actor(
             x=1, y=1,
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -195,14 +196,14 @@ class TestConfusionConsumable(unittest.TestCase):
         test that activating without a target actor will raise an exception
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         ent = Actor(
             x=1, y=1,
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -231,7 +232,7 @@ class TestConfusionConsumable(unittest.TestCase):
         test that activating on self(player) will raise an exception
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -269,7 +270,7 @@ class TestHealingConsumable(unittest.TestCase):
         test that activate will heal the fighter
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -296,7 +297,7 @@ class TestHealingConsumable(unittest.TestCase):
         '''
         test that activate raise Impossible when it cannot heal
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         eng = Engine(player=actor)
@@ -326,7 +327,7 @@ class TestFireballDamageConsumable(unittest.TestCase):
         and set the event handler to AreaRangedAttackHandler
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -349,14 +350,14 @@ class TestFireballDamageConsumable(unittest.TestCase):
         add a message to the log, damage the target, consume the item
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         ent = Actor(
             x=5, y=5,
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -391,21 +392,21 @@ class TestFireballDamageConsumable(unittest.TestCase):
         add a message to the log, damage the targets, consume the item
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         ent = Actor(
             x=5, y=5,
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         ent2 = Actor(
             x=7, y=7,
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -442,21 +443,21 @@ class TestFireballDamageConsumable(unittest.TestCase):
         will raise an exceptions
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         ent = Actor(
             x=5, y=5,
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         ent2 = Actor(
             x=7, y=7,
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -487,7 +488,7 @@ class TestFireballDamageConsumable(unittest.TestCase):
         will raise an exceptions
         '''
         actor = Actor(
-            ai_cls=BaseAI,
+            ai_cls=BaseAI, equipment=Equipment(),
             fighter=Fighter(hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -525,14 +526,14 @@ class TestLightningDamageConsumable(unittest.TestCase):
         test that if there is an actor close enough, the consumable will 
         damage it and be consumed
         '''
-        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+        player = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         actor1 = Actor(
             x=2, y=2,
-            ai_cls=BaseAI, fighter=Fighter(
+            ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
                 hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -562,21 +563,21 @@ class TestLightningDamageConsumable(unittest.TestCase):
         test that if there are 2 actors close enough, the consumable will
         damage the closer one and not the one further away
         '''
-        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+        player = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         actor1 = Actor(
             x=2, y=2,
-            ai_cls=BaseAI, fighter=Fighter(
+            ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
                 hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         actor2 = Actor(
             x=7, y=7,
-            ai_cls=BaseAI, fighter=Fighter(
+            ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
                 hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -607,7 +608,7 @@ class TestLightningDamageConsumable(unittest.TestCase):
         '''
         test that if there are no actors, an Impossible exception is raised
         '''
-        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+        player = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -631,14 +632,14 @@ class TestLightningDamageConsumable(unittest.TestCase):
         '''
         test that if there are no visible actors, an Impossible exception is raised
         '''
-        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+        player = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         actor1 = Actor(
             x=2, y=2,
-            ai_cls=BaseAI, fighter=Fighter(
+            ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
                 hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
@@ -663,14 +664,14 @@ class TestLightningDamageConsumable(unittest.TestCase):
         '''
         test that if there are no actors in range, an Impossible exception is raised
         '''
-        player = Actor(ai_cls=BaseAI, fighter=Fighter(
+        player = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
         actor1 = Actor(
             x=5, y=5,
-            ai_cls=BaseAI, fighter=Fighter(
+            ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
                 hp=10, defense=10, power=10),
             inventory=Inventory(capacity=5),
             level=Level()

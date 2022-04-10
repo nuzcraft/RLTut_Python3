@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, Mock, patch
 from numpy import power
 
 from components.ai import BaseAI, HostileEnemy, ConfusedEnemy
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
@@ -20,7 +21,7 @@ class Test_BaseAI(unittest.TestCase):
         '''
         tests that the entity can be set correctly
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         self.assertEqual(actor, actor.ai.entity)
@@ -116,7 +117,7 @@ class TestConfusedEnemy(unittest.TestCase):
         '''
         test that the confused enemy can be initized without issues
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+        actor = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         ai = ConfusedEnemy(
@@ -128,7 +129,7 @@ class TestConfusedEnemy(unittest.TestCase):
         '''
         test that with 0 or less turns remaining the ai switches back 
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+        actor = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         ai = ConfusedEnemy(
@@ -146,7 +147,7 @@ class TestConfusedEnemy(unittest.TestCase):
         test that with turns remaining the ai will perform a bump action 
         in a random direction and reduce the number of turns remaining
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+        actor = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         ai = ConfusedEnemy(
@@ -167,7 +168,7 @@ class TestHostileEnemy(unittest.TestCase):
         test that the hostile enemy class can be initialized without issues
         '''
         # instantiating an actor will automatically instantiate the ai class under actor.ai
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
+        actor = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         self.assertEqual(actor, actor.ai.entity)
@@ -184,7 +185,7 @@ class TestHostileEnemy(unittest.TestCase):
         gm.tiles[:, :] = tile_types.floor
         gm.entities.add(player)
 
-        hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
+        hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         gm.entities.add(hostile_ent)
@@ -216,7 +217,7 @@ class TestHostileEnemy(unittest.TestCase):
         gm.entities.add(player)
 
         # hostile entity is 2 spaces away
-        hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, fighter=Fighter(
+        hostile_ent = Actor(x=0, y=2, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         gm.entities.add(hostile_ent)
@@ -248,7 +249,7 @@ class TestHostileEnemy(unittest.TestCase):
         gm.entities.add(player)
 
         # hostile entity is 1 spaces away
-        hostile_ent = Actor(x=0, y=1, ai_cls=HostileEnemy, fighter=Fighter(
+        hostile_ent = Actor(x=0, y=1, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
             hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
             level=Level())
         gm.entities.add(hostile_ent)
