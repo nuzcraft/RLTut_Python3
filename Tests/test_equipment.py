@@ -267,3 +267,83 @@ class TestEquipment(unittest.TestCase):
 
         self.assertIsNone(eq.weapon)
         patch_equip_message.assert_called_once()
+
+    def test_toggle_equip_weapon_equip(self):
+        '''
+        test that the toggle_equip function can equip a weapon
+        '''
+        item = Item(equippable=Equippable(equipment_type=EquipmentType.WEAPON))
+        eq = Equipment()
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        actor.parent = gm
+        eq.parent = actor
+        eq.toggle_equip(equippable_item=item, add_message=False)
+        self.assertEqual(eq.weapon, item)
+
+    def test_toggle_equip_armor_equip(self):
+        '''
+        test that the toggle_equip function can equip armor
+        '''
+        item = Item(equippable=Equippable(equipment_type=EquipmentType.ARMOR))
+        eq = Equipment()
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        actor.parent = gm
+        eq.parent = actor
+        eq.toggle_equip(equippable_item=item, add_message=False)
+        self.assertEqual(eq.armor, item)
+
+    def test_toggle_equip_weapon_unequip(self):
+        '''
+        test that the toggle_equip function can unequip a weapon
+        '''
+        item = Item(equippable=Equippable(equipment_type=EquipmentType.WEAPON))
+        eq = Equipment(weapon=item)
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        actor.parent = gm
+        eq.parent = actor
+        eq.toggle_equip(equippable_item=item, add_message=False)
+        self.assertIsNone(eq.weapon)
+
+    def test_toggle_equip_armor_unequip(self):
+        '''
+        test that the toggle_equip function can unequip armor
+        '''
+        item = Item(equippable=Equippable(equipment_type=EquipmentType.ARMOR))
+        eq = Equipment(armor=item)
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        actor.parent = gm
+        eq.parent = actor
+        eq.toggle_equip(equippable_item=item, add_message=False)
+        self.assertIsNone(eq.armor)
