@@ -195,15 +195,75 @@ class TestEquipment(unittest.TestCase):
         '''
         test that equipping a new item will remove the old one
         '''
+        item = Item()
+        item2 = Item()
+        eq = Equipment(weapon=item)
+        eq.equip_to_slot("weapon", item2, False)
+        self.assertEqual(eq.weapon, item2)
 
     def test_equip_to_slot_no_current_item(self):
         '''
         test that equipping a new item will not try to remove
         an old one if it does not exist
         '''
+        item = Item()
+        eq = Equipment()
+        eq.equip_to_slot("weapon", item, False)
+        self.assertEqual(eq.weapon, item)
 
     def test_equip_to_slot_with_message(self):
         '''
         test that equipping a new item with add_message set to true
         will send an equip message
         '''
+        item = Item(name="item")
+        eq = Equipment()
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        actor.parent = gm
+        eq.parent = actor
+        with patch("components.equipment.Equipment.equip_message") as patch_equip_message:
+            eq.equip_to_slot(slot="weapon", item=item, add_message=True)
+
+        self.assertEqual(eq.weapon, item)
+        patch_equip_message.assert_called_once()
+
+    def test_unequip_from_slot_with_current_item(self):
+        '''
+        test that unequipping will remove the old item
+        '''
+        item = Item()
+        eq = Equipment(weapon=item)
+        eq.unequip_from_slot("weapon", False)
+        self.assertIsNone(eq.weapon)
+
+    def test_unequip_from_slot_with_message(self):
+        '''
+        test that unequipping an item with add_message set to true
+        will send an unequip message
+        '''
+        item = Item(name="item")
+        eq = Equipment(weapon=item)
+        actor = Actor(
+            ai_cls=BaseAI,
+            fighter=Fighter(hp=10, defense=10, power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        eng = Engine(player=actor)
+        gm = GameMap(engine=eng, width=10, height=10)
+        eng.game_map = gm
+        actor.parent = gm
+        eq.parent = actor
+        with patch("components.equipment.Equipment.unequip_message") as patch_equip_message:
+            eq.unequip_from_slot(slot="weapon", add_message=True)
+
+        self.assertIsNone(eq.weapon)
+        patch_equip_message.assert_called_once()
