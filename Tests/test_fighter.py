@@ -1,16 +1,20 @@
 from turtle import width
 import unittest
 from unittest.mock import patch
+
+from numpy import power
 from components.fighter import Fighter
 from components.equipment import Equipment
+from components.equippable import Equippable
 from components.ai import HostileEnemy
 from components.inventory import Inventory
 from components.level import Level
-from entity import Actor
+from entity import Actor, Item
 from engine import Engine
 from game_map import GameMap
 from render_order import RenderOrder
 from input_handlers import GameOverEventHandler
+from equipment_types import EquipmentType
 import color
 
 
@@ -100,6 +104,100 @@ class Test_Fighter(unittest.TestCase):
         ft.hp = 0
         # triggering 'die' should remove the ai component
         self.assertIsNone(ft.parent.ai)
+
+    def test_property_defense(self):
+        '''
+        def that that the property will return the defense of fighter plus equipment
+        '''
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
+        act = Actor(
+            ai_cls=HostileEnemy,
+            equipment=Equipment(weapon=Item(equippable=Equippable(
+                equipment_type=EquipmentType.WEAPON, power_bonus=2, defense_bonus=3))),
+            fighter=ft,
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        ft.parent = act
+        self.assertEqual(ft.defense, 13)
+
+    def test_property_power(self):
+        '''
+        def that that the property will return the power of fighter plus equipment
+        '''
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
+        act = Actor(
+            ai_cls=HostileEnemy,
+            equipment=Equipment(weapon=Item(equippable=Equippable(
+                equipment_type=EquipmentType.WEAPON, power_bonus=2, defense_bonus=3))),
+            fighter=ft,
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        ft.parent = act
+        self.assertEqual(ft.power, 12)
+
+    def test_property_defense_bonus(self):
+        '''
+        def that that the property will return the defense of equipment
+        '''
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
+        act = Actor(
+            ai_cls=HostileEnemy,
+            equipment=Equipment(weapon=Item(equippable=Equippable(
+                equipment_type=EquipmentType.WEAPON, power_bonus=2, defense_bonus=3))),
+            fighter=ft,
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        ft.parent = act
+        self.assertEqual(ft.defense_bonus, 3)
+
+    def test_property_defense_bonus_none(self):
+        '''
+        def that that the property will return 0 if the parent has no equipment
+        '''
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
+        act = Actor(
+            ai_cls=HostileEnemy,
+            equipment=Equipment(weapon=Item()),
+            fighter=ft,
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        ft.parent = act
+        self.assertEqual(ft.defense_bonus, 0)
+
+    def test_property_power_bonus(self):
+        '''
+        def that that the property will return the defense of equipment
+        '''
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
+        act = Actor(
+            ai_cls=HostileEnemy,
+            equipment=Equipment(weapon=Item(equippable=Equippable(
+                equipment_type=EquipmentType.WEAPON, power_bonus=2, defense_bonus=3))),
+            fighter=ft,
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        ft.parent = act
+        self.assertEqual(ft.power_bonus, 2)
+
+    def test_property_power_bonus_none(self):
+        '''
+        def that that the property will return 0 if the parent has no equipment
+        '''
+        ft = Fighter(hp=10, base_defense=10, base_power=10)
+        act = Actor(
+            ai_cls=HostileEnemy,
+            equipment=Equipment(weapon=Item()),
+            fighter=ft,
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        ft.parent = act
+        self.assertEqual(ft.power_bonus, 0)
 
     @patch('message_log.MessageLog.add_message')
     def test_die_player(self, mock_add_message):
