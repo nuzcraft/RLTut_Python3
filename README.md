@@ -20,6 +20,8 @@ https://rogueliketutorials.com/tutorials/tcod/v2/part-13/
 
 I've been interested in tis part for a while; I think I remember how the implementation works from a previous time I did this tutorial (in python 2). I'm partial to using equipment as a form of 'leveling up' as opposed to the actual level up mechanics, so I'm very interested in implementing some sort of equipment system.
 
+And we're done!! That was exciting! Adding equipment was a bit easier than expected aside from all the extra bells and whistles needed to interact with them. I played through the final build, and with a bit of luck (not much luck) I was able to get to level 6 and become invincible! Turning this into an actually interesting game will take some work. I'm excited to get started on my own version own game based on this framework.
+
 ## Part 12 Dev Notes
 
 ### Increasing Difficulty
