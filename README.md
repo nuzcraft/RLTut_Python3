@@ -1,4 +1,6 @@
-# RLTut_Python3
+# Roguelike Tutorial with Unit Tests
+
+## Python 3 and tcod
 
 Followed the roguelike tutorial at http://rogueliketutorials.com/tutorials/tcod/v2/
 
