@@ -1,7 +1,5 @@
 import unittest
 from unittest.mock import patch
-from numpy import maximum, power
-from tcod import console_get_char_background, console_get_char_foreground
 import tcod.event
 from tcod.console import Console
 from input_handlers import (
@@ -31,6 +29,7 @@ from actions import (
     ItemAction,
     Action,
     TakeStairAction,
+    EquipAction,
 )
 from engine import Engine
 from entity import Entity, Actor, Item
@@ -38,6 +37,7 @@ from game_map import GameMap, GameWorld
 from exceptions import Impossible
 from components.ai import BaseAI
 from components.equipment import Equipment
+from components.equippable import Dagger
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.consumable import Consumable
@@ -1729,7 +1729,7 @@ class TestIventoryEventHandler(unittest.TestCase):
 
 
 class TestInventoryActivateHandler(unittest.TestCase):
-    def test_on_item_selected(self):
+    def test_on_item_selected_consumable(self):
         '''
         test that selecting an item will call the get_action of the consumable
         '''
@@ -1751,6 +1751,53 @@ class TestInventoryActivateHandler(unittest.TestCase):
         with patch('components.consumable.Consumable.get_action') as patch_get_action:
             action = event_handler.on_item_selected(item=item1)
         patch_get_action.assert_called_once()
+
+    def test_on_item_selected_equippable(self):
+        '''
+        test that selecting an item will return the EquipAction action
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        item1 = Item(name="item1", equippable=Dagger())
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryActivateHandler(engine=eng)
+        action = event_handler.on_item_selected(item=item1)
+        self.assertIsInstance(action, EquipAction)
+
+    def test_on_item_selected_other(self):
+        '''
+        test that selecting an item that is not consumable or equippable
+        will return none
+        '''
+        player = Actor(
+            ai_cls=BaseAI,
+            equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
+            inventory=Inventory(capacity=5),
+            level=Level()
+        )
+        item1 = Item(name="item1")
+        player.inventory.items = [
+            item1,
+        ]
+        eng = Engine(player=player)
+        gm = GameMap(engine=eng, width=50, height=50)
+        eng.game_map = gm
+        player.parent = gm
+        event_handler = InventoryActivateHandler(engine=eng)
+        action = event_handler.on_item_selected(item=item1)
+        self.assertIsNone(action)
 
 
 class TestInventoryDropHandler(unittest.TestCase):
