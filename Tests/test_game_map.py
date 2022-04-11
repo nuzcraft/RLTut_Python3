@@ -4,6 +4,7 @@ from game_map import GameMap, GameWorld
 from entity import Entity, Actor, Item
 from engine import Engine
 from components.ai import HostileEnemy
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.consumable import Consumable
@@ -56,10 +57,10 @@ class Test_Game_Map(unittest.TestCase):
         player = Entity()
         eng = Engine(player=player)
         ent1 = Entity()
-        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter,
+        act2 = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter,
                      inventory=Inventory(capacity=5),
                      level=Level())
-        act3 = Actor(ai_cls=HostileEnemy, fighter=Fighter,
+        act3 = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter,
                      inventory=Inventory(capacity=5),
                      level=Level())
         act3.ai = None
@@ -77,7 +78,7 @@ class Test_Game_Map(unittest.TestCase):
         player = Entity()
         eng = Engine(player=player)
         ent1 = Entity()
-        act2 = Actor(ai_cls=HostileEnemy, fighter=Fighter,
+        act2 = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter,
                      inventory=Inventory(capacity=5),
                      level=Level())
         itm3 = Item(consumable=Consumable())
@@ -176,8 +177,8 @@ class Test_Game_Map(unittest.TestCase):
         tests that checking a location with an actor
         will return that actor
         '''
-        act = Actor(x=5, y=6, ai_cls=HostileEnemy,
-                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        act = Actor(x=5, y=6, ai_cls=HostileEnemy, equipment=Equipment(),
+                    fighter=Fighter(hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
                     level=Level())
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})
@@ -192,8 +193,8 @@ class Test_Game_Map(unittest.TestCase):
         tests that checking a location with an actor
         will return that actor
         '''
-        act = Actor(x=5, y=6, ai_cls=HostileEnemy,
-                    fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        act = Actor(x=5, y=6, ai_cls=HostileEnemy, equipment=Equipment(),
+                    fighter=Fighter(hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
                     level=Level())
         eng = Engine(player=act)
         gm = GameMap(engine=eng, width=10, height=10, entities={act})

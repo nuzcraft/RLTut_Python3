@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from components.inventory import Inventory
 from components.ai import BaseAI
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.consumable import Consumable
 from components.level import Level
@@ -24,7 +25,7 @@ class TestInventory(unittest.TestCase):
         '''
         test that the parent (actor) of an inventory can be set without issues
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
                       level=Level())
         inv = Inventory(capacity=5)
         inv.parent = actor
@@ -35,7 +36,7 @@ class TestInventory(unittest.TestCase):
         test that an item can be dropped
         from the inventory and onto the map
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
                       level=Level())
         inv = Inventory(capacity=5)
         inv.parent = actor

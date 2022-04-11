@@ -7,6 +7,7 @@ from components.base_component import BaseComponent
 if TYPE_CHECKING:
     from entity import Actor
 
+
 class Level(BaseComponent):
     parent: Actor
 
@@ -38,7 +39,8 @@ class Level(BaseComponent):
 
         self.current_xp += xp
 
-        self.engine.message_log.add_message(f"You gain {xp} experience points.")
+        self.engine.message_log.add_message(
+            f"You gain {xp} experience points.")
 
         if self.requires_level_up:
             self.engine.message_log.add_message(
@@ -58,15 +60,16 @@ class Level(BaseComponent):
         self.increase_level()
 
     def increase_power(self, amount: int = 1) -> None:
-        self.parent.fighter.power += amount
+        self.parent.fighter.base_power += amount
 
         self.engine.message_log.add_message("You feel stronger!")
 
         self.increase_level()
 
     def increase_defense(self, amount: int = 1) -> None:
-        self.parent.fighter.defense += amount
+        self.parent.fighter.base_defense += amount
 
-        self.engine.message_log.add_message("You're getting tougher, more steadfast!")
+        self.engine.message_log.add_message(
+            "You're getting tougher, more steadfast!")
 
         self.increase_level()

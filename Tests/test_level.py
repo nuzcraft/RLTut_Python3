@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from components.level import Level
 from components.ai import BaseAI
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from engine import Engine
@@ -81,8 +82,8 @@ class TestLevel(unittest.TestCase):
         test that calling add_xp adding xp will also add a message to the log
         '''
         actor = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -110,8 +111,8 @@ class TestLevel(unittest.TestCase):
         when the 
         '''
         actor = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -141,8 +142,8 @@ class TestLevel(unittest.TestCase):
         test that calling increase_level will increase the level 
         '''
         actor = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -163,8 +164,8 @@ class TestLevel(unittest.TestCase):
         test that calling increase_max_hp will increase the max_hp and hp
         '''
         actor = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -190,8 +191,8 @@ class TestLevel(unittest.TestCase):
         test that calling increase_power will increase the power
         '''
         actor = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -215,8 +216,8 @@ class TestLevel(unittest.TestCase):
         test that calling increase_defense will increase the defense
         '''
         actor = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )

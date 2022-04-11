@@ -3,10 +3,13 @@ from entity import Entity, Actor, Item
 from game_map import GameMap
 from engine import Engine
 from render_order import RenderOrder
+from equipment_types import EquipmentType
 
 from components.ai import BaseAI
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.consumable import Consumable
+from components.equippable import Equippable
 from components.inventory import Inventory
 from components.level import Level
 
@@ -140,7 +143,7 @@ class TestActor(unittest.TestCase):
         '''
         test that initializing an actor sets the values as expected
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5),
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(10, 10, 10), inventory=Inventory(capacity=5),
                       level=Level())
         # some of these are defaults
         self.assertEqual(actor.x, 0)
@@ -164,7 +167,7 @@ class TestActor(unittest.TestCase):
         '''
         test the is_alive property returns true if there is an ai component
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             10, 10, 10), inventory=Inventory(capacity=5),
             level=Level())
         self.assertTrue(actor.is_alive)
@@ -173,7 +176,7 @@ class TestActor(unittest.TestCase):
         '''
         test the is_alive property returns false if there is no
         '''
-        actor = Actor(ai_cls=BaseAI, fighter=Fighter(
+        actor = Actor(ai_cls=BaseAI, equipment=Equipment(), fighter=Fighter(
             10, 10, 10), inventory=Inventory(capacity=5),
             level=Level())
         actor.ai = None  # remove the ai component
@@ -186,7 +189,8 @@ class TestItem(unittest.TestCase):
         test that items can get initialized without issues
         '''
         cm = Consumable()
-        itm = Item(consumable=cm)
+        eq = Equippable(equipment_type=EquipmentType.ARMOR)
+        itm = Item(consumable=cm, equippable=eq)
         self.assertEqual(itm.x, 0)
         self.assertEqual(itm.y, 0)
         self.assertEqual(itm.char, '?')
@@ -196,3 +200,5 @@ class TestItem(unittest.TestCase):
         self.assertEqual(itm.consumable.parent, itm)
         self.assertFalse(itm.blocks_movement)
         self.assertEqual(itm.render_order, RenderOrder.ITEM)
+        self.assertIsInstance(itm.equippable, Equippable)
+        self.assertEqual(itm.equippable.parent, itm)

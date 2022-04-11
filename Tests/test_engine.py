@@ -10,6 +10,7 @@ import tcod
 
 from entity import Entity, Actor
 from components.ai import HostileEnemy
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
@@ -43,8 +44,8 @@ class Test_Engine(unittest.TestCase):
         tests that an enemy taking its turn will print
         '''
         ent1 = Entity()
-        ent2 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        ent2 = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         eng = Engine(player=ent1)
         gm = GameMap(engine=eng, width=10,
@@ -65,8 +66,8 @@ class Test_Engine(unittest.TestCase):
         and not raise when an exception is return from the enemy
         '''
         ent1 = Entity()
-        ent2 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        ent2 = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         eng = Engine(player=ent1)
         gm = GameMap(engine=eng, width=10,
@@ -90,8 +91,8 @@ class Test_Engine(unittest.TestCase):
         patch in the compute_fov function from tcod.map and configure
         the return value to match the expected output
         '''
-        ent = Actor(x=5, y=5, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        ent = Actor(x=5, y=5, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         eng = Engine(player=ent)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -116,8 +117,8 @@ class Test_Engine(unittest.TestCase):
         this one may still break the github actions, but it works fine here
         I can't get it to not pop up the window, which is probably what breaks those actions
         '''
-        ent1 = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        ent1 = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         eng = Engine(player=ent1)
         eng.game_world = GameWorld(

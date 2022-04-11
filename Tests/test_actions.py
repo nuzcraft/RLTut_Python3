@@ -13,11 +13,14 @@ from actions import (
     ItemAction,
     DropItem,
     TakeStairAction,
+    EquipAction,
 )
 from entity import Entity, Actor, Item
 from game_map import GameMap, GameWorld
 from engine import Engine
 from components.ai import BaseAI, HostileEnemy
+from components.equipment import Equipment
+from components.equippable import Dagger
 from components.fighter import Fighter
 from components.consumable import Consumable
 from components.inventory import Inventory
@@ -69,8 +72,8 @@ class Test_Actions_WaitAction(unittest.TestCase):
 class Test_Actions_TakeStairsAction(unittest.TestCase):
     def test_perform_with_stairs(self):
         actor = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -95,8 +98,8 @@ class Test_Actions_TakeStairsAction(unittest.TestCase):
 
     def test_perform_no_stairs(self):
         actor = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -181,16 +184,16 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         of the action
         '''
         pl = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level(),
         )  # player at 0, 0
         ent = Actor(
             x=1,
             y=1,
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level(),
         )  # entity at 1, 1
@@ -209,8 +212,8 @@ class Test_Actions_ActionWithDirection(unittest.TestCase):
         of the action
         '''
         pl = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )  # player at 0, 0
@@ -252,11 +255,11 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         test that a Melee Action from a player with a target will do damage
         put out a message with the correct color
         '''
-        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5), inventory=Inventory(capacity=5),
+        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=0, base_power=5), inventory=Inventory(capacity=5),
             level=Level())  # player at 0,0
-        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5), inventory=Inventory(capacity=5),
+        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=0, base_power=5), inventory=Inventory(capacity=5),
             level=Level())  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -283,14 +286,14 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         test that a Melee Action from a enemy with a target will do damage
         put out a message with the correct color
         '''
-        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5), inventory=Inventory(capacity=5),
+        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=0, base_power=5), inventory=Inventory(capacity=5),
             level=Level())  # player at 0,0
-        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5), inventory=Inventory(capacity=5),
+        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=0, base_power=5), inventory=Inventory(capacity=5),
             level=Level())  # blocking entity at 1,1
-        ent2 = Actor(x=2, y=2, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5), inventory=Inventory(capacity=5),
+        ent2 = Actor(x=2, y=2, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=0, base_power=5), inventory=Inventory(capacity=5),
             level=Level())  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -317,11 +320,11 @@ class Test_Actions_MeleeAction(unittest.TestCase):
         '''
         test that a Melee Action with a target will print when no damage is done
         '''
-        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=0, power=5), inventory=Inventory(capacity=5),
+        pl = Actor(x=0, y=0, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=0, base_power=5), inventory=Inventory(capacity=5),
             level=Level())  # player at 0,0
-        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=5, power=5), inventory=Inventory(capacity=5),
+        ent = Actor(x=1, y=1, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=5, base_power=5), inventory=Inventory(capacity=5),
             level=Level())  # blocking entity at 1,1
         eng = Engine(player=pl)
         gm = GameMap(engine=eng, width=10, height=10)
@@ -429,16 +432,16 @@ class Test_Actions_BumpAction(unittest.TestCase):
         pl = Actor(
             x=0,
             y=0,
-            ai_cls=HostileEnemy,
-            fighter=Fighter(hp=10, defense=0, power=5),
+            ai_cls=HostileEnemy, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=0, base_power=5),
             inventory=Inventory(capacity=5),
             level=Level()
         )  # player at 0,0
         ent = Actor(
             x=1,
             y=1,
-            ai_cls=HostileEnemy,
-            fighter=Fighter(hp=10, defense=0, power=5),
+            ai_cls=HostileEnemy, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=0, base_power=5),
             inventory=Inventory(capacity=5),
             level=Level()
         )  # blocking entity at 1,1
@@ -485,8 +488,8 @@ class TestPickupAction(unittest.TestCase):
         '''
         test that a pickup action can be initialized okay
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        actor = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         action = PickupAction(entity=actor)
         self.assertIsInstance(action, PickupAction)
@@ -499,8 +502,8 @@ class TestPickupAction(unittest.TestCase):
         '''
         actor = Actor(
             x=5, y=6,
-            ai_cls=HostileEnemy,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=HostileEnemy, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -534,8 +537,8 @@ class TestPickupAction(unittest.TestCase):
         '''
         actor = Actor(
             x=5, y=6,
-            ai_cls=HostileEnemy,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=HostileEnemy, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -562,8 +565,8 @@ class TestPickupAction(unittest.TestCase):
         '''
         actor = Actor(
             x=5, y=6,
-            ai_cls=HostileEnemy,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=HostileEnemy, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=5),
             level=Level()
         )
@@ -590,8 +593,8 @@ class TestPickupAction(unittest.TestCase):
         '''
         actor = Actor(
             x=5, y=6,
-            ai_cls=HostileEnemy,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=HostileEnemy, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=0),
             level=Level()
         )
@@ -618,8 +621,8 @@ class TestItemAction(unittest.TestCase):
         test that an item action can get initialized okay
         and the target_xy gets set to the x, y of the entity
         '''
-        actor = Actor(x=5, y=6, ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        actor = Actor(x=5, y=6, ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         item = Item(consumable=Consumable())
         item_action = ItemAction(entity=actor, item=item)
@@ -631,8 +634,8 @@ class TestItemAction(unittest.TestCase):
         test that an item action can get initialized okay
         and the target_xy gets set
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        actor = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         item = Item(consumable=Consumable())
         item_action = ItemAction(entity=actor, item=item, target_xy=(5, 6))
@@ -643,8 +646,8 @@ class TestItemAction(unittest.TestCase):
         '''
         test that get_actor_at_location is called with the correct inputs
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        actor = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         item = Item(consumable=Consumable())
         eng = Engine(player=actor)
@@ -663,8 +666,8 @@ class TestItemAction(unittest.TestCase):
         test that the activeate command on the consumable is called
         passing in the existing itemAction
         '''
-        actor = Actor(ai_cls=HostileEnemy, fighter=Fighter(
-            hp=10, defense=10, power=10), inventory=Inventory(capacity=5),
+        actor = Actor(ai_cls=HostileEnemy, equipment=Equipment(), fighter=Fighter(
+            hp=10, base_defense=10, base_power=10), inventory=Inventory(capacity=5),
             level=Level())
         item = Item(consumable=Consumable())
         item_action = ItemAction(entity=actor, item=item)
@@ -681,8 +684,8 @@ class TestDropItem(unittest.TestCase):
         test that this will call the drop command of the inventory
         '''
         ent = Actor(
-            ai_cls=BaseAI,
-            fighter=Fighter(hp=10, defense=10, power=10),
+            ai_cls=BaseAI, equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
             inventory=Inventory(capacity=1),
             level=Level()
         )
@@ -695,6 +698,40 @@ class TestDropItem(unittest.TestCase):
         with patch('components.inventory.Inventory.drop') as patch_drop:
             action.perform()
         patch_drop.assert_called_once_with(item)
+
+
+class TestEquipAction(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that the equip action can be initialized
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
+            inventory=Inventory(capacity=1),
+            level=Level()
+        )
+        item = Item(equippable=Dagger())
+        ea = EquipAction(entity=ent, item=item)
+        self.assertEqual(ea.item, item)
+
+    def test_perform(self):
+        '''
+        test that perform will call toggle_equip
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
+            inventory=Inventory(capacity=1),
+            level=Level()
+        )
+        item = Item(equippable=Dagger())
+        ea = EquipAction(entity=ent, item=item)
+        with patch('components.equipment.Equipment.toggle_equip') as patch_toggle_equip:
+            ea.perform()
+        patch_toggle_equip.assert_called_once_with(item)
 
 
 if __name__ == '__main__':
