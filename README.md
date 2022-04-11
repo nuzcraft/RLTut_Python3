@@ -20,4 +20,4 @@ Version 1.0 is a complete version of the final game from the tutorial. I've made
 
 In addition to the existing codebase, this project has **329** unit tests that cover _most_ of the major functions. This _should_ make developing additional features easier to do with fewer bugs, though updating existing unit tests can take a bit of time. Note that I am not an expert or experienced tester so there is still much to optimize in my testing.
 
-For anyone that stumples on this repo, I hope you find it useful! I had a lot of fun putting this together.
+For anyone that stumbles on this repo, I hope you find it useful! I had a lot of fun putting this together.
