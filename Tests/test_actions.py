@@ -13,12 +13,14 @@ from actions import (
     ItemAction,
     DropItem,
     TakeStairAction,
+    EquipAction,
 )
 from entity import Entity, Actor, Item
 from game_map import GameMap, GameWorld
 from engine import Engine
 from components.ai import BaseAI, HostileEnemy
 from components.equipment import Equipment
+from components.equippable import Dagger
 from components.fighter import Fighter
 from components.consumable import Consumable
 from components.inventory import Inventory
@@ -696,6 +698,40 @@ class TestDropItem(unittest.TestCase):
         with patch('components.inventory.Inventory.drop') as patch_drop:
             action.perform()
         patch_drop.assert_called_once_with(item)
+
+
+class TestEquipAction(unittest.TestCase):
+    def test_init(self):
+        '''
+        test that the equip action can be initialized
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
+            inventory=Inventory(capacity=1),
+            level=Level()
+        )
+        item = Item(equippable=Dagger())
+        ea = EquipAction(entity=ent, item=item)
+        self.assertEqual(ea.item, item)
+
+    def test_perform(self):
+        '''
+        test that perform will call toggle_equip
+        '''
+        ent = Actor(
+            ai_cls=BaseAI,
+            equipment=Equipment(),
+            fighter=Fighter(hp=10, base_defense=10, base_power=10),
+            inventory=Inventory(capacity=1),
+            level=Level()
+        )
+        item = Item(equippable=Dagger())
+        ea = EquipAction(entity=ent, item=item)
+        with patch('components.equipment.Equipment.toggle_equip') as patch_toggle_equip:
+            ea.perform()
+        patch_toggle_equip.assert_called_once_with(item)
 
 
 if __name__ == '__main__':
